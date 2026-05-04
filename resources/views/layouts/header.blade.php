@@ -3,7 +3,7 @@
 
         <!-- Logo -->
         <a href="/" class="flex items-center gap-3">
-            <img src="{{ asset('images/logo-kominfo.png') }}" alt="Logo Diskominfo Tangsel" class="h-10 w-auto object-contain">
+            <img src="{{ asset('images/logo-kominfo.png') }}" alt="Logo Diskominfo Tangsel" class="h-18 w-auto object-contain">
         </a>
 
         <!-- Desktop Navigation -->

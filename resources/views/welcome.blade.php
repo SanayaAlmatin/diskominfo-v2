@@ -6,9 +6,9 @@
 @push('styles')
     <style>
         .welcome-modern header {
-            background: #044FA0 !important;
+            /* background: #044FA0 !important; */
             border-top-color: rgba(255, 255, 255, 0.16) !important;
-            border-bottom-color: rgba(255, 255, 255, 0.14) !important;
+            /* border-bottom-color: rgba(255, 255, 255, 0.14) !important; */
             box-shadow: none !important;
         }
 
