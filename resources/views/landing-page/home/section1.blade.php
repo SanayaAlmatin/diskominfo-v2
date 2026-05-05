@@ -8,14 +8,14 @@
         .welcome-modern header {
             /* background: #044FA0 !important; */
             border-top-color: rgba(255, 255, 255, 0.16) !important;
-            /* border-bottom-color: rgba(255, 255, 255, 0.14) !important; */
+            border-bottom-color: none !important;
             box-shadow: none !important;
         }
 
         .city-pattern {
             background-color: #044FA0;
             background-image: url("data:image/svg+xml,%3Csvg width='180' height='180' viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.13' stroke-width='1.5'%3E%3Cpath d='M18 42h40v34h38v42h46'/%3E%3Cpath d='M30 132h28V98h48V58h44'/%3E%3Cpath d='M90 18v34M132 76h30M18 86h30M84 136v26'/%3E%3Ccircle cx='58' cy='42' r='4' fill='%23F7D558' fill-opacity='.72' stroke='none'/%3E%3Ccircle cx='96' cy='76' r='4' fill='%23FFFFFF' fill-opacity='.45' stroke='none'/%3E%3Ccircle cx='132' cy='132' r='4' fill='%23F7D558' fill-opacity='.72' stroke='none'/%3E%3Ccircle cx='90' cy='18' r='3' fill='%23FFFFFF' fill-opacity='.45' stroke='none'/%3E%3C/g%3E%3Cg fill='%23FFFFFF' fill-opacity='.1'%3E%3Crect x='18' y='146' width='12' height='16' rx='1'/%3E%3Crect x='36' y='134' width='12' height='28' rx='1'/%3E%3Crect x='54' y='122' width='12' height='40' rx='1'/%3E%3Crect x='126' y='144' width='12' height='18' rx='1'/%3E%3Crect x='144' y='126' width='12' height='36' rx='1'/%3E%3C/g%3E%3C/svg%3E");
-            background-size: 220px 220px;
+            background-size: 200px 200px;
             animation: cityPatternDrift 36s linear infinite;
         }
 

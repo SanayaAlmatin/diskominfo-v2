@@ -2,8 +2,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
 
         <!-- Logo -->
-        <a href="/" class="flex items-center gap-3">
-            <img src="{{ asset('images/logo-kominfo.png') }}" alt="Logo Diskominfo Tangsel" class="h-18 w-auto object-contain">
+        <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-3">
+            <img src="{{ asset('Images/logo-kominfo.png') }}" alt="Logo Diskominfo Tangsel" class="h-18 w-auto object-contain">
         </a>
 
         <!-- Desktop Navigation -->
@@ -12,13 +12,13 @@
 
                 <!-- Profil -->
                 <li class="relative group h-full flex items-center">
-                    <a href="#" class="px-3 py-2 text-sm font-semibold hover:text-white flex items-center gap-1 transition-colors h-full border-b-2 border-transparent hover:border-kominfo-yellow">
+                    <a href="{{ route('profil.visi-misi') }}" wire:navigate class="px-3 py-2 text-sm font-semibold hover:text-white flex items-center gap-1 transition-colors h-full border-b-2 hover:border-kominfo-yellow {{ request()->routeIs('profil.*') ? 'border-kominfo-yellow text-white' : 'border-transparent' }}">
                         Profil
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-70 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </a>
                     <ul class="absolute top-full left-0 bg-white text-gray-800 shadow-xl rounded-b-lg w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top -translate-y-2 group-hover:translate-y-0">
                         <li><a href="#" class="block px-4 py-3 text-sm hover:bg-blue-50 hover:text-kominfo-blue transition-colors">Tentang Kami</a></li>
-                        <li><a href="#" class="block px-4 py-3 text-sm hover:bg-blue-50 hover:text-kominfo-blue transition-colors">Visi & Misi</a></li>
+                        <li><a href="{{ route('profil.visi-misi') }}" wire:navigate class="block px-4 py-3 text-sm hover:bg-blue-50 hover:text-kominfo-blue transition-colors {{ request()->routeIs('profil.visi-misi') ? 'bg-blue-50 font-semibold text-kominfo-blue' : '' }}">Visi & Misi</a></li>
                         <li><a href="#" class="block px-4 py-3 text-sm hover:bg-blue-50 hover:text-kominfo-blue transition-colors">Struktur Organisasi</a></li>
                     </ul>
                 </li>
@@ -129,7 +129,7 @@
                     </summary>
                     <div class="border-t border-slate-100 py-2">
                         <a href="#" class="block px-5 py-2.5 text-sm text-slate-600 hover:bg-blue-50 hover:text-kominfo-blue">Tentang Kami</a>
-                        <a href="#" class="block px-5 py-2.5 text-sm text-slate-600 hover:bg-blue-50 hover:text-kominfo-blue">Visi & Misi</a>
+                        <a href="{{ route('profil.visi-misi') }}" wire:navigate class="block px-5 py-2.5 text-sm hover:bg-blue-50 hover:text-kominfo-blue {{ request()->routeIs('profil.visi-misi') ? 'bg-blue-50 font-semibold text-kominfo-blue' : 'text-slate-600' }}">Visi & Misi</a>
                         <a href="#" class="block px-5 py-2.5 text-sm text-slate-600 hover:bg-blue-50 hover:text-kominfo-blue">Struktur Organisasi</a>
                     </div>
                 </details>
@@ -197,19 +197,18 @@
 </header>
 
 @push('scripts')
-    <script>
+    <script data-navigate-once>
         (() => {
-            const header = document.querySelector('[data-site-header]');
-            const button = header ? header.querySelector('[data-mobile-menu-button]') : null;
-            const menu = header ? header.querySelector('[data-mobile-menu]') : null;
-            const openIcon = header ? header.querySelector('[data-menu-icon-open]') : null;
-            const closeIcon = header ? header.querySelector('[data-menu-icon-close]') : null;
+            const setMenuState = (header, isOpen) => {
+                const button = header ? header.querySelector('[data-mobile-menu-button]') : null;
+                const menu = header ? header.querySelector('[data-mobile-menu]') : null;
+                const openIcon = header ? header.querySelector('[data-menu-icon-open]') : null;
+                const closeIcon = header ? header.querySelector('[data-menu-icon-close]') : null;
 
-            if (!header || !button || !menu || !openIcon || !closeIcon) {
-                return;
-            }
+                if (!header || !button || !menu || !openIcon || !closeIcon) {
+                    return;
+                }
 
-            const setMenuState = (isOpen) => {
                 menu.classList.toggle('hidden', !isOpen);
                 openIcon.classList.toggle('hidden', isOpen);
                 closeIcon.classList.toggle('hidden', !isOpen);
@@ -221,32 +220,59 @@
                 }
             };
 
-            button.addEventListener('click', () => {
-                setMenuState(menu.classList.contains('hidden'));
-            });
+            const initSiteHeader = () => {
+                const header = document.querySelector('[data-site-header]');
+                const button = header ? header.querySelector('[data-mobile-menu-button]') : null;
+                const menu = header ? header.querySelector('[data-mobile-menu]') : null;
+                const openIcon = header ? header.querySelector('[data-menu-icon-open]') : null;
+                const closeIcon = header ? header.querySelector('[data-menu-icon-close]') : null;
 
-            menu.querySelectorAll('a').forEach((link) => {
-                link.addEventListener('click', () => setMenuState(false));
-            });
+                if (!header || !button || !menu || !openIcon || !closeIcon || header.dataset.siteHeaderReady === 'true') {
+                    return;
+                }
+
+                header.dataset.siteHeaderReady = 'true';
+
+                button.addEventListener('click', () => {
+                    setMenuState(header, menu.classList.contains('hidden'));
+                });
+
+                menu.querySelectorAll('a').forEach((link) => {
+                    link.addEventListener('click', () => setMenuState(header, false));
+                });
+            };
 
             document.addEventListener('click', (event) => {
-                if (!header.contains(event.target)) {
-                    setMenuState(false);
+                const header = document.querySelector('[data-site-header]');
+
+                if (header && !header.contains(event.target)) {
+                    setMenuState(header, false);
                 }
             });
 
             document.addEventListener('keydown', (event) => {
                 if (event.key === 'Escape') {
-                    setMenuState(false);
-                    button.blur();
+                    const header = document.querySelector('[data-site-header]');
+                    const button = header ? header.querySelector('[data-mobile-menu-button]') : null;
+
+                    setMenuState(header, false);
+                    button?.blur();
                 }
             });
 
             window.addEventListener('resize', () => {
                 if (window.innerWidth >= 1024) {
-                    setMenuState(false);
+                    setMenuState(document.querySelector('[data-site-header]'), false);
                 }
             });
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initSiteHeader, { once: true });
+            } else {
+                initSiteHeader();
+            }
+
+            document.addEventListener('livewire:navigated', initSiteHeader);
         })();
     </script>
 @endpush
