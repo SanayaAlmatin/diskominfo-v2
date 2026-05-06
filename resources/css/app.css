@@ -1,8 +1,113 @@
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* ─── Lowongan Carousel — Corporate Trust Design System ─── */
+
+#lowongan-carousel * {
+    font-family: 'Plus Jakarta Sans', 'Poppins', sans-serif;
+}
+
+/* ─── Colored shadows ─── */
+.vacancy-card-shadow {
+    box-shadow: 0 8px 30px -4px rgba(79, 70, 229, 0.15), 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+    transition:
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        scale 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vacancy-card-active {
+    box-shadow:
+        0 10px 40px -4px rgba(79, 70, 229, 0.22),
+        0 4px 16px -4px rgba(124, 58, 237, 0.14);
+}
+
+/* ─── 3D isometric hover (active card only) ─── */
+.vacancy-card-inner {
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.vacancy-card-wrap:hover .vacancy-card-inner {
+    transform: rotateX(2deg) rotateY(-6deg) scale(1.02);
+    box-shadow: 0 24px 48px -8px rgba(0, 0, 0, 0.18), 0 8px 16px -4px rgba(79, 70, 229, 0.12);
+}
+
+/* ─── Gradient text ─── */
+.gradient-text {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ─── Nav arrow blur button ─── */
+.carousel-arrow {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.carousel-arrow:hover {
+    transform: scale(1.08);
+}
+
+/* ─── Dot indicator ─── */
+.carousel-dot {
+    transition: width 0.35s ease, background 0.35s ease;
+}
+
+/* ─── Card badges ─── */
+.card-badge-vacancy {
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+}
+
+.card-badge-program {
+    background: linear-gradient(135deg, #0891B2, #0284C7);
+}
+
+.card-badge-bounty {
+    background: linear-gradient(135deg, #D97706, #F59E0B);
+}
+
+/* ─── CTA Buttons ─── */
+.btn-cta-primary {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.30);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px 0 rgba(79, 70, 229, 0.38);
+}
+
+.btn-cta-secondary {
+    border: 1.5px solid #E2E8F0;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-cta-secondary:hover {
+    background: #F8FAFC;
+    border-color: #C7D2FE;
+    transform: translateY(-1px);
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+    .vacancy-card-shadow,
+    .vacancy-card-inner,
+    .carousel-arrow,
+    .carousel-dot {
+        transition: none !important;
+    }
 }
