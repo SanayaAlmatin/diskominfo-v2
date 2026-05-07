@@ -59,6 +59,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,1&display=swap"
+        rel="stylesheet" />
+
     <!-- Tailwind CSS (CDN) -->
     <script src="https://unpkg.com/@tailwindcss/browser@4" data-navigate-once></script>
 
@@ -104,6 +108,9 @@
 
     <!-- Main Content -->
     @yield('content')
+
+    <!-- Global Footer -->
+    @include('layouts.footer')
 
     @livewireScripts
 

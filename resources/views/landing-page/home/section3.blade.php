@@ -1,4 +1,3 @@
-
 @php
     $vacancies = [
         [
@@ -88,7 +87,7 @@
     ];
 @endphp
 
-<section id="lowongan-carousel" class="relative overflow-hidden bg-[#F8FAFC] px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+<section id="lowongan-carousel" class="relative overflow-hidden bg-white px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
 
 
     <div class="relative mx-auto max-w-7xl">
@@ -96,8 +95,7 @@
         {{-- Section header --}}
         <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div class="max-w-xl">
-                <span
-                    class="inline-flex items-center text-sm font-bold uppercase tracking-[0.18em] text-blue-800">
+                <span class="inline-flex items-center text-sm font-bold uppercase tracking-[0.18em] text-blue-800">
                     Karir &amp; Program
                 </span>
                 <h2 class="mt-3 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
@@ -121,23 +119,33 @@
         </div>
 
         {{-- Carousel viewport --}}
-        <div class="relative select-none" x-data="vacancyCarousel" x-init="init()"
-            @mouseenter="pause()"
-            @mouseleave="resume()"
-            @touchstart.passive="startX = $event.touches[0].clientX"
-            @touchend="endX = $event.changedTouches[0].clientX; handleSwipe()"
-            @mousedown="startX = $event.clientX"
+        <div class="relative select-none" x-data="vacancyCarousel" x-init="init()" @mouseenter="pause()"
+            @mouseleave="resume()" @touchstart.passive="startX = $event.touches[0].clientX"
+            @touchend="endX = $event.changedTouches[0].clientX; handleSwipe()" @mousedown="startX = $event.clientX"
             @mouseup="endX = $event.clientX; handleSwipe()">
             {{-- Cards track — absolute positioning eliminates flex DOM-order wrap bug --}}
-            <div class="relative mx-auto max-w-5xl h-[450px] overflow-visible py-4">
+            <div class="relative mx-auto max-w-5xl h-[580px] overflow-visible py-4">
                 @foreach ($vacancies as $idx => $card)
                     @php $i = $idx; @endphp
-                    <div class="vacancy-card-wrap absolute top-0 left-1/2 w-80 md:w-96 cursor-pointer"
+                    <div class="vacancy-card-wrap absolute top-0 left-1/2 cursor-pointer"
                         :class="getCardClass({{ $i }})" style="perspective: 1200px;"
                         @click="goTo({{ $i }})">
-                        <div class="vacancy-card-inner vacancy-card-shadow rounded-2xl bg-white"
+                        <div class="vacancy-card-inner vacancy-card-shadow rounded-2xl bg-white overflow-hidden"
                             :class="active === {{ $i }} ? 'vacancy-card-active' : ''">
-                            <div class="flex h-full flex-col p-6">
+
+                            {{-- Header image with floating badge --}}
+                            <div class="relative">
+                                <img src="https://placehold.co/800x450/{{ ltrim($card['accent'], '#') }}/FFFFFF?text={{ rawurlencode($card['title']) }}"
+                                    alt="Ilustrasi {{ $card['title'] }}"
+                                    class="w-full h-36 md:h-48 object-cover rounded-t-2xl" />
+                                <span
+                                    class="absolute bottom-3 left-3 inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-bold text-white bg-black/40 backdrop-blur-sm">
+                                    {{ $card['badge'] }}
+                                </span>
+                            </div>
+
+                            {{-- Card content --}}
+                            <div class="flex flex-col p-4 md:p-6">
 
                                 {{-- Card top: icon only --}}
                                 <div class="mb-5">
@@ -148,11 +156,13 @@
                                 </div>
 
                                 {{-- Title + desc --}}
-                                <h3 class="text-lg font-extrabold leading-snug text-slate-900">{{ $card['title'] }}</h3>
-                                <p class="mt-2 text-sm leading-6 text-slate-500 line-clamp-3">{{ $card['desc'] }}</p>
+                                <h3 class="text-base md:text-lg font-extrabold leading-snug text-slate-900">
+                                    {{ $card['title'] }}</h3>
+                                <p class="mt-2 text-xs md:text-sm leading-6 text-slate-500 line-clamp-3">
+                                    {{ $card['desc'] }}</p>
 
                                 {{-- Tags --}}
-                                <div class="mt-4 flex flex-wrap gap-2">
+                                <div class="mt-3 md:mt-4 flex flex-wrap gap-1.5 md:gap-2">
                                     @foreach ($card['tags'] as $tag)
                                         <span
                                             class="rounded-md bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600">{{ $tag }}</span>
@@ -173,7 +183,7 @@
                                 {{-- CTA --}}
                                 <div class="mt-auto pt-5">
                                     <a href="#"
-                                        class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-blue-700 rounded-full hover:bg-blue-800 transition-colors w-fit">
+                                        class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors w-fit">
                                         Selengkapnya
                                     </a>
                                 </div>
@@ -217,5 +227,3 @@
 
     </div>
 </section>
-
-
