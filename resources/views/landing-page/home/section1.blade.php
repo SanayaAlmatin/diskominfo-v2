@@ -190,7 +190,7 @@
     <section class="city-pattern relative overflow-hidden text-white">
         <div class="absolute inset-x-0 bottom-0 h-px bg-white/20"></div>
         <div
-            class="relative mx-auto grid min-h-[50vh] max-w-7xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.08fr_.92fr] lg:px-8 lg:py-12">
+            class="relative mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.08fr_.92fr] lg:px-8 lg:py-12">
             <div class="max-w-3xl">
                 <div
                     class="welcome-reveal welcome-delay-1 mb-5 inline-flex items-center gap-3 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white">
@@ -302,7 +302,7 @@
 
     <section class="bg-[#F5F8FC] px-4 py-10 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
-            <div class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div class="mb-6 flex flex-col items-start gap-3">
                 <div>
                     <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#044FA0]">Fokus Layanan</p>
                     <h2 class="mt-2 text-2xl font-extrabold tracking-normal text-slate-950">Membangun layanan kota yang

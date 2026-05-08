@@ -1,183 +1,306 @@
-@php
-    $defaultBeritas = [
-        [
-            'title' => 'Penguatan Layanan Digital Kota Tangerang Selatan',
-            'excerpt' => 'Diskominfo Tangerang Selatan terus mendorong layanan pemerintahan berbasis teknologi agar informasi dan pelayanan publik semakin mudah diakses warga.',
-            'category' => 'Transformasi Digital',
-            'date_label' => 'Terbaru',
-            'url' => '#',
-        ],
-        [
-            'title' => 'Literasi Digital untuk Masyarakat yang Aman dan Produktif',
-            'excerpt' => 'Edukasi literasi digital menjadi bagian dari upaya membangun ruang digital yang sehat, aman, dan bermanfaat bagi masyarakat.',
-            'category' => 'Komunikasi Publik',
-            'date_label' => 'Info Publik',
-            'url' => '#',
-        ],
-        [
-            'title' => 'Integrasi Data Mendukung Kebijakan Kota Cerdas',
-            'excerpt' => 'Penguatan tata kelola data membantu perangkat daerah mengambil keputusan yang lebih akurat dan terukur.',
-            'category' => 'Satu Data',
-            'date_label' => 'Update',
-            'url' => '#',
-        ],
-        [
-            'title' => 'Infrastruktur TIK untuk Pelayanan yang Responsif',
-            'excerpt' => 'Konektivitas dan keamanan sistem elektronik terus ditingkatkan untuk mendukung pelayanan publik yang stabil.',
-            'category' => 'Infrastruktur TIK',
-            'date_label' => 'Berita',
-            'url' => '#',
-        ],
-    ];
-
-    $sourceBeritas = $beritas ?? $defaultBeritas;
-
-    if ($sourceBeritas instanceof \Illuminate\Pagination\AbstractPaginator) {
-        $newsItems = collect($sourceBeritas->items());
-    } elseif ($sourceBeritas instanceof \Illuminate\Support\Collection) {
-        $newsItems = $sourceBeritas;
-    } else {
-        $newsItems = collect($sourceBeritas);
-    }
-
-    $newsItems = $newsItems->take(4)->values();
-
-    $getValue = function ($item, array $keys, $fallback = null) {
-        foreach ($keys as $key) {
-            $value = data_get($item, $key);
-
-            if (! is_null($value) && $value !== '') {
-                return $value;
-            }
+@push('styles')
+    <style>
+        /* Swiper Overrides */
+        .berita-swiper {
+            padding-bottom: 40px !important;
         }
 
-        return $fallback;
-    };
-
-    $formatDate = function ($value) {
-        if (! $value) {
-            return 'Terbaru';
+        .swiper-button-next,
+        .swiper-button-prev {
+            background: rgba(255, 255, 255, 0.9) !important;
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50% !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
         }
 
-        if ($value instanceof \Carbon\CarbonInterface) {
-            return $value->format('d M Y');
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 16px !important;
+            color: #044FA0 !important;
+            font-weight: bold !important;
         }
 
-        try {
-            return \Carbon\Carbon::parse($value)->format('d M Y');
-        } catch (\Throwable $exception) {
-            return $value;
-        }
-    };
-
-    $resolveImage = function ($path) {
-        if (! $path) {
-            return null;
+        .swiper-pagination-bullet {
+            background: #ccc !important;
+            opacity: 1 !important;
         }
 
-        if (preg_match('/^(https?:)?\/\//', $path) || substr($path, 0, 1) === '/') {
-            return $path;
+        .swiper-pagination-bullet-active {
+            background: #044FA0 !important;
+            width: 24px !important;
+            border-radius: 6px !important;
         }
 
-        return asset($path);
-    };
-
-    $toText = function ($value, $fallback = '') {
-        if (is_null($value) || $value === '') {
-            return $fallback;
+        /* Widget Overrides */
+        #gpr-kominfo-widget-header {
+            height: 0px !important;
         }
 
-        if (is_scalar($value)) {
-            return (string) $value;
+        #gpr-kominfo-widget-footer {
+            height: 30px !important;
         }
+    </style>
+@endpush
 
-        if (is_object($value) && method_exists($value, '__toString')) {
-            return (string) $value;
-        }
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-        return $fallback;
-    };
-@endphp
+            {{-- Berita Utama (Left Column) --}}
+            <div class="lg:col-span-5">
+                <h2 class="text-2xl font-bold text-[#044FA0] mb-1">Berita Utama</h2>
+                <div class="w-12 h-1.5 bg-[#F7D558] mb-4 rounded-full"></div>
 
-@if ($newsItems->isNotEmpty())
-    <section id="berita" class="bg-white px-4 py-12 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-7xl">
-            <div class="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-end md:justify-between">
-                <div class="max-w-2xl">
-                    <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#044FA0]">Berita Terkini</p>
-                    <h2 class="mt-2 text-2xl font-extrabold leading-tight tracking-normal text-slate-950 sm:text-3xl">
-                        Informasi terbaru Diskominfo Tangerang Selatan
-                    </h2>
+                <div class="swiper berita-swiper">
+                    <div class="swiper-wrapper">
+
+                        {{-- Slide 1 --}}
+                        <div class="swiper-slide">
+                            <div class="relative aspect-video overflow-hidden rounded-xl">
+                                <img src="https://picsum.photos/800/600?random=1"
+                                    alt="Pemkot Tangsel Resmikan Alun-alun Baru di Pusat Kota"
+                                    class="w-full h-full object-cover">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-4">
+                                    <h3 class="text-white font-semibold text-base leading-snug mb-2">
+                                        <a href="#" class="hover:text-[#F7D558] transition-colors duration-200">
+                                            Pemkot Tangsel Resmikan Alun-alun Baru di Pusat Kota
+                                        </a>
+                                    </h3>
+                                    <div class="flex items-center gap-2 text-white/80 text-xs">
+                                        <span>
+                                            <i class="fas fa-calendar-alt text-[#F7D558] mr-1"></i>
+                                            Kamis, 8 Mei 2025
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Slide 2 --}}
+                        <div class="swiper-slide">
+                            <div class="relative aspect-video overflow-hidden rounded-xl">
+                                <img src="https://picsum.photos/800/600?random=2"
+                                    alt="Diskominfo Tangsel Luncurkan Aplikasi Layanan Publik Digital"
+                                    class="w-full h-full object-cover">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-4">
+                                    <h3 class="text-white font-semibold text-base leading-snug mb-2">
+                                        <a href="#" class="hover:text-[#F7D558] transition-colors duration-200">
+                                            Diskominfo Tangsel Luncurkan Aplikasi Layanan Publik Digital
+                                        </a>
+                                    </h3>
+                                    <div class="flex items-center gap-2 text-white/80 text-xs">
+                                        <span>
+                                            <i class="fas fa-calendar-alt text-[#F7D558] mr-1"></i>
+                                            Rabu, 7 Mei 2025
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Slide 3 --}}
+                        <div class="swiper-slide">
+                            <div class="relative aspect-video overflow-hidden rounded-xl">
+                                <img src="https://picsum.photos/800/600?random=3"
+                                    alt="Program Smart City Tangsel Raih Penghargaan Nasional"
+                                    class="w-full h-full object-cover">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-4">
+                                    <h3 class="text-white font-semibold text-base leading-snug mb-2">
+                                        <a href="#" class="hover:text-[#F7D558] transition-colors duration-200">
+                                            Program Smart City Tangsel Raih Penghargaan Nasional
+                                        </a>
+                                    </h3>
+                                    <div class="flex items-center gap-2 text-white/80 text-xs">
+                                        <span>
+                                            <i class="fas fa-calendar-alt text-[#F7D558] mr-1"></i>
+                                            Selasa, 6 Mei 2025
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    {{-- Navigation --}}
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+
+            {{-- Right Column (Berita Populer & Terbaru) --}}
+            <div class="lg:col-span-4">
+
+                {{-- Berita Populer --}}
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-1">Berita Populer</h3>
+                    <div class="w-12 h-1.5 bg-[#F7D558] mb-4 rounded-full"></div>
+                    <div class="divide-y divide-gray-100">
+
+                        <div class="flex items-start gap-3 py-3">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
+                                1
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
+                                    <a href="#" target="_blank"
+                                        class="hover:text-[#044FA0] transition-colors duration-200">
+                                        Wali Kota Tangsel Tinjau Langsung Pembangunan Infrastruktur Jalan
+                                    </a>
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 py-3">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
+                                2
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
+                                    <a href="#" target="_blank"
+                                        class="hover:text-[#044FA0] transition-colors duration-200">
+                                        Pemkot Tangsel Buka Pendaftaran Beasiswa Pendidikan 2025
+                                    </a>
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 py-3">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
+                                3
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
+                                    <a href="#" target="_blank"
+                                        class="hover:text-[#044FA0] transition-colors duration-200">
+                                        Festival Budaya Tangerang Selatan Dihadiri Ribuan Warga
+                                    </a>
+                                </h4>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
-                <a href="#" class="inline-flex w-fit items-center gap-2 text-sm font-bold text-[#044FA0] transition hover:text-slate-950">
-                    Lihat Semua
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14" />
-                        <path d="m12 5 7 7-7 7" />
-                    </svg>
-                </a>
+                {{-- Berita Terbaru --}}
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-1">Berita Terbaru</h3>
+                    <div class="w-12 h-1.5 bg-[#F7D558] mb-4 rounded-full"></div>
+                    <div class="divide-y divide-gray-100">
+
+                        <div class="flex items-start gap-3 py-3">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
+                                1
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
+                                    <a href="#" target="_blank"
+                                        class="hover:text-[#044FA0] transition-colors duration-200">
+                                        Rapat Koordinasi OPD Tangsel Bahas Rencana Pembangunan 2026
+                                    </a>
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 py-3">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
+                                2
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
+                                    <a href="#" target="_blank"
+                                        class="hover:text-[#044FA0] transition-colors duration-200">
+                                        Sosialisasi Penggunaan Aplikasi Satu Data Kota Tangerang Selatan
+                                    </a>
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 py-3">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
+                                3
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
+                                    <a href="#" target="_blank"
+                                        class="hover:text-[#044FA0] transition-colors duration-200">
+                                        Diskominfo Gelar Pelatihan Literasi Digital untuk Warga Tangsel
+                                    </a>
+                                </h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
 
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach ($newsItems as $berita)
-                    @php
-                        $title = $toText($getValue($berita, ['title', 'judul'], null), 'Berita Diskominfo Tangerang Selatan');
-                        $excerpt = $toText($getValue($berita, ['excerpt', 'ringkasan', 'description', 'deskripsi', 'content', 'isi'], null), 'Informasi resmi Diskominfo Tangerang Selatan.');
-                        $category = $toText($getValue($berita, ['category.name', 'category', 'kategori.name', 'kategori'], null), 'Berita');
-                        $date = $getValue($berita, ['date_label'], null) ?: $formatDate($getValue($berita, ['published_at', 'tanggal', 'created_at', 'date'], null));
-                        $image = $resolveImage($getValue($berita, ['image', 'thumbnail', 'gambar', 'foto'], null));
-                        $url = $getValue($berita, ['url', 'link'], null);
-                        $slug = $getValue($berita, ['slug'], null);
-                        $url = $url ?: ($slug ? url('/berita/' . $slug) : '#');
-                    @endphp
-
-                    <article class="group flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white transition hover:-translate-y-1 hover:border-[#044FA0] hover:shadow-lg">
-                        <a href="{{ $url }}" class="flex h-full flex-col">
-                            <div class="relative aspect-square overflow-hidden bg-[#F5F8FC]">
-                                @if ($image)
-                                    <img src="{{ $image }}" alt="{{ $title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
-                                @else
-                                    <div class="flex h-full w-full items-center justify-center bg-[#044FA0] p-8">
-                                        <img src="{{ asset('Images/logo-kominfo.png') }}" alt="Logo Diskominfo Tangsel" class="max-h-24 w-auto object-contain">
-                                    </div>
-                                @endif
-
-                                <span class="absolute left-3 top-3 max-w-[90%] rounded-md bg-white/95 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#044FA0] shadow-sm">
-                                    {{ $category }}
-                                </span>
-                            </div>
-
-                            <div class="flex flex-1 flex-col p-4">
-                                <div class="mb-3 flex items-center gap-2 text-xs font-semibold text-slate-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#044FA0]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M8 2v4" />
-                                        <path d="M16 2v4" />
-                                        <rect width="18" height="18" x="3" y="4" rx="2" />
-                                        <path d="M3 10h18" />
-                                    </svg>
-                                    {{ $date }}
-                                </div>
-
-                                <h3 class="text-base font-extrabold leading-snug text-slate-950">
-                                    {{ $title }}
-                                </h3>
-                                <p class="mt-3 text-sm leading-6 text-slate-600">
-                                    {{ \Illuminate\Support\Str::limit(strip_tags((string) $excerpt), 105) }}
-                                </p>
-
-                                <span class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-bold text-[#044FA0]">
-                                    Baca Selengkapnya
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M5 12h14" />
-                                        <path d="m12 5 7 7-7 7" />
-                                    </svg>
-                                </span>
-                            </div>
-                        </a>
-                    </article>
-                @endforeach
+            {{-- GPR Widget Column --}}
+            <div class="lg:col-span-3 w-full overflow-hidden rounded-xl">
+                <div id="gpr-kominfo-widget-container"></div>
             </div>
+
         </div>
-    </section>
-@endif
+    </div>
+
+    <script type="text/javascript" src="https://widget.komdigi.go.id/gpr-widget-kominfo.min.js" async></script>
+</section>
+
+<script data-navigate-once>
+    function initBeritaSwiper() {
+        const swiperContainer = document.querySelector('.berita-swiper');
+
+        // Return if element doesn't exist or already initialized
+        if (!swiperContainer || swiperContainer.classList.contains('swiper-initialized')) {
+            return;
+        }
+
+        var beritaSwiper = new Swiper('.berita-swiper', {
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            speed: 800,
+            effect: 'slide',
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            breakpoints: {
+                320: {
+                    slidesPerView: 1,
+                    spaceBetween: 10
+                },
+                768: {
+                    slidesPerView: 1,
+                    spaceBetween: 20
+                },
+                1024: {
+                    slidesPerView: 1,
+                    spaceBetween: 30
+                }
+            }
+        });
+    }
+
+    // Initialize on DOMContentLoaded (for fresh loads)
+    document.addEventListener('DOMContentLoaded', initBeritaSwiper);
+
+    // Initialize on livewire:navigated (for SPA navigation)
+    document.addEventListener('livewire:navigated', initBeritaSwiper);
+</script>
