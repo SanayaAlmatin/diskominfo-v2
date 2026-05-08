@@ -176,11 +176,11 @@
 
                     {{-- Large Yellow Play Button --}}
                     <button
-                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-[#F7D558] flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform duration-200 z-10"
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#F7D558] flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform duration-200 z-10"
                         aria-label="Play featured video">
                         {{-- Pulse ring --}}
                         <span class="absolute inset-0 rounded-full bg-[#F7D558]/40 animate-ping"></span>
-                        <span class="material-symbols-outlined text-[#044FA0] text-3xl z-10"
+                        <span class="material-symbols-outlined text-[#044FA0] text-xl md:text-3xl z-10"
                             style="font-variation-settings: 'FILL' 1;">
                             play_arrow
                         </span>
@@ -188,12 +188,12 @@
 
                     {{-- Bottom Gradient Overlay with badge & title --}}
                     <div
-                        class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-5 pb-5 pt-16">
+                        class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 md:p-6 flex flex-col justify-end">
                         <span
-                            class="inline-block bg-[#F7D558] text-[#044FA0] text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-full mb-2">
+                            class="inline-block bg-[#F7D558] text-[#044FA0] text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-full mb-2 self-start">
                             Featured Briefing
                         </span>
-                        <h3 class="text-base font-bold text-white leading-snug">
+                        <h3 class="text-lg md:text-2xl font-bold text-white leading-tight">
                             {{ $featuredVideo['title'] }}
                         </h3>
                         <div class="flex items-center gap-3 mt-2 text-xs text-white/70">
@@ -214,37 +214,33 @@
             <div class="flex flex-col gap-4">
                 @foreach ($sideVideos as $index => $video)
                     <article
-                        class="group flex gap-4 items-start bg-white/10 hover:bg-white/20 rounded-2xl p-4 cursor-pointer transition-colors duration-200">
+                        class="group flex flex-row items-center gap-3 md:gap-4 cursor-pointer py-3 border-b border-white/10 last:border-0">
 
-                        {{-- Small Thumbnail --}}
+                        {{-- Thumbnail --}}
                         <div
-                            class="relative flex-shrink-0 w-28 aspect-video rounded-xl overflow-hidden bg-white/10 flex items-center justify-center">
+                            class="relative w-28 md:w-40 aspect-video rounded-xl bg-slate-600 shrink-0 overflow-hidden">
                             {{-- Replace with <img> when available --}}
-                            <span class="material-symbols-outlined text-3xl text-white/30">{{ $video['icon'] }}</span>
+                            <span
+                                class="absolute inset-0 flex items-center justify-center material-symbols-outlined text-3xl text-white/20">{{ $video['icon'] }}</span>
 
                             {{-- Tiny Yellow Play Button --}}
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span
-                                    class="w-8 h-8 rounded-full bg-[#F7D558] flex items-center justify-center shadow group-hover:scale-110 transition-transform duration-200"
-                                    aria-label="Play video">
-                                    <span class="material-symbols-outlined text-[#044FA0] text-base"
-                                        style="font-variation-settings: 'FILL' 1; font-size: 16px;">
-                                        play_arrow
-                                    </span>
+                            <span
+                                class="absolute inset-0 m-auto w-8 h-8 rounded-full bg-[#F7D558] flex items-center justify-center shadow group-hover:scale-110 transition-transform duration-200"
+                                aria-label="Play video">
+                                <span class="material-symbols-outlined text-[#044FA0]"
+                                    style="font-variation-settings: 'FILL' 1; font-size: 16px;">
+                                    play_arrow
                                 </span>
-                            </div>
+                            </span>
                         </div>
 
                         {{-- Video Info --}}
-                        <div class="flex-1 min-w-0">
-                            <span class="inline-block text-[#F7D558] text-xs font-bold uppercase tracking-widest mb-1">
-                                Briefing #{{ count($sideVideos) - $index + 1 }}
-                            </span>
+                        <div class="flex flex-col flex-1 min-w-0">
                             <h4
-                                class="text-sm font-bold text-white leading-snug group-hover:text-[#F7D558] transition-colors duration-200 line-clamp-2">
+                                class="text-sm md:text-base font-semibold text-white leading-snug group-hover:text-[#F7D558] transition-colors duration-200 line-clamp-2">
                                 {{ $video['title'] }}
                             </h4>
-                            <div class="flex items-center gap-3 mt-2 text-xs text-white/60">
+                            <div class="flex items-center gap-3 mt-1 text-xs text-slate-300">
                                 <span class="flex items-center gap-1">
                                     <span class="material-symbols-outlined text-xs">calendar_today</span>
                                     {{ $video['date'] }}
@@ -256,10 +252,6 @@
                             </div>
                         </div>
 
-                        <span
-                            class="material-symbols-outlined text-white/30 group-hover:text-[#F7D558] transition-colors duration-200 mt-1 flex-shrink-0">
-                            chevron_right
-                        </span>
                     </article>
                 @endforeach
 

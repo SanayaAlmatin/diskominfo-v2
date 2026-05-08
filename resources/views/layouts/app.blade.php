@@ -59,6 +59,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
+    <!-- Swiper.js 11 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+    <script data-hid="gpr-kominfo" src="https://widget.komdigi.go.id/gpr-widget-kominfo.min.js" asynconload="this.__vm_l=1"
+        onerror="console.warn('GPR Widget failed to load')"></script>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
     <!-- Google Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,1&display=swap"
         rel="stylesheet" />
@@ -113,6 +122,9 @@
     @include('layouts.footer')
 
     @livewireScripts
+
+    <!-- Swiper.js 11 -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" data-navigate-once></script>
 
     @stack('scripts')
 </body>
