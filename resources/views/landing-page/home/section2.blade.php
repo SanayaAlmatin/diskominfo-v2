@@ -32,13 +32,27 @@
             border-radius: 6px !important;
         }
 
-        /* Widget Overrides */
-        #gpr-kominfo-widget-header {
-            height: 0px !important;
+        /* Brutalist Reset for GPR Widget */
+        #gpr-kominfo-widget-container {
+            height: 100% !important;
+            max-height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
         }
 
+        #gpr-kominfo-widget-header,
         #gpr-kominfo-widget-footer {
-            height: 30px !important;
+            display: none !important;
+        }
+
+        #gpr-kominfo-widget-body {
+            height: 100% !important;
+            max-height: 100% !important;
+            margin: 0 !important;
+            padding: 10px 10px 0 10px !important;
+            background-color: #ffffff !important;
         }
     </style>
 @endpush
@@ -57,7 +71,8 @@
 
                         {{-- Slide 1 --}}
                         <div class="swiper-slide">
-                            <div class="relative aspect-video overflow-hidden rounded-xl">
+                            <div
+                                class="relative w-full aspect-[4/3] md:aspect-video lg:aspect-[1/1] xl:aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">
                                 <img src="https://picsum.photos/800/600?random=1"
                                     alt="Pemkot Tangsel Resmikan Alun-alun Baru di Pusat Kota"
                                     class="w-full h-full object-cover">
@@ -80,7 +95,8 @@
 
                         {{-- Slide 2 --}}
                         <div class="swiper-slide">
-                            <div class="relative aspect-video overflow-hidden rounded-xl">
+                            <div
+                                class="relative w-full aspect-[4/3] md:aspect-video lg:aspect-[1/1] xl:aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">
                                 <img src="https://picsum.photos/800/600?random=2"
                                     alt="Diskominfo Tangsel Luncurkan Aplikasi Layanan Publik Digital"
                                     class="w-full h-full object-cover">
@@ -103,7 +119,8 @@
 
                         {{-- Slide 3 --}}
                         <div class="swiper-slide">
-                            <div class="relative aspect-video overflow-hidden rounded-xl">
+                            <div
+                                class="relative w-full aspect-[4/3] md:aspect-video lg:aspect-[1/1] xl:aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">
                                 <img src="https://picsum.photos/800/600?random=3"
                                     alt="Program Smart City Tangsel Raih Penghargaan Nasional"
                                     class="w-full h-full object-cover">
@@ -246,8 +263,13 @@
             </div>
 
             {{-- GPR Widget Column --}}
-            <div class="lg:col-span-3 w-full overflow-hidden rounded-xl">
-                <div id="gpr-kominfo-widget-container"></div>
+            <div class="lg:col-span-3 w-full">
+                <div class="relative w-full h-[480px] bg-[#1a2a6c] rounded-xl overflow-hidden">
+                    <div
+                        class="absolute top-[14px] bottom-[14px] left-[2px] right-[2px] bg-white rounded-[10px] overflow-hidden shadow-inner">
+                        <div id="gpr-kominfo-widget-container" class="w-full h-full"></div>
+                    </div>
+                </div>
             </div>
 
         </div>
