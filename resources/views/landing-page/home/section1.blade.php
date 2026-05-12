@@ -190,7 +190,7 @@
     <section class="city-pattern relative overflow-hidden text-white">
         <div class="absolute inset-x-0 bottom-0 h-px bg-white/20"></div>
         <div
-            class="relative mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.08fr_.92fr] lg:px-8 lg:py-12">
+            class="relative mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-4 pb-10 pt-28 sm:px-6 lg:grid-cols-[1.08fr_.92fr] lg:px-8 lg:pb-12 lg:pt-32">
             <div class="max-w-3xl">
                 <div
                     class="welcome-reveal welcome-delay-1 mb-5 inline-flex items-center gap-3 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white">

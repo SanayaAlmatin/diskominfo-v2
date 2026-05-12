@@ -134,13 +134,17 @@
         <span class="sekilas-orb orb-2"></span>
         <span class="sekilas-orb orb-3"></span>
 
-        <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div class="relative mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-6 lg:px-8 lg:pb-16 lg:pt-36">
 
-            {{-- Badge --}}
-            <div
-                class="sekilas-fade-up sekilas-delay-1 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]">
-                <span class="h-2 w-2 rounded-full bg-[#F7D558]"></span>
-                Profil Diskominfo
+            <div class="flex flex-col items-start">
+                <x-breadcrumb class="sekilas-fade-up sekilas-delay-1 mb-5" :links="[['label' => 'Beranda', 'url' => route('home')], ['label' => 'Sekilas Diskominfo']]" />
+
+                {{-- Badge --}}
+                <div
+                    class="sekilas-fade-up sekilas-delay-1 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]">
+                    <span class="h-2 w-2 rounded-full bg-[#F7D558]"></span>
+                    Profil Diskominfo
+                </div>
             </div>
 
             <div class="mt-6 grid gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-center">
@@ -156,15 +160,6 @@
                         Dinas Komunikasi dan Informatika Kota Tangerang Selatan merupakan unsur pelaksana otonomi
                         daerah di bidang komunikasi dan informatika, persandian dan statistik.
                     </p>
-
-                    {{-- Breadcrumb --}}
-                    <nav class="sekilas-fade-up sekilas-delay-4 mt-6 flex items-center gap-2 text-xs text-blue-100"
-                        aria-label="Breadcrumb">
-                        <a href="{{ route('home') }}" wire:navigate
-                            class="font-semibold text-white/90 transition hover:text-white">Beranda</a>
-                        <span class="text-blue-200">/</span>
-                        <span class="text-white">Sekilas Diskominfo</span>
-                    </nav>
 
                     {{-- Stat chips --}}
                     <div class="sekilas-fade-up sekilas-delay-5 mt-6 grid gap-3 sm:grid-cols-3">

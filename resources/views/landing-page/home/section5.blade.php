@@ -1,154 +1,168 @@
-@php
-    $wifiLocations = [
-        [
-            'name' => 'Puskesmas Serpong',
-            'type' => 'Public Health Center',
-            'status' => 'Active',
-            'distance' => '200m',
-            'icon' => 'health_and_safety',
-            'top' => '25%',
-            'left' => '33%',
-        ],
-        [
-            'name' => 'Taman Kota BSD',
-            'type' => 'Public Park',
-            'status' => 'Active',
-            'distance' => '450m',
-            'icon' => 'library_books',
-            'top' => '50%',
-            'left' => '66%',
-        ],
-        [
-            'name' => 'Kantor Walikota',
-            'type' => 'Government Office',
-            'status' => 'Active',
-            'distance' => '1.2km',
-            'icon' => 'account_balance',
-            'top' => '66%',
-            'left' => '50%',
-        ],
-        [
-            'name' => 'Stasiun Rawa Buntu',
-            'type' => 'Transit Hub',
-            'status' => 'Active',
-            'distance' => '2.5km',
-            'icon' => 'train',
-            'top' => '80%',
-            'left' => '20%',
-        ],
-    ];
-@endphp
+@push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <style>
+        #wifiMap .leaflet-control-attribution {
+            font-size: 10px;
+            background: rgba(255, 255, 255, 0.7);
+        }
 
-<section id="wifi" class="py-16 bg-[#F8FAFC]">
+        #wifiMap .wifi-marker-icon {
+            background-color: #044FA0;
+            border: 3px solid white;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+@endpush
+
+<section id="wifi" class="py-16 md:py-24 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {{-- ── Split Layout (40 / 60) ── --}}
-        <div x-data="{
-            query: '',
-            locations: {{ json_encode($wifiLocations) }},
-            get filtered() {
-                if (!this.query.trim()) return this.locations;
-                const q = this.query.toLowerCase();
-                return this.locations.filter(l =>
-                    l.name.toLowerCase().includes(q) || l.type.toLowerCase().includes(q)
-                );
-            }
-        }" class="flex flex-col md:flex-row h-auto md:h-[600px] gap-6">
-
-            {{-- ── Left Sidebar — Directory (40%) ── --}}
-            <aside class="w-full md:w-[40%] flex flex-col gap-6 overflow-hidden">
-                
-                {{-- Search & Stats --}}
-                <div class="flex flex-col gap-4">
-                    {{-- Search Input --}}
-                    <div class="relative group">
-                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors">search</span>
-                        <input x-model="query" type="text" placeholder="Find nearest WiFi spot..." 
-                            class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all placeholder:text-slate-400" />
-                    </div>
-
-                    {{-- Featured Stats Card --}}
-                    <div class="bg-indigo-50/80 p-5 rounded-xl border border-indigo-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-indigo-700 uppercase tracking-widest mb-1">Active Connectivity</p>
-                            <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight">150+ Spots</h3>
-                        </div>
-                        <div class="bg-indigo-200/50 p-3 rounded-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-indigo-700 text-3xl" style="font-variation-settings: 'FILL' 1;">wifi</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Scrollable Directory --}}
-                <div class="flex-grow overflow-y-auto pr-2 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-                    
-                    <template x-for="(loc, idx) in filtered" :key="idx">
-                        {{-- WiFi List Item --}}
-                        <div class="p-4 bg-white border border-slate-200 rounded-xl flex items-center justify-between hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer group">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-100 transition-colors">
-                                    <span class="material-symbols-outlined" x-text="loc.icon"></span>
-                                </div>
-                                <div>
-                                    <h4 class="text-base font-bold text-slate-900" x-text="loc.name"></h4>
-                                    <p class="text-sm text-slate-500">
-                                        <span x-text="loc.type"></span> &bull; <span x-text="loc.status"></span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="text-right shrink-0">
-                                <p class="text-xs font-bold text-indigo-700" x-text="loc.distance"></p>
-                            </div>
-                        </div>
-                    </template>
-
-                    {{-- Empty State (If Search Not Found) --}}
-                    <div x-show="filtered.length === 0" class="py-10 text-center text-slate-400">
-                        <span class="material-symbols-outlined text-4xl mb-2 opacity-50">location_off</span>
-                        <p class="text-sm">Tidak ada titik WiFi yang cocok.</p>
-                    </div>
-
-                </div>
-            </aside>
-
-            {{-- ── Right Column — Map (60%) ── --}}
-            <section class="w-full md:w-[60%] relative bg-slate-200 rounded-2xl overflow-hidden shadow-inner border border-slate-200 min-h-[400px]">
-                
-                {{-- Mock Map Background --}}
-                <div class="absolute inset-0 z-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30 mix-blend-multiply"></div>
-                
-                {{-- Overlay Markers (Rendered from Alpine data) --}}
-                <div class="absolute inset-0 pointer-events-none">
-                    <template x-for="(loc, idx) in locations" :key="'map-'+idx">
-                        <div class="absolute pointer-events-auto cursor-pointer group flex flex-col items-center -translate-x-1/2 -translate-y-1/2"
-                             :style="`top: ${loc.top}; left: ${loc.left};`">
-                            <div class="bg-indigo-600 w-10 h-10 rounded-full flex items-center justify-center text-white border-2 border-white shadow-md transform group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">wifi</span>
-                            </div>
-                            <div class="mt-2 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-200 transition-all group-hover:shadow-md">
-                                <span class="text-xs font-semibold text-slate-800 whitespace-nowrap" x-text="loc.name"></span>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                {{-- Map Controls --}}
-                <div class="absolute right-6 bottom-6 flex flex-col gap-2 z-10">
-                    <div class="flex flex-col bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                        <button class="p-2.5 text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors border-b border-slate-100 flex items-center justify-center">
-                            <span class="material-symbols-outlined">add</span>
-                        </button>
-                        <button class="p-2.5 text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors flex items-center justify-center">
-                            <span class="material-symbols-outlined">remove</span>
-                        </button>
-                    </div>
-                    <button class="bg-indigo-600 text-white p-3 rounded-xl shadow-md hover:bg-indigo-700 transition-colors mt-1 flex items-center justify-center focus:ring-2 focus:ring-indigo-300 focus:outline-none">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">my_location</span>
-                    </button>
-                </div>
-
-            </section>
-
+        {{-- Section Title --}}
+        <div class="mb-10 text-center">
+            <span class="text-blue-600 font-bold tracking-widest text-sm uppercase">Infrastruktur & Jaringan</span>
+            <h2 class="mt-2 text-3xl font-extrabold text-slate-900 sm:text-4xl">Peta Konektivitas Digital</h2>
+            <p class="mt-4 text-slate-600 max-w-2xl mx-auto text-sm md:text-base">
+                Pantauan persebaran titik WiFi publik dan jaringan intra pemerintah di seluruh wilayah Kota Tangerang
+                Selatan.
+            </p>
         </div>
-    </div>
+
+        {{-- Rounded Frame Wrapper --}}
+        <div class="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
+
+            {{-- ── Leaflet Map Container ── --}}
+            <div id="wifiMap" class="w-full h-[350px] md:h-[500px] lg:h-[600px] z-0"></div>
+
+            {{-- ── Stats Footer (below the map) ── --}}
+            <div class="relative bg-[#044FA0] border-t border-white/10">
+                <div class="max-w-7xl mx-auto px-2 py-4 md:px-6 md:py-6">
+                    <div class="flex flex-row items-center justify-between divide-x divide-white/20">
+
+                        {{-- Stat 1: WiFi Points --}}
+                        <div class="flex items-center justify-center gap-3 w-1/2 px-2 md:px-4">
+                            <div
+                                class="w-10 h-10 md:w-14 md:h-14 rounded-full border border-white/20 bg-white/10 flex items-center justify-center shrink-0">
+                                <i class="fas fa-wifi text-[#F7D558] text-base md:text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-extrabold text-xl md:text-2xl leading-none">752</h3>
+                                <p
+                                    class="text-[#F7D558] font-bold text-[10px] md:text-xs tracking-wider uppercase mt-1">
+                                    WiFi Points</p>
+                                <p class="hidden md:block text-blue-200 text-sm mt-1">City-wide public hotspots</p>
+                            </div>
+                        </div>
+
+                        {{-- Stat 2: Intra Networks --}}
+                        <div class="flex items-center justify-center gap-3 w-1/2 px-2 md:px-4">
+                            <div
+                                class="w-10 h-10 md:w-14 md:h-14 rounded-full border border-white/20 bg-white/10 flex items-center justify-center shrink-0">
+                                <i class="fas fa-network-wired text-[#F7D558] text-base md:text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-extrabold text-xl md:text-2xl leading-none">8</h3>
+                                <p
+                                    class="text-[#F7D558] font-bold text-[10px] md:text-xs tracking-wider uppercase mt-1">
+                                    Intra Networks</p>
+                                <p class="hidden md:block text-blue-200 text-sm mt-1">Government intranet nodes</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>{{-- end rounded frame wrapper --}}
+    </div>{{-- end max-w-7xl --}}
 </section>
+
+@push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map centered on South Tangerang, zoom control disabled (re-added bottom-right)
+            var map = L.map('wifiMap', {
+                zoomControl: false
+            }).setView([-6.2886, 106.7179], 13);
+
+            // Move zoom control to bottom-right so it clears the stats overlay
+            L.control.zoom({
+                position: 'bottomright'
+            }).addTo(map);
+
+            // Google Maps road tile layer
+            L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '&copy; <a href="https://maps.google.com" target="_blank" rel="noopener">Google Maps</a>'
+            }).addTo(map);
+
+            // Custom WiFi marker using a div icon
+            function makeIcon() {
+                return L.divIcon({
+                    className: '',
+                    html: '<div class="wifi-marker-icon"><i class="fas fa-wifi"></i></div>',
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18],
+                    popupAnchor: [0, -20]
+                });
+            }
+
+            // WiFi hotspot locations around South Tangerang
+            var locations = [{
+                    name: 'Puskesmas Serpong',
+                    coords: [-6.3023, 106.6669],
+                    type: 'Public Health Center'
+                },
+                {
+                    name: 'Taman Kota BSD',
+                    coords: [-6.2955, 106.6711],
+                    type: 'Public Park'
+                },
+                {
+                    name: 'Kantor Walikota Tangsel',
+                    coords: [-6.2886, 106.7179],
+                    type: 'Government Office'
+                },
+                {
+                    name: 'Stasiun Rawa Buntu',
+                    coords: [-6.2800, 106.6960],
+                    type: 'Transit Hub'
+                },
+            ];
+
+            locations.forEach(function(loc) {
+                L.marker(loc.coords, {
+                        icon: makeIcon()
+                    })
+                    .addTo(map)
+                    .bindPopup(
+                        '<b style="color:#044FA0;">' + loc.name + '</b>' +
+                        '<br><span style="color:#555;">' + loc.type + '</span>' +
+                        '<br><span style="color:#22c55e;font-size:12px;">&#9679; Active</span>'
+                    );
+            });
+
+
+        });
+    </script>
+@endpush

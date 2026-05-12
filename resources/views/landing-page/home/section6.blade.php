@@ -27,29 +27,31 @@
     ];
 
     $featuredVideo = [
-        'title' => 'Annual Digital Transformation Progress Report — South Tangerang 2024',
-        'duration' => '42:18',
-        'date' => '15 Apr 2024',
+        'title' => 'Rapat Paripurna HUT Kota Tangerang Selatan ke-16 — Sidang Terbuka DPRD',
+        'channel' => 'Diskominfo Tangsel Official',
+        'duration' => '1:24:05',
+        'date' => '26 Nov 2024',
+        'icon' => 'record_voice_over',
     ];
 
-    $sideVideos = [
+    $playlistVideos = [
         [
-            'title' => 'City Data Governance Policy Briefing',
-            'date' => '10 Apr 2024',
-            'duration' => '28:05',
-            'icon' => 'policy',
+            'title' => 'Live Streaming Upacara Hari Pahlawan 2024 — Lapangan A. Yani Tangsel',
+            'date' => '10 Nov 2024',
+            'duration' => '58:30',
+            'icon' => 'flag',
         ],
         [
-            'title' => 'Cybersecurity Infrastructure Update',
-            'date' => '02 Apr 2024',
-            'duration' => '19:44',
-            'icon' => 'security',
+            'title' => 'Peluncuran Aplikasi TangselKu — Layanan Digital Terpadu Warga Tangsel',
+            'date' => '05 Nov 2024',
+            'duration' => '35:12',
+            'icon' => 'smartphone',
         ],
         [
-            'title' => 'Public WiFi Expansion — Q1 Review',
-            'date' => '25 Mar 2024',
-            'duration' => '22:30',
-            'icon' => 'wifi',
+            'title' => 'Workshop Literasi Digital UMKM — Pemkot Tangsel × Kominfo RI',
+            'date' => '28 Okt 2024',
+            'duration' => '1:10:44',
+            'icon' => 'storefront',
         ],
     ];
 @endphp
@@ -129,125 +131,122 @@
     </div>
 </section>
 
-<section id="videos" class="py-20 bg-[#044FA0]">
+<section id="videos" class="py-16 bg-[#044FA0]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- ── Section Header ── --}}
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
-            <div>
-                <span
-                    class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#F7D558] mb-2">
-                    <span class="h-px w-8 bg-[#F7D558] inline-block rounded-full"></span>
-                    Official Recordings
-                </span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-                    Latest Public Briefings
-                </h2>
-            </div>
-            <a href="#"
-                class="inline-flex items-center gap-2 bg-[#F7D558] text-[#044FA0] font-bold rounded-full px-6 py-2 text-sm hover:bg-white transition-colors duration-200 whitespace-nowrap self-start sm:self-auto">
-                <span class="material-symbols-outlined text-base"
-                    style="font-variation-settings: 'FILL' 1;">play_circle</span>
-                Watch All Videos
-            </a>
+        <div class="text-start w-full mb-8 md:mb-10">
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                Video Terbaru
+            </h2>
         </div>
 
-        {{-- ── Two-Column Layout ── --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {{-- ── Asymmetric 12-Column Grid ── --}}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            {{-- ─── LEFT: Main Featured Video ─── --}}
-            <div class="group cursor-pointer" x-data>
-
-                {{-- Thumbnail Container --}}
+            {{-- ─── LEFT: Hero / Main Featured Video (8 cols) ─── --}}
+            <div class="lg:col-span-6 flex flex-col h-full lg:mt-9">
+                {{-- Responsive Card: stacked on mobile, overlay on desktop --}}
                 <div
-                    class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#1a5fb4] to-[#033a7a] aspect-video flex items-center justify-center shadow-2xl">
+                    class="flex flex-col md:block relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl bg-[#033b7a] md:bg-slate-900 group cursor-pointer">
 
-                    {{-- Replace with real thumbnail image: --}}
-                    {{-- <img src="..." alt="{{ $featuredVideo['title'] }}" class="absolute inset-0 w-full h-full object-cover"> --}}
+                    {{-- TOP: Thumbnail & Play Button --}}
+                    <div class="relative aspect-video w-full shrink-0 overflow-hidden">
+                        {{-- Background Image Placeholder (replace src with real YouTube thumbnail URL) --}}
+                        <img src="https://placehold.co/1280x720/1e293b/ffffff?text=Video+Thumbnail"
+                            alt="{{ $featuredVideo['title'] }}"
+                            class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
 
-                    {{-- Background icon placeholder --}}
-                    <span class="material-symbols-outlined text-8xl text-white/10">
-                        videocam
-                    </span>
-
-                    {{-- Dark overlay that clears on hover --}}
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300">
+                        {{-- Centered Play Button (Red, Responsive) --}}
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+                            <div
+                                class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-red-600/90 flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.5)] group-hover:bg-red-600 transition-all duration-300 transform group-hover:scale-110">
+                                <i class="fas fa-play text-white text-lg md:text-3xl ml-1 md:ml-2"></i>
+                            </div>
+                        </div>
                     </div>
 
-                    {{-- Large Yellow Play Button --}}
-                    <button
-                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#F7D558] flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform duration-200 z-10"
-                        aria-label="Play featured video">
-                        {{-- Pulse ring --}}
-                        <span class="absolute inset-0 rounded-full bg-[#F7D558]/40 animate-ping"></span>
-                        <span class="material-symbols-outlined text-[#044FA0] text-xl md:text-3xl z-10"
-                            style="font-variation-settings: 'FILL' 1;">
-                            play_arrow
-                        </span>
-                    </button>
-
-                    {{-- Bottom Gradient Overlay with badge & title --}}
+                    {{-- BOTTOM (Mobile) / OVERLAY (Desktop): Text Content --}}
                     <div
-                        class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 md:p-6 flex flex-col justify-end">
-                        <span
-                            class="inline-block bg-[#F7D558] text-[#044FA0] text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-full mb-2 self-start">
-                            Featured Briefing
-                        </span>
-                        <h3 class="text-lg md:text-2xl font-bold text-white leading-tight">
+                        class="flex flex-col p-4 bg-white rounded-b-2xl md:bg-transparent md:rounded-none md:absolute md:inset-0 md:bg-gradient-to-t md:from-black/95 md:via-black/50 md:to-transparent md:justify-end md:p-8 z-20">
+
+                        {{-- Title --}}
+                        <h3
+                            class="text-slate-900 md:text-white font-bold text-base md:text-2xl leading-snug md:leading-tight line-clamp-2 md:drop-shadow-md">
                             {{ $featuredVideo['title'] }}
                         </h3>
-                        <div class="flex items-center gap-3 mt-2 text-xs text-white/70">
-                            <span class="flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm">calendar_today</span>
-                                {{ $featuredVideo['date'] }}
-                            </span>
-                            <span class="flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm">schedule</span>
-                                {{ $featuredVideo['duration'] }}
-                            </span>
+
+                        {{-- Metadata Row --}}
+                        <div
+                            class="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2 md:mt-3 text-[11px] sm:text-xs text-slate-600 md:text-gray-300 font-medium">
+                            <div class="flex items-center gap-1.5">
+                                <i class="far fa-calendar-alt text-red-500 md:text-white/70 text-xs md:text-sm"></i>
+                                <span>{{ $featuredVideo['date'] }}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="far fa-clock text-red-500 md:text-white/70 text-xs md:text-sm"></i>
+                                <span>{{ $featuredVideo['duration'] }}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="far fa-user-circle text-red-500 md:text-white/70 text-xs md:text-sm"></i>
+                                <span class="text-slate-800 md:text-white">{{ $featuredVideo['channel'] }}</span>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
 
-            {{-- ─── RIGHT: Side Video List ─── --}}
-            <div class="flex flex-col gap-4">
-                @foreach ($sideVideos as $index => $video)
+            {{-- ─── RIGHT: Playlist (6 cols) ─── --}}
+            <div class="lg:col-span-6 flex flex-col gap-3">
+
+                {{-- Playlist header --}}
+                <p class="text-sm font-bold uppercase tracking-widest text-white mb-1 border-b border-white/10 pb-3">
+                    Video Lainnya
+                </p>
+
+                @foreach ($playlistVideos as $index => $video)
                     <article
-                        class="group flex flex-row items-center gap-3 md:gap-4 cursor-pointer py-3 border-b border-white/10 last:border-0">
+                        class="group flex flex-row gap-3 items-center cursor-pointer p-2 hover:bg-white/5 rounded-xl transition-colors duration-200">
 
                         {{-- Thumbnail --}}
                         <div
-                            class="relative w-28 md:w-40 aspect-video rounded-xl bg-slate-600 shrink-0 overflow-hidden">
-                            {{-- Replace with <img> when available --}}
+                            class="relative w-32 md:w-36 aspect-video rounded-lg overflow-hidden bg-[#021e45] shrink-0">
+                            {{-- Placeholder background --}}
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-[#1a5fb4]/60 to-[#021e45] flex items-center justify-center">
+                                <span
+                                    class="material-symbols-outlined text-3xl text-white/20 select-none">{{ $video['icon'] }}</span>
+                            </div>
+                            {{-- Play overlay on hover --}}
+                            <div
+                                class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-200">
+                            </div>
+                            {{-- Small play icon --}}
                             <span
-                                class="absolute inset-0 flex items-center justify-center material-symbols-outlined text-3xl text-white/20">{{ $video['icon'] }}</span>
-
-                            {{-- Tiny Yellow Play Button --}}
-                            <span
-                                class="absolute inset-0 m-auto w-8 h-8 rounded-full bg-[#F7D558] flex items-center justify-center shadow group-hover:scale-110 transition-transform duration-200"
-                                aria-label="Play video">
-                                <span class="material-symbols-outlined text-[#044FA0]"
-                                    style="font-variation-settings: 'FILL' 1; font-size: 16px;">
+                                class="absolute inset-0 m-auto w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow group-hover:scale-110 transition-transform duration-200">
+                                <span class="material-symbols-outlined text-white text-base"
+                                    style="font-variation-settings: 'FILL' 1;">
                                     play_arrow
                                 </span>
                             </span>
+                            {{-- Duration badge --}}
+                            <span
+                                class="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                {{ $video['duration'] }}
+                            </span>
                         </div>
 
-                        {{-- Video Info --}}
+                        {{-- Video Details --}}
                         <div class="flex flex-col flex-1 min-w-0">
                             <h4
-                                class="text-sm md:text-base font-semibold text-white leading-snug group-hover:text-[#F7D558] transition-colors duration-200 line-clamp-2">
+                                class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-white transition-colors duration-200">
                                 {{ $video['title'] }}
                             </h4>
-                            <div class="flex items-center gap-3 mt-1 text-xs text-slate-300">
+                            <div class="flex items-center gap-2 mt-1.5 text-xs text-blue-300">
                                 <span class="flex items-center gap-1">
                                     <span class="material-symbols-outlined text-xs">calendar_today</span>
                                     {{ $video['date'] }}
-                                </span>
-                                <span class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs">schedule</span>
-                                    {{ $video['duration'] }}
                                 </span>
                             </div>
                         </div>
@@ -255,10 +254,19 @@
                     </article>
                 @endforeach
 
-
             </div>
 
         </div>
+
+        {{-- ── Bottom CTA ── --}}
+        <div class="flex justify-center mt-10 md:mt-12 w-full">
+            <a href="https://www.youtube.com/@diskominfotangsel" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center justify-center gap-2 px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-sm md:text-base font-bold rounded-2xl md:rounded-3xl transition-all duration-200 hover:-translate-y-1 shadow-lg shadow-red-600/20">
+                <i class="fab fa-youtube text-lg md:text-xl"></i>
+                Kunjungi Channel YouTube
+            </a>
+        </div>
+
     </div>
 </section>
 

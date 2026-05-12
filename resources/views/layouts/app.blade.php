@@ -116,7 +116,9 @@
     @include('layouts.header')
 
     <!-- Main Content -->
-    @yield('content')
+    <main>
+        @yield('content')
+    </main>
 
     <!-- Global Footer -->
     @include('layouts.footer')

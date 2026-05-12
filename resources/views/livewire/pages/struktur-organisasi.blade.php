@@ -109,12 +109,16 @@
 	     HERO SECTION
 	     ════════════════════════════════════════ --}}
     <section class="struktur-org-hero relative overflow-hidden text-white">
-        <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16 text-center">
+        <div class="relative mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-6 lg:px-8 lg:pb-16 lg:pt-36 text-center">
 
-            <div
-                class="so-fade-up so-d1 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]">
-                <span class="h-2 w-2 rounded-full bg-[#F7D558]"></span>
-                Profil Diskominfo
+            <div class="flex flex-col items-center">
+                <x-breadcrumb class="so-fade-up so-d1 mb-5" :links="[['label' => 'Beranda', 'url' => route('home')], ['label' => 'Struktur Organisasi']]" />
+
+                <div
+                    class="so-fade-up so-d1 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]">
+                    <span class="h-2 w-2 rounded-full bg-[#F7D558]"></span>
+                    Profil Diskominfo
+                </div>
             </div>
 
             <h1 class="so-fade-up so-d2 mt-5 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
@@ -125,13 +129,6 @@
                 Susunan jabatan dan tata kerja Dinas Komunikasi dan Informatika Kota Tangerang Selatan.
             </p>
 
-            <nav class="so-fade-up so-d4 mt-5 inline-flex items-center gap-2 text-xs text-blue-200"
-                aria-label="Breadcrumb">
-                <a href="{{ route('home') }}" wire:navigate
-                    class="font-semibold text-white/90 transition hover:text-white">Beranda</a>
-                <span>/</span>
-                <span class="text-white">Struktur Organisasi</span>
-            </nav>
         </div>
     </section>
 
@@ -321,26 +318,17 @@
             {{-- ════════════════════════════════════════
 			     DOWNLOAD CTA
 			     ════════════════════════════════════════ --}}
-            <div class="mt-12 so-fade-up so-d5">
-                <div
-                    class="rounded-2xl bg-gradient-to-br from-[#044FA0] via-[#0C5AA6] to-[#1E78B7] px-8 py-10 text-center text-white shadow-xl">
-                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#F7D558]">Dokumen Resmi</p>
-                    <h3 class="mt-3 text-xl font-extrabold sm:text-2xl">Butuh Dokumen Resmi?</h3>
-                    <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-blue-100">
-                        Unduh bagan struktur organisasi dalam format PDF untuk keperluan administrasi atau referensi
-                        resmi.
-                    </p>
-                    <button type="button"
-                        class="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#F7D558] px-6 py-3 text-sm font-bold text-[#044FA0] transition hover:bg-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                        Unduh Bagan PDF
-                    </button>
-                </div>
+            <div class="mt-12 so-fade-up so-d5 flex justify-center">
+                <button type="button"
+                    class="inline-flex items-center gap-2 rounded-lg bg-[#F7D558] px-6 py-3 text-sm font-bold text-[#044FA0] transition hover:bg-yellow-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Unduh Struktur Organisasi
+                </button>
             </div>
 
         </div>
