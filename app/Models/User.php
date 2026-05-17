@@ -2,44 +2,83 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    protected $fillable = [
+        'username',
+        'nama',
+        'email',
+        'no_telp',
+        'alamat',
+        'instansi',
+        'photo',
+        'avatar',
+        'role',
+        'password',
+        'google_id',
+        'remember_token',
+    ];
+
+    protected $hidden = ['password', 'remember_token'];
+
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'google2fa_enabled' => 'boolean',
         ];
     }
 
-    /**
-     * Get the user's initials
-     */
-    public function initials(): string
+    public function roles()
     {
-        return Str::of($this->name)
-            ->explode(' ')
-            ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
-            ->implode('');
+        return $this->belongsToMany(Role::class, 'user_has_roles', 'user_id', 'role_id');
+    }
+
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles()->where('name', $roleName)->exists();
+    }
+
+    public function hasAnyRole(array $roles): bool
+    {
+        return $this->roles()->whereIn('name', $roles)->exists();
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super-admin');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasAnyRole(['super-admin', 'admin']);
+    }
+
+    public function getCmsRole(): string
+    {
+        if ($this->hasRole('super-admin')) {
+            return 'super-admin';
+        }
+        if ($this->hasRole('admin')) {
+            return 'admin';
+        }
+        if ($this->hasRole('guest')) {
+            return 'guest';
+        }
+
+        // Fallback to legacy role column
+        return match ($this->role) {
+            'super-admin' => 'super-admin',
+            'verifikator', 'editor' => 'admin',
+            default => 'guest',
+        };
     }
 }

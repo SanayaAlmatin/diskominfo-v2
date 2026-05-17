@@ -1,5 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\InfrastrukturTikController;
+use App\Http\Controllers\Admin\ProgramVacancyController;
+use App\Http\Controllers\Admin\SekilasController;
+use App\Http\Controllers\Admin\StatistikController;
+use App\Http\Controllers\Admin\StrukturOrganisasiController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VisiMisiController;
 use App\Livewire\Pages\InfrastrukturTik;
 use App\Livewire\Pages\SekilasDiskominfo;
 use App\Livewire\Pages\StatistikLayananInformasi;
@@ -7,6 +16,7 @@ use App\Livewire\Pages\StrukturOrganisasi;
 use App\Livewire\Pages\VisiMisi;
 use Illuminate\Support\Facades\Route;
 
+// ─── Landing Page (Livewire) ──────────────────────────────────────────────────
 Route::view('/', 'welcome')->name('home');
 
 Route::get('/profil/visi-misi', VisiMisi::class)->name('profil.visi-misi');
@@ -15,3 +25,69 @@ Route::get('/profil/struktur-organisasi', StrukturOrganisasi::class)->name('prof
 
 Route::get('/unit-kerja/infrastruktur-tik', InfrastrukturTik::class)->name('unit-kerja.infrastruktur-tik');
 Route::get('/unit-kerja/statistik-layanan-informasi', StatistikLayananInformasi::class)->name('unit-kerja.statistik-layanan-informasi');
+
+// ─── CMS Admin ───────────────────────────────────────────────────────────────
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    // Auth (guest only)
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+        Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+        Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+    });
+
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Protected CMS routes
+    Route::middleware(['admin.auth'])->group(function () {
+
+        // Dashboard
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Sekilas Diskominfo
+        Route::resource('sekilas', SekilasController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin']);
+
+        // Visi & Misi
+        Route::resource('visi-misi', VisiMisiController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin'])
+            ->parameters(['visi-misi' => 'visiMisi']);
+
+        // Struktur Organisasi
+        Route::resource('struktur-organisasi', StrukturOrganisasiController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin'])
+            ->parameters(['struktur-organisasi' => 'strukturOrganisasi']);
+
+        // Infrastruktur TIK
+        Route::resource('infrastruktur-tik', InfrastrukturTikController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin'])
+            ->parameters(['infrastruktur-tik' => 'infrastrukturTik']);
+
+        // Statistik Layanan Informasi
+        Route::resource('statistik', StatistikController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin']);
+        Route::post('statistik/{statistik}/files', [StatistikController::class, 'storeFile'])
+            ->name('statistik.storeFile')
+            ->middleware(['admin.role:super-admin,admin']);
+        Route::delete('statistik/{statistik}/files/{file}', [StatistikController::class, 'destroyFile'])
+            ->name('statistik.destroyFile')
+            ->middleware(['admin.role:super-admin']);
+
+        // Program & Lowongan (Carousel)
+        Route::resource('program-vacancy', ProgramVacancyController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin'])
+            ->parameters(['program-vacancy' => 'programVacancy']);
+
+        // User Management (Super Admin only)
+        Route::resource('users', UserController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin']);
+    });
+});

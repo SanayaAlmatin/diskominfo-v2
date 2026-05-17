@@ -13,6 +13,7 @@
 .phpactor.json
 .phpunit.result.cache
 *.md
+*.sql
 Homestead.json
 Homestead.yaml
 npm-debug.log

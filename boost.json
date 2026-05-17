@@ -5,6 +5,8 @@
     "cloud": false,
     "skills": [
         "laravel-best-practices",
-        "livewire-development"
+        "socialite-development",
+        "livewire-development",
+        "tailwindcss-development"
     ]
 }
