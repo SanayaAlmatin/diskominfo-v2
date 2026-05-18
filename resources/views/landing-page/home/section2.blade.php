@@ -69,77 +69,40 @@
                 <div class="swiper berita-swiper">
                     <div class="swiper-wrapper">
 
-                        {{-- Slide 1 --}}
+                        @forelse ($latestNews ?? [] as $news)
                         <div class="swiper-slide">
                             <div
                                 class="relative w-full aspect-[4/3] md:aspect-video lg:aspect-[1/1] xl:aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">
-                                <img src="https://picsum.photos/800/600?random=1"
-                                    alt="Pemkot Tangsel Resmikan Alun-alun Baru di Pusat Kota"
+                                @if($news->description_image)
+                                <img src="{{ asset('storage/' . $news->description_image) }}"
+                                    alt="{{ $news->title }}"
                                     class="w-full h-full object-cover">
+                                @else
+                                <div class="w-full h-full bg-gradient-to-br from-[#044FA0] to-[#1E78B7]"></div>
+                                @endif
                                 <div
                                     class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-4">
                                     <h3 class="text-white font-semibold text-base leading-snug mb-2">
                                         <a href="#" class="hover:text-[#F7D558] transition-colors duration-200">
-                                            Pemkot Tangsel Resmikan Alun-alun Baru di Pusat Kota
+                                            {{ $news->title }}
                                         </a>
                                     </h3>
                                     <div class="flex items-center gap-2 text-white/80 text-xs">
                                         <span>
                                             <i class="fas fa-calendar-alt text-[#F7D558] mr-1"></i>
-                                            Kamis, 8 Mei 2025
+                                            {{ $news->published_at?->isoFormat('dddd, D MMMM YYYY') }}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        {{-- Slide 2 --}}
+                        @empty
                         <div class="swiper-slide">
-                            <div
-                                class="relative w-full aspect-[4/3] md:aspect-video lg:aspect-[1/1] xl:aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">
-                                <img src="https://picsum.photos/800/600?random=2"
-                                    alt="Diskominfo Tangsel Luncurkan Aplikasi Layanan Publik Digital"
-                                    class="w-full h-full object-cover">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-4">
-                                    <h3 class="text-white font-semibold text-base leading-snug mb-2">
-                                        <a href="#" class="hover:text-[#F7D558] transition-colors duration-200">
-                                            Diskominfo Tangsel Luncurkan Aplikasi Layanan Publik Digital
-                                        </a>
-                                    </h3>
-                                    <div class="flex items-center gap-2 text-white/80 text-xs">
-                                        <span>
-                                            <i class="fas fa-calendar-alt text-[#F7D558] mr-1"></i>
-                                            Rabu, 7 Mei 2025
-                                        </span>
-                                    </div>
-                                </div>
+                            <div class="relative w-full aspect-[4/3] md:aspect-video lg:aspect-[1/1] xl:aspect-[4/3] overflow-hidden rounded-2xl bg-slate-200 flex items-center justify-center">
+                                <p class="text-slate-400 text-sm">Belum ada berita yang dipublikasikan.</p>
                             </div>
                         </div>
-
-                        {{-- Slide 3 --}}
-                        <div class="swiper-slide">
-                            <div
-                                class="relative w-full aspect-[4/3] md:aspect-video lg:aspect-[1/1] xl:aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">
-                                <img src="https://picsum.photos/800/600?random=3"
-                                    alt="Program Smart City Tangsel Raih Penghargaan Nasional"
-                                    class="w-full h-full object-cover">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-4">
-                                    <h3 class="text-white font-semibold text-base leading-snug mb-2">
-                                        <a href="#" class="hover:text-[#F7D558] transition-colors duration-200">
-                                            Program Smart City Tangsel Raih Penghargaan Nasional
-                                        </a>
-                                    </h3>
-                                    <div class="flex items-center gap-2 text-white/80 text-xs">
-                                        <span>
-                                            <i class="fas fa-calendar-alt text-[#F7D558] mr-1"></i>
-                                            Selasa, 6 Mei 2025
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        @endforelse
 
                     </div>
                     {{-- Navigation --}}
@@ -158,50 +121,23 @@
                     <div class="w-12 h-1.5 bg-[#F7D558] mb-4 rounded-full"></div>
                     <div class="divide-y divide-gray-100">
 
+                        @forelse (($popularNews ?? [])->take(3) as $index => $news)
                         <div class="flex items-start gap-3 py-3">
                             <div
                                 class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
-                                1
+                                {{ $index + 1 }}
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
-                                    <a href="#" target="_blank"
-                                        class="hover:text-[#044FA0] transition-colors duration-200">
-                                        Wali Kota Tangsel Tinjau Langsung Pembangunan Infrastruktur Jalan
+                                    <a href="#" class="hover:text-[#044FA0] transition-colors duration-200">
+                                        {{ $news->title }}
                                     </a>
                                 </h4>
                             </div>
                         </div>
-
-                        <div class="flex items-start gap-3 py-3">
-                            <div
-                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
-                                2
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
-                                    <a href="#" target="_blank"
-                                        class="hover:text-[#044FA0] transition-colors duration-200">
-                                        Pemkot Tangsel Buka Pendaftaran Beasiswa Pendidikan 2025
-                                    </a>
-                                </h4>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3 py-3">
-                            <div
-                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
-                                3
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
-                                    <a href="#" target="_blank"
-                                        class="hover:text-[#044FA0] transition-colors duration-200">
-                                        Festival Budaya Tangerang Selatan Dihadiri Ribuan Warga
-                                    </a>
-                                </h4>
-                            </div>
-                        </div>
+                        @empty
+                        <p class="py-3 text-xs text-slate-400 italic">Belum ada data berita.</p>
+                        @endforelse
 
                     </div>
                 </div>
@@ -212,50 +148,23 @@
                     <div class="w-12 h-1.5 bg-[#F7D558] mb-4 rounded-full"></div>
                     <div class="divide-y divide-gray-100">
 
+                        @forelse ($latestNews ?? [] as $index => $news)
                         <div class="flex items-start gap-3 py-3">
                             <div
                                 class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
-                                1
+                                {{ $index + 1 }}
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
-                                    <a href="#" target="_blank"
-                                        class="hover:text-[#044FA0] transition-colors duration-200">
-                                        Rapat Koordinasi OPD Tangsel Bahas Rencana Pembangunan 2026
+                                    <a href="#" class="hover:text-[#044FA0] transition-colors duration-200">
+                                        {{ $news->title }}
                                     </a>
                                 </h4>
                             </div>
                         </div>
-
-                        <div class="flex items-start gap-3 py-3">
-                            <div
-                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
-                                2
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
-                                    <a href="#" target="_blank"
-                                        class="hover:text-[#044FA0] transition-colors duration-200">
-                                        Sosialisasi Penggunaan Aplikasi Satu Data Kota Tangerang Selatan
-                                    </a>
-                                </h4>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3 py-3">
-                            <div
-                                class="flex-shrink-0 w-7 h-7 rounded-full bg-[#044FA0] text-white text-xs font-bold flex items-center justify-center">
-                                3
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-gray-700 leading-snug line-clamp-2">
-                                    <a href="#" target="_blank"
-                                        class="hover:text-[#044FA0] transition-colors duration-200">
-                                        Diskominfo Gelar Pelatihan Literasi Digital untuk Warga Tangsel
-                                    </a>
-                                </h4>
-                            </div>
-                        </div>
+                        @empty
+                        <p class="py-3 text-xs text-slate-400 italic">Belum ada berita terbaru.</p>
+                        @endforelse
 
                     </div>
                 </div>

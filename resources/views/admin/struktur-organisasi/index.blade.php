@@ -18,7 +18,7 @@
             @endif
         </div>
 
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
             <div class="overflow-x-auto">
                 <table id="table-sotk" class="w-full text-sm">
                     <thead class="bg-gray-50 border-b border-gray-100">
@@ -33,7 +33,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        @forelse($items as $item)
+                        @foreach($items as $item)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 font-bold text-gray-900">{{ $item->tahun }}</td>
                                 <td class="px-4 py-3 text-gray-800">{{ $item->nama_sotk }}</td>
@@ -74,22 +74,22 @@
                                     </td>
                                 @endif
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-4 py-12 text-center text-gray-400 text-sm">Belum ada data SOTK.
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
+        <div id="dt-paging-sotk"></div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
         $('#table-sotk').DataTable({
+            layout: {
+                bottomStart: 'info',
+                bottomEnd: '#dt-paging-sotk',
+            },
             columnDefs: [{
                 orderable: false,
                 targets: [2, -1]

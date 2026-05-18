@@ -4,6 +4,9 @@
 import Alpine from 'alpinejs';
 window.Alpine = Alpine;
 
+import ApexCharts from 'apexcharts';
+window.ApexCharts = ApexCharts;
+
 // ── SweetAlert2 global setup ─────────────────────────────────────────────────
 import Swal from 'sweetalert2';
 

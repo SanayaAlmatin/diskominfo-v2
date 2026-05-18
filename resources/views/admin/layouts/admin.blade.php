@@ -56,18 +56,27 @@
             padding: 14px 20px;
             background: #F8FAFC;
             border-bottom: 1px solid #E2E8F0;
+            border-radius: 12px 12px 0 0;
         }
 
-        /* ── Bottom bar: info + pagination ── */
+        /* ── Table row: bottom rounding + horizontal scroll ── */
+        div.dt-container div.dt-layout-row.dt-layout-table {
+            border-radius: 0 0 12px 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── Bottom bar: info only (pagination moved outside card) ── */
         div.dt-container div.dt-layout-row:last-child {
             display: flex !important;
             align-items: center !important;
-            justify-content: space-between !important;
+            justify-content: flex-start !important;
             flex-wrap: wrap;
             gap: 12px;
-            padding: 18px 24px;
-            background: #F8FAFC;
-            border-top: 1px solid #E2E8F0;
+            padding: 10px 20px 0 20px;
+            background: transparent;
+            border-top: none;
         }
 
         div.dt-container div.dt-layout-row:last-child .dt-layout-cell {
@@ -75,11 +84,16 @@
         }
 
         div.dt-container .dt-info {
-            padding-left: 4px;
+            padding-left: 0;
         }
 
-        div.dt-container .dt-paging {
-            padding-right: 4px;
+        /* ── External pagination container ── */
+        [id^="dt-paging-"] {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 10px;
         }
 
         /* Label text */
@@ -89,12 +103,6 @@
             font-weight: 500;
             color: #64748B;
             letter-spacing: 0.01em;
-        }
-
-        /* Fix 1 — table row: horizontal scroll on mobile */
-        div.dt-container div.dt-layout-row.dt-layout-table {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         /* Search input */
@@ -302,17 +310,22 @@
                 width: 100%;
             }
 
-            /* Fix 2c — bottom bar centers when stacked */
+            /* Fix 2c — bottom bar (info) on mobile */
             div.dt-container div.dt-layout-row:last-child {
-                justify-content: center !important;
-                padding: 14px 16px;
+                justify-content: flex-start !important;
+                padding: 8px 16px 0 16px;
             }
 
-            /* Fix 2d — top/bottom bar horizontal padding reduced */
-            div.dt-container div.dt-layout-row:first-child,
-            div.dt-container div.dt-layout-row:last-child {
+            /* Fix 2d — top bar horizontal padding reduced */
+            div.dt-container div.dt-layout-row:first-child {
                 padding-left: 16px;
                 padding-right: 16px;
+            }
+
+            /* Fix 2e — external pagination container centered on mobile */
+            [id^="dt-paging-"] {
+                justify-content: center;
+                margin-top: 8px;
             }
 
             /* Smaller pagination buttons on mobile */
@@ -567,6 +580,8 @@
             pageLength: 10,
             lengthMenu: [5, 10, 25, 50, 100],
             order: [],
+            scrollX: true,
+            scrollCollapse: true,
         });
     </script>
     @stack('scripts')

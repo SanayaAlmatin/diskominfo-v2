@@ -2,13 +2,18 @@
 
 namespace App\Livewire\Pages;
 
+use App\Models\TmSejarah;
+use App\Models\TmSotk;
 use Livewire\Component;
 
 class SekilasDiskominfo extends Component
 {
     public function render()
     {
-        return view('livewire.pages.sekilas-diskominfo')
+        $sekilas     = TmSejarah::latest()->first();
+        $sotkHistory = TmSotk::orderBy('tahun')->get();
+
+        return view('livewire.pages.sekilas-diskominfo', compact('sekilas', 'sotkHistory'))
             ->extends('layouts.app', [
                 'title' => 'Sekilas Diskominfo - Diskominfo Tangerang Selatan',
                 'metaDescription' => 'Dinas Komunikasi dan Informatika Kota Tangerang Selatan — profil singkat, sejarah, tugas pokok, dan fungsi organisasi.',

@@ -256,5 +256,42 @@
         </div>
     </section>
 
+    {{-- ════════════════════════════════════════
+         STATISTIK CAPAIAN (dari CMS)
+         ════════════════════════════════════════ --}}
+    @if($tikStats->isNotEmpty())
+    <section class="bg-white px-4 py-14 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
+
+            <div class="tik-fade-up tik-d5 mb-10 text-center">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">Data &amp; Angka</p>
+                <h2 class="mt-2 text-2xl font-extrabold text-slate-900 sm:text-3xl">Statistik Infrastruktur TIK</h2>
+            </div>
+
+            @foreach ($tikStats as $kategori => $stats)
+            <div class="mb-10">
+                <h3 class="mb-4 text-base font-bold text-[#044FA0] uppercase tracking-wide">{{ $kategori }}</h3>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    @foreach ($stats as $stat)
+                    <div class="rounded-2xl border border-slate-200 bg-[#F5F8FC] p-5 text-center shadow-sm">
+                        @if($stat->icon)
+                        <div class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-[#044FA0]/10 text-[#044FA0]">
+                            <span class="text-lg">{{ $stat->icon }}</span>
+                        </div>
+                        @endif
+                        <p class="text-2xl font-extrabold text-[#044FA0]">{{ $stat->nilai }}</p>
+                        @if($stat->satuan)
+                        <p class="text-xs text-slate-500">{{ $stat->satuan }}</p>
+                        @endif
+                        <p class="mt-1 text-sm font-semibold text-slate-700">{{ $stat->label }}</p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endforeach
+
+        </div>
+    </section>
+    @endif
 
 </main>

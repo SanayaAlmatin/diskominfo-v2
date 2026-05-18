@@ -122,7 +122,7 @@
             </div>
 
             <h1 class="so-fade-up so-d2 mt-5 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
-                Struktur Organisasi Tahun 2026
+                Struktur Organisasi{{ $sotk ? ' Tahun ' . $sotk->tahun : '' }}
             </h1>
 
             <p class="so-fade-up so-d3 mt-4 text-sm leading-7 text-blue-100 sm:text-base">
@@ -137,6 +137,23 @@
 	     ════════════════════════════════════════ --}}
     <section class="bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl overflow-x-auto">
+
+            {{-- ── GAMBAR BAGAN SOTK (dari CMS) ── --}}
+            @if($sotk && $sotk->gambar)
+            <div class="so-fade-up so-d1 mb-12">
+                @if($sotk->nama_sotk)
+                <p class="mb-4 text-center text-sm font-semibold text-slate-600">{{ $sotk->nama_sotk }}</p>
+                @endif
+                <div class="overflow-hidden rounded-2xl border border-slate-200 shadow-lg">
+                    <img src="{{ asset('storage/' . $sotk->gambar) }}"
+                         alt="Struktur Organisasi {{ $sotk->tahun }}"
+                         class="w-full h-auto">
+                </div>
+                @if($sotk->deskripsi)
+                <p class="mt-4 text-center text-xs text-slate-500">{{ $sotk->deskripsi }}</p>
+                @endif
+            </div>
+            @endif
 
             {{-- ── LEVEL 1: Kepala Dinas ── --}}
             <div class="flex justify-center so-fade-up so-d1">

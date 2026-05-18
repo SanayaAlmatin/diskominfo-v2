@@ -2,13 +2,16 @@
 
 namespace App\Livewire\Pages;
 
+use App\Models\TmSotk;
 use Livewire\Component;
 
 class StrukturOrganisasi extends Component
 {
     public function render()
     {
-        return view('livewire.pages.struktur-organisasi')
+        $sotk = TmSotk::where('is_current', true)->orderByDesc('tahun')->first();
+
+        return view('livewire.pages.struktur-organisasi', compact('sotk'))
             ->extends('layouts.app', [
                 'title'           => 'Struktur Organisasi - Diskominfo Tangerang Selatan',
                 'metaDescription' => 'Struktur organisasi Dinas Komunikasi dan Informatika Kota Tangerang Selatan tahun 2026.',

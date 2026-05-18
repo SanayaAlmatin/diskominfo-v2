@@ -2,13 +2,16 @@
 
 namespace App\Livewire\Pages;
 
+use App\Models\TmBidangStatistik;
 use Livewire\Component;
 
 class StatistikLayananInformasi extends Component
 {
     public function render()
     {
-        return view('livewire.pages.statistik-layanan-informasi')
+        $bidangList = TmBidangStatistik::with('files')->orderBy('n_bidang')->get();
+
+        return view('livewire.pages.statistik-layanan-informasi', compact('bidangList'))
             ->extends('layouts.app', [
                 'title' => 'Bidang Statistik & Layanan Informasi Publik - Diskominfo Tangerang Selatan',
                 'metaDescription' => 'Bidang Penyelenggaraan Statistik & Layanan Informasi Publik Dinas Komunikasi dan Informatika Kota Tangerang Selatan — tugas, fungsi, dan tim kerja.',

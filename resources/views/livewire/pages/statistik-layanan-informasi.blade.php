@@ -253,5 +253,57 @@
             </div>
         </div>
     </section>
+    {{-- ════════════════════════════════════════
+         DOKUMEN STATISTIK (dari CMS)
+         ════════════════════════════════════════ --}}
+    @if($bidangList->isNotEmpty())
+    <section class="bg-white px-4 py-14 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
+
+            <div class="statistik-fade-up statistik-d5 mb-10 text-center">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">Unduh Data</p>
+                <h2 class="mt-2 text-2xl font-extrabold text-slate-900 sm:text-3xl">Dokumen Statistik Sektoral</h2>
+            </div>
+
+            <div class="space-y-8">
+                @foreach ($bidangList as $bidang)
+                @if($bidang->files->isNotEmpty())
+                <div class="rounded-2xl border border-slate-200 bg-[#F5F8FC] p-6 shadow-sm">
+                    <h3 class="mb-4 text-base font-bold text-[#044FA0]">{{ $bidang->n_bidang }}</h3>
+                    <div class="divide-y divide-slate-200">
+                        @foreach ($bidang->files as $file)
+                        <div class="flex items-center justify-between gap-4 py-3">
+                            <div class="flex items-start gap-3">
+                                <span class="mt-0.5 inline-flex h-7 w-10 shrink-0 items-center justify-center rounded-md bg-[#044FA0]/10 text-[10px] font-bold uppercase text-[#044FA0]">
+                                    {{ $file->type ?? 'file' }}
+                                </span>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-800">{{ $file->deskripsi }}</p>
+                                    @if($file->d_entry)
+                                    <p class="text-xs text-slate-400">{{ \Carbon\Carbon::parse($file->d_entry)->isoFormat('D MMM YYYY') }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            <a href="{{ asset('storage/' . $file->file) }}"
+                               target="_blank"
+                               class="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-[#044FA0] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#0d4f94]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Unduh
+                            </a>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+                @endforeach
+            </div>
+
+        </div>
+    </section>
+    @endif
 
 </main>

@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\StrukturOrganisasiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VisiMisiController;
+use App\Http\Controllers\HomeController;
+use App\Http\Middleware\TrackPageVisit;
 use App\Livewire\Pages\InfrastrukturTik;
 use App\Livewire\Pages\SekilasDiskominfo;
 use App\Livewire\Pages\StatistikLayananInformasi;
@@ -17,14 +19,16 @@ use App\Livewire\Pages\VisiMisi;
 use Illuminate\Support\Facades\Route;
 
 // ─── Landing Page (Livewire) ──────────────────────────────────────────────────
-Route::view('/', 'welcome')->name('home');
+Route::middleware([TrackPageVisit::class])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/profil/visi-misi', VisiMisi::class)->name('profil.visi-misi');
-Route::get('/profil/sekilas-diskominfo', SekilasDiskominfo::class)->name('profil.sekilas-diskominfo');
-Route::get('/profil/struktur-organisasi', StrukturOrganisasi::class)->name('profil.struktur-organisasi');
+    Route::get('/profil/visi-misi', VisiMisi::class)->name('profil.visi-misi');
+    Route::get('/profil/sekilas-diskominfo', SekilasDiskominfo::class)->name('profil.sekilas-diskominfo');
+    Route::get('/profil/struktur-organisasi', StrukturOrganisasi::class)->name('profil.struktur-organisasi');
 
-Route::get('/unit-kerja/infrastruktur-tik', InfrastrukturTik::class)->name('unit-kerja.infrastruktur-tik');
-Route::get('/unit-kerja/statistik-layanan-informasi', StatistikLayananInformasi::class)->name('unit-kerja.statistik-layanan-informasi');
+    Route::get('/unit-kerja/infrastruktur-tik', InfrastrukturTik::class)->name('unit-kerja.infrastruktur-tik');
+    Route::get('/unit-kerja/statistik-layanan-informasi', StatistikLayananInformasi::class)->name('unit-kerja.statistik-layanan-informasi');
+});
 
 // ─── CMS Admin ───────────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {

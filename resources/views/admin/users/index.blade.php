@@ -16,7 +16,7 @@
             </a>
         </div>
 
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
             <div class="overflow-x-auto">
                 <table id="table-users" class="w-full text-sm">
                     <thead class="bg-gray-50 border-b border-gray-100">
@@ -30,7 +30,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        @forelse($users as $user)
+                        @foreach($users as $user)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-3">
@@ -95,22 +95,22 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="px-4 py-12 text-center text-gray-400 text-sm">Belum ada pengguna.
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
+        <div id="dt-paging-users"></div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
         $('#table-users').DataTable({
+            layout: {
+                bottomStart: 'info',
+                bottomEnd: '#dt-paging-users',
+            },
             columnDefs: [{
                 orderable: false,
                 targets: [0, -1]

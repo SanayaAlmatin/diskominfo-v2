@@ -223,38 +223,28 @@
             </div>
 
             @php
-                $sotk = [
-                    [
-                        'year' => '2010',
-                        'perda' => 'Perda No. 6 Tahun 2010',
-                        'desc' => 'Nomenklatur awal sebagai Dinas Perhubungan, Komunikasi, dan Informatika.',
-                        'icon_bg' => 'bg-[#FFF3C2] text-[#8A6C00]',
-                        'bar' => 'bg-[#F7D558]',
-                    ],
-                    [
-                        'year' => '2016',
-                        'perda' => 'Perda No. 8 Tahun 2016',
-                        'desc' => 'Pemisahan fungsi, resmi berdiri sendiri sebagai Dinas Komunikasi dan Informatika.',
-                        'icon_bg' => 'bg-[#E8F6EE] text-[#1B6A3D]',
-                        'bar' => 'bg-[#10B981]',
-                    ],
-                    [
-                        'year' => '2022',
-                        'perda' => 'Perda No. 56 Tahun 2022',
-                        'desc' => 'Penyederhanaan birokrasi dan penyempurnaan SOTK terbaru.',
-                        'icon_bg' => 'bg-[#F1EAFE] text-[#5B21B6]',
-                        'bar' => 'bg-[#7C3AED]',
-                    ],
+                $barColors = ['bg-[#F7D558]', 'bg-[#10B981]', 'bg-[#7C3AED]', 'bg-[#F97316]', 'bg-[#0EA5E9]'];
+                $iconColors = [
+                    'bg-[#FFF3C2] text-[#8A6C00]',
+                    'bg-[#E8F6EE] text-[#1B6A3D]',
+                    'bg-[#F1EAFE] text-[#5B21B6]',
+                    'bg-[#FFF0E5] text-[#9A3412]',
+                    'bg-[#E0F2FE] text-[#0369A1]',
                 ];
             @endphp
 
+            @if($sotkHistory->isNotEmpty())
             <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($sotk as $item)
+                @foreach ($sotkHistory as $index => $item)
+                    @php
+                        $bar = $barColors[$index % count($barColors)];
+                        $iconCls = $iconColors[$index % count($iconColors)];
+                    @endphp
                     <article
                         class="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                         <div class="flex flex-1 items-start gap-4 p-6">
                             <div
-                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $item['icon_bg'] }}">
+                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $iconCls }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -267,16 +257,20 @@
                             </div>
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                                    {{ $item['year'] }}</p>
-                                <p class="mt-1 text-sm font-bold text-slate-800">{{ $item['perda'] }}</p>
-                                <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ $item['desc'] }}</p>
+                                    {{ $item->tahun }}</p>
+                                <p class="mt-1 text-sm font-bold text-slate-800">{{ $item->nama_sotk }}</p>
+                                @if($item->deskripsi)
+                                <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ $item->deskripsi }}</p>
+                                @endif
                             </div>
                         </div>
-                        {{-- Accent bottom bar --}}
-                        <div class="h-1 w-full {{ $item['bar'] }}"></div>
+                        <div class="h-1 w-full {{ $bar }}"></div>
                     </article>
                 @endforeach
             </div>
+            @else
+            <p class="mt-8 text-sm text-slate-500 italic">Belum ada data riwayat SOTK.</p>
+            @endif
 
         </div>
     </section>
