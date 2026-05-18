@@ -10,7 +10,7 @@ class VisiMisiController extends Controller
 {
     public function index()
     {
-        $items = TmVisiMisi::orderBy('tipe')->orderBy('sort_order')->paginate(20);
+        $items = TmVisiMisi::orderBy('tipe')->orderBy('sort_order')->get();
 
         return view('admin.visi-misi.index', compact('items'));
     }

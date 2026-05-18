@@ -10,7 +10,7 @@ class InfrastrukturTikController extends Controller
 {
     public function index()
     {
-        $items = TmTikStats::orderBy('kategori')->orderBy('sort_order')->paginate(15);
+        $items = TmTikStats::orderBy('kategori')->orderBy('sort_order')->get();
 
         return view('admin.infrastruktur-tik.index', compact('items'));
     }

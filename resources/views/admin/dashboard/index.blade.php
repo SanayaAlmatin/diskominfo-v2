@@ -8,7 +8,7 @@
 
         {{-- Welcome banner --}}
         <div class="rounded-xl p-6 text-white" style="background: linear-gradient(135deg, #0F2044, #1a3460);">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <h2 class="text-xl font-bold">Selamat Datang, {{ auth()->user()->nama }}!</h2>
                     <p class="text-blue-300 text-sm mt-1">CMS Portal Diskominfo Tangerang Selatan —

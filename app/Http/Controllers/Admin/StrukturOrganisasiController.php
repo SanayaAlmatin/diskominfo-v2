@@ -11,7 +11,7 @@ class StrukturOrganisasiController extends Controller
 {
     public function index()
     {
-        $items = TmSotk::orderBy('tahun', 'desc')->paginate(10);
+        $items = TmSotk::orderBy('tahun', 'desc')->get();
 
         return view('admin.struktur-organisasi.index', compact('items'));
     }

@@ -11,7 +11,7 @@ class ProgramVacancyController extends Controller
 {
     public function index()
     {
-        $items = TmInfoBanner::orderBy('created_at', 'desc')->paginate(10);
+        $items = TmInfoBanner::orderBy('created_at', 'desc')->get();
 
         return view('admin.program-vacancy.index', compact('items'));
     }

@@ -11,7 +11,7 @@ class SekilasController extends Controller
 {
     public function index()
     {
-        $sekilas = TmSejarah::orderBy('id', 'desc')->paginate(10);
+        $sekilas = TmSejarah::orderBy('id', 'desc')->get();
 
         return view('admin.sekilas.index', compact('sekilas'));
     }

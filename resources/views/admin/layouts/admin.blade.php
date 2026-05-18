@@ -6,7 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'CMS') — Diskominfo Tangsel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+    @stack('styles')
     <style>
         :root {
             --navy: #0F2044;
@@ -25,32 +31,334 @@
         .sidebar-nav a.active {
             border-left: 3px solid #FFC107;
         }
+
+        /* Hide sidebar on mobile before Alpine.js initializes */
+        @media (max-width: 1023px) {
+            [x-cloak] {
+                display: none !important;
+            }
+        }
+
+        div.dt-container,
+        div.dt-container input,
+        div.dt-container select,
+        div.dt-container button {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Remove default row margins */
+        div.dt-container div.dt-layout-row {
+            margin: 0 !important;
+        }
+
+        /* ── Top bar: length + search ── */
+        div.dt-container div.dt-layout-row:first-child {
+            padding: 14px 20px;
+            background: #F8FAFC;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        /* ── Bottom bar: info + pagination ── */
+        div.dt-container div.dt-layout-row:last-child {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 18px 24px;
+            background: #F8FAFC;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        div.dt-container div.dt-layout-row:last-child .dt-layout-cell {
+            padding: 0 !important;
+        }
+
+        div.dt-container .dt-info {
+            padding-left: 4px;
+        }
+
+        div.dt-container .dt-paging {
+            padding-right: 4px;
+        }
+
+        /* Label text */
+        div.dt-container .dt-length,
+        div.dt-container .dt-search {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748B;
+            letter-spacing: 0.01em;
+        }
+
+        /* Fix 1 — table row: horizontal scroll on mobile */
+        div.dt-container div.dt-layout-row.dt-layout-table {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Search input */
+        div.dt-container .dt-search input {
+            border: 1.5px solid #E2E8F0 !important;
+            border-radius: 10px !important;
+            padding: 7px 12px !important;
+            font-size: 13px !important;
+            outline: none;
+            color: #0F172A;
+            background: #FFFFFF;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+            transition: border-color .2s ease, box-shadow .2s ease;
+            margin-left: 8px;
+            width: 220px;
+        }
+
+        /* Length select */
+        div.dt-container .dt-length select,
+        div.dt-container select.dt-input {
+            border: 1.5px solid #E2E8F0 !important;
+            border-radius: 10px !important;
+            padding: 6px 10px !important;
+            font-size: 13px !important;
+            outline: none;
+            color: #0F172A;
+            background: #FFFFFF;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+            transition: border-color .2s ease, box-shadow .2s ease;
+            margin: 0 6px;
+            cursor: pointer;
+        }
+
+        /* Focus — indigo ring */
+        div.dt-container .dt-search input:focus,
+        div.dt-container .dt-length select:focus,
+        div.dt-container select.dt-input:focus {
+            border-color: #4F46E5 !important;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14),
+                0 1px 3px rgba(15, 23, 42, 0.04) !important;
+        }
+
+        /* Info text */
+        div.dt-container .dt-info {
+            font-size: 12px;
+            font-weight: 500;
+            color: #94A3B8;
+            letter-spacing: 0.01em;
+        }
+
+        /* ── Pagination buttons ── */
+        div.dt-container .dt-paging .dt-paging-button {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            border-radius: 8px !important;
+            padding: 0 10px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            border: 1.5px solid #E2E8F0 !important;
+            margin: 0 5px !important;
+            color: #64748B !important;
+            background: #FFFFFF !important;
+            transition: all .2s ease !important;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+            text-decoration: none !important;
+            vertical-align: middle;
+        }
+
+        /* Active page — indigo→violet gradient + colored shadow */
+        div.dt-container .dt-paging .dt-paging-button.current,
+        div.dt-container .dt-paging .dt-paging-button.current:hover {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;
+            color: #FFFFFF !important;
+            border-color: transparent !important;
+            box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.45) !important;
+            transform: translateY(-1px);
+        }
+
+        /* Hover — indigo tint */
+        div.dt-container .dt-paging .dt-paging-button:hover:not(.current):not(.disabled) {
+            background: #EEF2FF !important;
+            color: #4F46E5 !important;
+            border-color: #C7D2FE !important;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12) !important;
+            transform: translateY(-1px);
+        }
+
+        /* Disabled */
+        div.dt-container .dt-paging .dt-paging-button.disabled,
+        div.dt-container .dt-paging .dt-paging-button.disabled:hover,
+        div.dt-container .dt-paging .dt-paging-button.disabled:active {
+            color: #CBD5E1 !important;
+            background: #F8FAFC !important;
+            border-color: #F1F5F9 !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ── Table header ── */
+        table.dataTable thead th,
+        table.dataTable thead td {
+            border-bottom: 1.5px solid #E2E8F0 !important;
+        }
+
+        table.dataTable.no-footer {
+            border-bottom: none !important;
+        }
+
+        /* Sort arrows — indigo when active */
+        table.dataTable thead th.dt-ordering-asc span.dt-column-order::before,
+        table.dataTable thead th.dt-ordering-desc span.dt-column-order::after {
+            color: #4F46E5;
+            opacity: 1 !important;
+        }
+
+        /* Dim sort arrows on inactive orderable columns */
+        table.dataTable thead th.dt-orderable-asc span.dt-column-order,
+        table.dataTable thead th.dt-orderable-desc span.dt-column-order {
+            opacity: 0.3;
+            transition: opacity .2s ease;
+        }
+
+        table.dataTable thead th:hover span.dt-column-order {
+            opacity: 0.55;
+        }
+
+        /* Row hover — subtle indigo tint */
+        table.dataTable tbody tr:hover>* {
+            box-shadow: inset 0 0 0 9999px rgba(79, 70, 229, 0.028) !important;
+        }
+
+        /* ── Row & cell spacing ── */
+        table.dataTable thead th,
+        table.dataTable thead td {
+            padding-top: 14px !important;
+            padding-bottom: 14px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+        }
+
+        table.dataTable tbody td {
+            padding-top: 14px !important;
+            padding-bottom: 14px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            vertical-align: middle;
+        }
+
+        /* ── Lightbox ── */
+        #img-lightbox {
+            backdrop-filter: blur(4px);
+        }
+
+        #img-lightbox img {
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            animation: lb-in .18s ease;
+        }
+
+        @keyframes lb-in {
+            from {
+                opacity: 0;
+                transform: scale(.94);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .lb-thumb {
+            cursor: zoom-in;
+            transition: opacity .15s ease, transform .15s ease;
+        }
+
+        .lb-thumb:hover {
+            opacity: .85;
+            transform: scale(1.04);
+        }
+
+        /* ── Mobile responsiveness ── */
+        @media (max-width: 640px) {
+
+            /* Fix 2a — top bar stacks vertically */
+            div.dt-container div.dt-layout-row:first-child {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px;
+                padding: 12px 16px;
+            }
+
+            /* Fix 2b — search input fills width */
+            div.dt-container .dt-search input {
+                width: 100% !important;
+                min-width: unset !important;
+                margin-left: 0;
+            }
+
+            div.dt-container .dt-search {
+                width: 100%;
+            }
+
+            /* Fix 2c — bottom bar centers when stacked */
+            div.dt-container div.dt-layout-row:last-child {
+                justify-content: center !important;
+                padding: 14px 16px;
+            }
+
+            /* Fix 2d — top/bottom bar horizontal padding reduced */
+            div.dt-container div.dt-layout-row:first-child,
+            div.dt-container div.dt-layout-row:last-child {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            /* Smaller pagination buttons on mobile */
+            div.dt-container .dt-paging .dt-paging-button {
+                min-width: 28px !important;
+                height: 28px !important;
+                padding: 0 8px !important;
+                font-size: 12px !important;
+                margin: 0 3px !important;
+            }
+        }
     </style>
 </head>
 
 <body class="h-full bg-gray-50 font-sans" x-data="{ sidebarOpen: false }">
 
     <!-- Mobile sidebar overlay -->
-    <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+    <div x-cloak x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-black/50 lg:hidden"
         @click="sidebarOpen = false"></div>
 
     <!-- Sidebar -->
     <aside class="fixed inset-y-0 left-0 z-50 w-64 flex flex-col transition-transform duration-300 lg:translate-x-0"
-        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" style="background-color: var(--navy);">
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" style="background-color: var(--navy);" x-cloak>
 
         <!-- Logo -->
-        <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background-color: var(--yellow);">
-                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.357l4-2a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zm5.99 7.176A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+        <div class="flex items-center justify-between gap-3 px-6 py-5 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style="background-color: var(--yellow);">
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.357l4-2a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zm5.99 7.176A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-white font-bold text-sm leading-tight">CMS Diskominfo</p>
+                    <p class="text-blue-300 text-xs">Tangerang Selatan</p>
+                </div>
+            </div>
+            <!-- Close button (mobile only) -->
+            <button @click="sidebarOpen = false"
+                class="lg:hidden p-1.5 rounded-lg text-blue-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-            </div>
-            <div>
-                <p class="text-white font-bold text-sm leading-tight">CMS Diskominfo</p>
-                <p class="text-blue-300 text-xs">Tangerang Selatan</p>
-            </div>
+            </button>
         </div>
 
         <!-- Navigation -->
@@ -174,9 +482,10 @@
                     <p class="text-white text-sm font-medium truncate">{{ auth()->user()?->nama }}</p>
                     <p class="text-blue-400 text-xs truncate">{{ auth()->user()?->getCmsRole() }}</p>
                 </div>
-                <form method="POST" action="{{ route('admin.logout') }}">
+                <form method="POST" action="{{ route('admin.logout') }}" id="logout-form">
                     @csrf
-                    <button type="submit" class="text-blue-400 hover:text-red-400 transition-colors" title="Logout">
+                    <button type="button" onclick="confirmLogout(document.getElementById('logout-form'))"
+                        class="text-blue-400 hover:text-red-400 transition-colors" title="Logout">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -212,41 +521,19 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
-                        Lihat Website
+                        <span class="hidden sm:inline">Lihat Website</span>
                     </a>
-                    <span class="text-gray-300">|</span>
-                    <span class="text-xs text-gray-500 font-medium">{{ auth()->user()?->nama }}</span>
+                    <span class="hidden sm:inline text-gray-300">|</span>
+                    <span
+                        class="hidden sm:inline text-xs text-gray-500 font-medium">{{ auth()->user()?->nama }}</span>
                 </div>
             </div>
         </header>
 
         <!-- Page content -->
-        <main class="flex-1 p-6">
+        <main class="flex-1 p-4 sm:p-6">
 
-            {{-- Flash Messages --}}
-            @if (session('success'))
-                <div class="mb-4 flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm"
-                    x-data x-init="setTimeout(() => $el.remove(), 4000)">
-                    <svg class="w-4 h-4 flex-shrink-0 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <span>{{ session('success') }}</span>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div
-                    class="mb-4 flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 text-sm">
-                    <svg class="w-4 h-4 flex-shrink-0 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <span>{{ session('error') }}</span>
-                </div>
-            @endif
+            {{-- Flash messages dihandle via SweetAlert (lihat @stack scripts di bawah) --}}
 
             @yield('content')
         </main>
@@ -257,6 +544,73 @@
         </footer>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <script>
+        // Global DataTables defaults — Bahasa Indonesia
+        $.extend(true, $.fn.dataTable.defaults, {
+            language: {
+                lengthMenu: 'Tampilkan _MENU_ data',
+                zeroRecords: 'Tidak ada data yang ditemukan',
+                info: 'Menampilkan _START_–_END_ dari _TOTAL_ data',
+                infoEmpty: 'Menampilkan 0 dari 0 data',
+                infoFiltered: '(difilter dari _MAX_ total data)',
+                search: 'Cari:',
+                paginate: {
+                    first: '«',
+                    last: '»',
+                    next: '›',
+                    previous: '‹',
+                },
+                emptyTable: 'Belum ada data.',
+            },
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            order: [],
+        });
+    </script>
+    @stack('scripts')
+
+    {{-- SweetAlert flash messages --}}
+    @if (session('success'))
+        <script>
+            window.__flashSuccess = @json(session('success'));
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            window.__flashError = @json(session('error'));
+        </script>
+    @endif
+
+    <!-- ── Image Lightbox ── -->
+    <div id="img-lightbox" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-4"
+        onclick="closeLightbox()">
+        <button onclick="event.stopPropagation(); closeLightbox()"
+            class="absolute top-4 right-5 text-white/70 hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <img id="img-lightbox-img" src="" alt="Preview"
+            class="max-h-[88vh] max-w-[88vw] object-contain rounded-2xl" onclick="event.stopPropagation()">
+    </div>
+    <script>
+        function openLightbox(src) {
+            document.getElementById('img-lightbox-img').src = src;
+            document.getElementById('img-lightbox').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('img-lightbox').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
 </body>
 
 </html>

@@ -13,7 +13,7 @@ class StatistikController extends Controller
 {
     public function index()
     {
-        $items = TmBidangStatistik::withCount('files')->orderBy('n_bidang')->paginate(15);
+        $items = TmBidangStatistik::withCount('files')->orderBy('n_bidang')->get();
 
         return view('admin.statistik.index', compact('items'));
     }

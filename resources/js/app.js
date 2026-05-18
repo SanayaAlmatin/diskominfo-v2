@@ -1,6 +1,89 @@
 /**
  * app.js — Alpine component registrations
  */
+import Alpine from 'alpinejs';
+window.Alpine = Alpine;
+
+// ── SweetAlert2 global setup ─────────────────────────────────────────────────
+import Swal from 'sweetalert2';
+
+/** Themed MySwal — navy confirm button, grey cancel */
+const MySwal = Swal.mixin({
+    confirmButtonColor: '#0F2044',
+    cancelButtonColor: '#6B7280',
+    reverseButtons: true,
+});
+window.MySwal = MySwal;
+
+/** Toast for flash messages (top-right, auto-dismiss) */
+const SwalToast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3500,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    },
+});
+window.SwalToast = SwalToast;
+
+/**
+ * confirmDelete(formEl, message)
+ * Tampilkan dialog konfirmasi sebelum submit form DELETE.
+ */
+window.confirmDelete = function (formEl, message) {
+    MySwal.fire({
+        title: 'Hapus Data?',
+        text: message ?? 'Data yang dihapus tidak dapat dikembalikan.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+    }).then((result) => {
+        if (result.isConfirmed) formEl.submit();
+    });
+};
+
+/**
+ * confirmLogout(formEl)
+ * Tampilkan dialog konfirmasi sebelum logout.
+ */
+window.confirmLogout = function (formEl) {
+    MySwal.fire({
+        title: 'Logout?',
+        text: 'Apakah Anda yakin ingin keluar dari CMS?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal',
+    }).then((result) => {
+        if (result.isConfirmed) formEl.submit();
+    });
+};
+
+// ── Flash messages (dibaca dari window vars yang diset Blade) ─────────────────
+if (window.__flashSuccess) {
+    SwalToast.fire({ icon: 'success', title: window.__flashSuccess });
+}
+if (window.__flashError) {
+    SwalToast.fire({ icon: 'error', title: window.__flashError });
+}
+
+// ── Login errors (modal, lebih prominent dari toast) ─────────────────────────
+if (window.__loginError) {
+    MySwal.fire({
+        icon: 'error',
+        title: 'Login Gagal',
+        text: window.__loginError,
+        confirmButtonText: 'Coba Lagi',
+    });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+import './tinymce-init.js';
+
 document.addEventListener('alpine:init', () => {
     window.Alpine.data('vacancyCarousel', () => ({
         active: 1,
@@ -87,3 +170,5 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 });
+
+Alpine.start();

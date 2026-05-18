@@ -48,7 +48,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Sekilas Diskominfo
         Route::resource('sekilas', SekilasController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:super-admin,admin'])
+            ->parameters(['sekilas' => 'sekilas']);
 
         // Visi & Misi
         Route::resource('visi-misi', VisiMisiController::class)
