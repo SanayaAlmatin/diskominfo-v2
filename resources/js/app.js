@@ -89,9 +89,9 @@ import './tinymce-init.js';
 
 document.addEventListener('alpine:init', () => {
     window.Alpine.data('vacancyCarousel', () => ({
-        active: 1,
+        active: 0,
         autoPlayInterval: null,
-        totalCards: 5,
+        totalCards: 1,
 
         // Swipe state
         startX: 0,
@@ -132,6 +132,16 @@ document.addEventListener('alpine:init', () => {
 
         getCardClass(index) {
             const total = this.totalCards;
+
+            // Jika hanya 1-2 card, sembunyikan card non-aktif agar tidak muncul asimetris di kiri
+            if (total <= 2 && index !== this.active) {
+                return [
+                    'z-0 scale-75 opacity-0 pointer-events-none',
+                    'w-72 md:w-96 lg:w-[400px]',
+                    '-translate-x-1/2',
+                    'transition-all duration-500 ease-out',
+                ].join(' ');
+            }
 
             if (index === this.active) {
                 return [

@@ -64,7 +64,8 @@
                                 <i class="fas fa-wifi text-[#F7D558] text-base md:text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-white font-extrabold text-xl md:text-2xl leading-none">752</h3>
+                                <h3 class="text-white font-extrabold text-xl md:text-2xl leading-none">
+                                    {{ number_format($wifis->count()) }}</h3>
                                 <p
                                     class="text-[#F7D558] font-bold text-[10px] md:text-xs tracking-wider uppercase mt-1">
                                     WiFi Points</p>
@@ -127,40 +128,43 @@
                 });
             }
 
-            // WiFi hotspot locations around South Tangerang
-            var locations = [{
-                    name: 'Puskesmas Serpong',
-                    coords: [-6.3023, 106.6669],
-                    type: 'Public Health Center'
-                },
-                {
-                    name: 'Taman Kota BSD',
-                    coords: [-6.2955, 106.6711],
-                    type: 'Public Park'
-                },
-                {
-                    name: 'Kantor Walikota Tangsel',
-                    coords: [-6.2886, 106.7179],
-                    type: 'Government Office'
-                },
-                {
-                    name: 'Stasiun Rawa Buntu',
-                    coords: [-6.2800, 106.6960],
-                    type: 'Transit Hub'
-                },
-            ];
+            // WiFi hotspot locations from Database
+            var locations = @json($wifis);
 
-            locations.forEach(function(loc) {
-                L.marker(loc.coords, {
-                        icon: makeIcon()
-                    })
-                    .addTo(map)
-                    .bindPopup(
-                        '<b style="color:#044FA0;">' + loc.name + '</b>' +
-                        '<br><span style="color:#555;">' + loc.type + '</span>' +
-                        '<br><span style="color:#22c55e;font-size:12px;">&#9679; Active</span>'
-                    );
-            });
+            if (locations && locations.length > 0) {
+                // If there are locations, fit the bounds to include all markers
+                var bounds = [];
+
+                locations.forEach(function(loc) {
+                    if (loc.latitude && loc.longitude) {
+                        var lat = parseFloat(loc.latitude);
+                        var lng = parseFloat(loc.longitude);
+                        bounds.push([lat, lng]);
+
+                        var keterangan = loc.keterangan ? loc.keterangan : 'Titik WiFi Publik';
+                        var ssid = loc.ssid ? 'SSID: <b>' + loc.ssid + '</b>' : '';
+                        var kecepatan = loc.kecepatan ? ' | ' + loc.kecepatan : '';
+                        var extraInfo = (ssid || kecepatan) ?
+                            '<br><span style="color:#333; font-size:12px;">' + ssid + kecepatan +
+                            '</span>' : '';
+
+                        L.marker([lat, lng], {
+                                icon: makeIcon()
+                            })
+                            .addTo(map)
+                            .bindPopup(
+                                '<b style="color:#044FA0;">' + loc.n_wilayah + '</b>' +
+                                '<br><span style="color:#555;">' + keterangan + '</span>' +
+                                extraInfo +
+                                '<br><span style="color:#22c55e;font-size:12px;">&#9679; Active</span>'
+                            );
+                    }
+                });
+
+                if (bounds.length > 0) {
+                    map.fitBounds(bounds);
+                }
+            }
 
 
         });

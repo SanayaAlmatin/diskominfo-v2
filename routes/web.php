@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InfrastrukturTikController;
+use App\Http\Controllers\Admin\LowonganController;
 use App\Http\Controllers\Admin\ProgramVacancyController;
 use App\Http\Controllers\Admin\SekilasController;
 use App\Http\Controllers\Admin\StatistikController;
@@ -12,6 +13,8 @@ use App\Http\Controllers\Admin\VisiMisiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Middleware\TrackPageVisit;
 use App\Livewire\Pages\InfrastrukturTik;
+use App\Livewire\Pages\LowonganDetail;
+use App\Livewire\Pages\LowonganIndex;
 use App\Livewire\Pages\SekilasDiskominfo;
 use App\Livewire\Pages\StatistikLayananInformasi;
 use App\Livewire\Pages\StrukturOrganisasi;
@@ -28,6 +31,9 @@ Route::middleware([TrackPageVisit::class])->group(function () {
 
     Route::get('/unit-kerja/infrastruktur-tik', InfrastrukturTik::class)->name('unit-kerja.infrastruktur-tik');
     Route::get('/unit-kerja/statistik-layanan-informasi', StatistikLayananInformasi::class)->name('unit-kerja.statistik-layanan-informasi');
+
+    Route::get('/lowongan', LowonganIndex::class)->name('lowongan.index');
+    Route::get('/karir/{id}', LowonganDetail::class)->name('karir.show');
 });
 
 // ─── CMS Admin ───────────────────────────────────────────────────────────────
@@ -73,6 +79,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->middleware(['admin.role:super-admin,admin'])
             ->parameters(['infrastruktur-tik' => 'infrastrukturTik']);
 
+        // Titik Wifi
+        Route::resource('wifi', \App\Http\Controllers\Admin\WifiController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin']);
+
         // Statistik Layanan Informasi
         Route::resource('statistik', StatistikController::class)
             ->except(['show'])
@@ -89,6 +100,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->except(['show'])
             ->middleware(['admin.role:super-admin,admin'])
             ->parameters(['program-vacancy' => 'programVacancy']);
+
+        // Lowongan Karir
+        Route::resource('lowongan', LowonganController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin']);
 
         // User Management (Super Admin only)
         Route::resource('users', UserController::class)

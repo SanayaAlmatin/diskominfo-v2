@@ -17,7 +17,11 @@
 
 /* ─── Colored shadows ─── */
 .vacancy-card-shadow {
-    box-shadow: 0 8px 30px -4px rgba(79, 70, 229, 0.15), 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow:
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 10px 36px -6px rgba(79, 70, 229, 0.20),
+        0 4px 12px -2px rgba(0, 0, 0, 0.10);
     transition:
         transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
         box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
@@ -27,8 +31,9 @@
 
 .vacancy-card-active {
     box-shadow:
-        0 10px 40px -4px rgba(79, 70, 229, 0.22),
-        0 4px 16px -4px rgba(124, 58, 237, 0.14);
+        0 2px 4px -1px rgba(0, 0, 0, 0.08),
+        0 16px 48px -6px rgba(79, 70, 229, 0.30),
+        0 6px 20px -4px rgba(124, 58, 237, 0.18);
 }
 
 /* ─── 3D isometric hover (active card only) ─── */
