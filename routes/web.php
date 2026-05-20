@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FooterController;
+use App\Http\Controllers\Admin\FooterPortalController;
 use App\Http\Controllers\Admin\InfrastrukturTikController;
 use App\Http\Controllers\Admin\FotoController;
 use App\Http\Controllers\Admin\LowonganController;
@@ -119,6 +121,33 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('foto', FotoController::class)
             ->except(['show'])
             ->middleware(['admin.role:super-admin,admin']);
+
+        // Konten Footer
+        Route::middleware(['admin.role:super-admin,admin'])->group(function () {
+            Route::get('footer/identitas', [FooterController::class, 'editIdentitas'])->name('footer.identitas');
+            Route::put('footer/identitas', [FooterController::class, 'updateIdentitas'])->name('footer.identitas.update');
+
+            Route::get('footer/sosmed', [FooterController::class, 'editSosmed'])->name('footer.sosmed');
+            Route::put('footer/sosmed', [FooterController::class, 'updateSosmed'])->name('footer.sosmed.update');
+
+            Route::get('footer/kontak', [FooterController::class, 'editKontak'])->name('footer.kontak');
+            Route::put('footer/kontak', [FooterController::class, 'updateKontak'])->name('footer.kontak.update');
+
+            Route::get('footer/utilitas', [FooterController::class, 'editUtilitas'])->name('footer.utilitas');
+            Route::put('footer/utilitas', [FooterController::class, 'updateUtilitas'])->name('footer.utilitas.update');
+
+            Route::resource('footer/portals', FooterPortalController::class)
+                ->except(['show'])
+                ->names([
+                    'index'   => 'footer.portals.index',
+                    'create'  => 'footer.portals.create',
+                    'store'   => 'footer.portals.store',
+                    'edit'    => 'footer.portals.edit',
+                    'update'  => 'footer.portals.update',
+                    'destroy' => 'footer.portals.destroy',
+                ])
+                ->parameters(['portals' => 'portal']);
+        });
 
         // User Management (Super Admin only)
         Route::resource('users', UserController::class)
