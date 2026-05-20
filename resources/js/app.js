@@ -2,7 +2,9 @@
  * app.js — Alpine component registrations
  */
 import Alpine from 'alpinejs';
-window.Alpine = Alpine;
+if (!window.Alpine) {
+    window.Alpine = Alpine;
+}
 
 import ApexCharts from 'apexcharts';
 window.ApexCharts = ApexCharts;
@@ -87,7 +89,14 @@ if (window.__loginError) {
 
 import './tinymce-init.js';
 
-document.addEventListener('alpine:init', () => {
+let alpineComponentsRegistered = false;
+
+function registerAlpineComponents() {
+    if (alpineComponentsRegistered || !window.Alpine) {
+        return;
+    }
+
+    alpineComponentsRegistered = true;
     window.Alpine.data('vacancyCarousel', () => ({
         active: 0,
         autoPlayInterval: null,
@@ -182,6 +191,27 @@ document.addEventListener('alpine:init', () => {
             ].join(' ');
         },
     }));
-});
+}
 
-Alpine.start();
+document.addEventListener('alpine:init', registerAlpineComponents);
+
+function startStandaloneAlpine() {
+    const shouldStartStandalone = document.body?.dataset?.startAlpine === 'true';
+    if (!shouldStartStandalone) {
+        return;
+    }
+
+    const hasLivewireRuntime = !!document.querySelector('script[src*="livewire/livewire.js"]');
+    if (hasLivewireRuntime || !window.Alpine || window.Alpine.initialized) {
+        return;
+    }
+
+    registerAlpineComponents();
+    window.Alpine.start();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startStandaloneAlpine, { once: true });
+} else {
+    startStandaloneAlpine();
+}

@@ -357,7 +357,7 @@
     </style>
 </head>
 
-<body class="h-full bg-gray-50 font-sans" x-data="{ sidebarOpen: false }">
+<body class="h-full bg-gray-50 font-sans" data-start-alpine="true" x-data="{ sidebarOpen: false }">
 
     <!-- Mobile sidebar overlay -->
     <div x-cloak x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-black/50 lg:hidden"

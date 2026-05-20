@@ -7,21 +7,34 @@
     <div class="space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <h2 class="text-lg font-bold text-gray-800">Daftar Titik WiFi</h2>
-            @if (auth()->user()->isAdmin())
-                <a href="{{ route('admin.wifi.create') }}"
-                    class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition-all"
-                    style="background-color: #0F2044;">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Tambah Lokasi
-                </a>
-            @endif
+            <div class="flex flex-wrap items-center gap-2">
+                <form method="GET" action="{{ route('admin.wifi.index') }}" class="flex items-center gap-2">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari wilayah atau SSID…"
+                        class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 w-56">
+                    <button type="submit"
+                        class="px-4 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition-all"
+                        style="background-color: #0F2044;">Cari</button>
+                    @if ($search)
+                        <a href="{{ route('admin.wifi.index') }}"
+                            class="px-3 py-2 rounded-lg text-sm text-gray-500 border border-gray-200 hover:bg-gray-50">Reset</a>
+                    @endif
+                </form>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('admin.wifi.create') }}"
+                        class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition-all"
+                        style="background-color: #0F2044;">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Tambah Lokasi
+                    </a>
+                @endif
+            </div>
         </div>
 
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
-                <table id="table-wifi" class="w-full text-sm">
+            <table class="w-full text-sm">
                     <thead class="bg-gray-50 border-b border-gray-100">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
@@ -75,17 +88,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        $('#table-wifi').DataTable({
-            paging: false,
-            info: false,
-            bFilter: false,
-            columnDefs: [{
-                orderable: false,
-                targets: [-1]
-            }]
-        });
-    </script>
-@endpush

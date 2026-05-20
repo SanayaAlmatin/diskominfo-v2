@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\StrukturOrganisasiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VisiMisiController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\WifiLocationController;
 use App\Http\Middleware\TrackPageVisit;
 use App\Livewire\Pages\InfrastrukturTik;
 use App\Livewire\Pages\LowonganDetail;
@@ -35,6 +36,10 @@ Route::middleware([TrackPageVisit::class])->group(function () {
     Route::get('/lowongan', LowonganIndex::class)->name('lowongan.index');
     Route::get('/karir/{id}', LowonganDetail::class)->name('karir.show');
 });
+
+Route::get('/wifi/locations', [WifiLocationController::class, 'index'])
+    ->middleware('throttle:120,1')
+    ->name('wifi.locations');
 
 // ─── CMS Admin ───────────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {

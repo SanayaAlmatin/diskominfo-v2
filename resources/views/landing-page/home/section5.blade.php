@@ -1,5 +1,7 @@
 @push('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <style>
         #wifiMap .leaflet-control-attribution {
             font-size: 10px;
@@ -7,17 +9,36 @@
         }
 
         #wifiMap .wifi-marker-icon {
-            background-color: #044FA0;
-            border: 3px solid white;
+            background-color: #4F46E5;
+            border: 2px solid #ffffff;
             border-radius: 50%;
             width: 36px;
             height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px -2px rgba(79, 70, 229, 0.35);
             color: white;
             font-size: 14px;
+        }
+
+        #wifiMapLoading,
+        #wifiMapHint {
+            background: rgba(15, 23, 42, 0.78);
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.3;
+            border-radius: 8px;
+            padding: 6px 10px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+        }
+
+        #wifiMapHint.is-warning {
+            background: rgba(180, 83, 9, 0.88);
+        }
+
+        #wifiMapHint.is-error {
+            background: rgba(185, 28, 28, 0.88);
         }
 
         /* Hide scrollbar for Chrome, Safari and Opera */
@@ -51,6 +72,10 @@
 
             {{-- ── Leaflet Map Container ── --}}
             <div id="wifiMap" class="w-full h-[350px] md:h-[500px] lg:h-[600px] z-0"></div>
+            <div class="pointer-events-none absolute left-3 top-3 z-[500] flex flex-col gap-2">
+                <div id="wifiMapLoading" class="hidden">Memuat titik WiFi...</div>
+                <div id="wifiMapHint" class="hidden"></div>
+            </div>
 
             {{-- ── Stats Footer (below the map) ── --}}
             <div class="relative bg-[#044FA0] border-t border-white/10">
@@ -65,7 +90,7 @@
                             </div>
                             <div>
                                 <h3 class="text-white font-extrabold text-xl md:text-2xl leading-none">
-                                    {{ number_format($wifis->count()) }}</h3>
+                                    {{ number_format($wifiTotal ?? 0) }}</h3>
                                 <p
                                     class="text-[#F7D558] font-bold text-[10px] md:text-xs tracking-wider uppercase mt-1">
                                     WiFi Points</p>
@@ -97,76 +122,242 @@
 </section>
 
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" data-navigate-once></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" data-navigate-once></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize map centered on South Tangerang, zoom control disabled (re-added bottom-right)
-            var map = L.map('wifiMap', {
-                zoomControl: false
-            }).setView([-6.2886, 106.7179], 13);
+        (function() {
+            var endpoint = @json(route('wifi.locations'));
+            var MIN_DETAIL_ZOOM = 12;
+            var REQUEST_DEBOUNCE_MS = 280;
 
-            // Move zoom control to bottom-right so it clears the stats overlay
-            L.control.zoom({
-                position: 'bottomright'
-            }).addTo(map);
+            function bootWifiMap() {
+                var mapEl = document.getElementById('wifiMap');
+                if (!mapEl) return;
+                if (mapEl._leaflet_id) return; // already initialized (guard against double-boot)
 
-            // Google Maps road tile layer
-            L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-                maxZoom: 20,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-                attribution: '&copy; <a href="https://maps.google.com" target="_blank" rel="noopener">Google Maps</a>'
-            }).addTo(map);
-
-            // Custom WiFi marker using a div icon
-            function makeIcon() {
-                return L.divIcon({
-                    className: '',
-                    html: '<div class="wifi-marker-icon"><i class="fas fa-wifi"></i></div>',
-                    iconSize: [36, 36],
-                    iconAnchor: [18, 18],
-                    popupAnchor: [0, -20]
-                });
-            }
-
-            // WiFi hotspot locations from Database
-            var locations = @json($wifis);
-
-            if (locations && locations.length > 0) {
-                // If there are locations, fit the bounds to include all markers
-                var bounds = [];
-
-                locations.forEach(function(loc) {
-                    if (loc.latitude && loc.longitude) {
-                        var lat = parseFloat(loc.latitude);
-                        var lng = parseFloat(loc.longitude);
-                        bounds.push([lat, lng]);
-
-                        var keterangan = loc.keterangan ? loc.keterangan : 'Titik WiFi Publik';
-                        var ssid = loc.ssid ? 'SSID: <b>' + loc.ssid + '</b>' : '';
-                        var kecepatan = loc.kecepatan ? ' | ' + loc.kecepatan : '';
-                        var extraInfo = (ssid || kecepatan) ?
-                            '<br><span style="color:#333; font-size:12px;">' + ssid + kecepatan +
-                            '</span>' : '';
-
-                        L.marker([lat, lng], {
-                                icon: makeIcon()
-                            })
-                            .addTo(map)
-                            .bindPopup(
-                                '<b style="color:#044FA0;">' + loc.n_wilayah + '</b>' +
-                                '<br><span style="color:#555;">' + keterangan + '</span>' +
-                                extraInfo +
-                                '<br><span style="color:#22c55e;font-size:12px;">&#9679; Active</span>'
-                            );
+                var loadingEl = document.getElementById('wifiMapLoading');
+                var hintEl = document.getElementById('wifiMapHint');
+                if (typeof window.L === 'undefined') {
+                    if (hintEl) {
+                        hintEl.textContent = 'Library peta gagal dimuat. Coba muat ulang halaman.';
+                        hintEl.classList.remove('hidden');
+                        hintEl.classList.add('is-error');
                     }
+                    return;
+                }
+
+                // Initialize map centered on South Tangerang, zoom control disabled (re-added bottom-right)
+                var map = L.map('wifiMap', {
+                    zoomControl: false,
+                    maxZoom: 20
+                }).setView([-6.2886, 106.7179], 13);
+                var markersLayer = typeof L.markerClusterGroup === 'function' ?
+                    L.markerClusterGroup({
+                        chunkedLoading: true,
+                        chunkInterval: 80,
+                        chunkDelay: 20,
+                        removeOutsideVisibleBounds: true,
+                        spiderfyOnMaxZoom: true,
+                        showCoverageOnHover: false,
+                    }) :
+                    L.layerGroup();
+                var activeController = null;
+                var latestRequestId = 0;
+
+                // Move zoom control to bottom-right so it clears the stats overlay
+                L.control.zoom({
+                    position: 'bottomright'
+                }).addTo(map);
+
+                // Google Maps road tile layer
+                L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    attribution: '&copy; <a href="https://maps.google.com" target="_blank" rel="noopener">Google Maps</a>'
+                }).addTo(map);
+                markersLayer.addTo(map);
+
+                // Custom WiFi marker using a div icon
+                function makeIcon() {
+                    return L.divIcon({
+                        className: '',
+                        html: '<div class="wifi-marker-icon"><i class="fas fa-wifi"></i></div>',
+                        iconSize: [36, 36],
+                        iconAnchor: [18, 18],
+                        popupAnchor: [0, -20]
+                    });
+                }
+
+                function escapeHtml(value) {
+                    return String(value ?? '')
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#039;');
+                }
+
+                function buildPopup(loc) {
+                    var wilayah = escapeHtml(loc.n_wilayah || 'Titik WiFi');
+                    var keterangan = escapeHtml(loc.keterangan || 'Titik WiFi Publik');
+                    var ssid = loc.ssid ? 'SSID: <b>' + escapeHtml(loc.ssid) + '</b>' : '';
+                    var kecepatan = loc.kecepatan ? ' | ' + escapeHtml(loc.kecepatan) : '';
+                    var extraInfo = (ssid || kecepatan) ?
+                        '<br><span style="color:#333; font-size:12px;">' + ssid + kecepatan + '</span>' : '';
+
+                    return '<b style="color:#4F46E5;">' + wilayah + '</b>' +
+                        '<br><span style="color:#555;">' + keterangan + '</span>' +
+                        extraInfo +
+                        '<br><span style="color:#22c55e;font-size:12px;">&#9679; Active</span>';
+                }
+
+                function setLoadingState(isLoading) {
+                    loadingEl.classList.toggle('hidden', !isLoading);
+                }
+
+                function setHint(message, tone) {
+                    if (!message) {
+                        hintEl.classList.add('hidden');
+                        hintEl.textContent = '';
+                        hintEl.classList.remove('is-warning', 'is-error');
+                        return;
+                    }
+
+                    hintEl.textContent = message;
+                    hintEl.classList.remove('hidden');
+                    hintEl.classList.toggle('is-warning', tone === 'warning');
+                    hintEl.classList.toggle('is-error', tone === 'error');
+                }
+
+                function clearMarkerLayer() {
+                    markersLayer.clearLayers();
+                }
+
+                function addMarkers(markers) {
+                    if (typeof markersLayer.addLayers === 'function') {
+                        markersLayer.addLayers(markers);
+                        return;
+                    }
+
+                    markers.forEach(function(marker) {
+                        markersLayer.addLayer(marker);
+                    });
+                }
+
+                function debounce(callback, wait) {
+                    var timeoutId = null;
+
+                    return function() {
+                        var args = arguments;
+                        clearTimeout(timeoutId);
+                        timeoutId = setTimeout(function() {
+                            callback.apply(null, args);
+                        }, wait);
+                    };
+                }
+
+                function fetchLocations() {
+                    if (map.getZoom() < MIN_DETAIL_ZOOM) {
+                        if (activeController) {
+                            activeController.abort();
+                        }
+
+                        clearMarkerLayer();
+                        setLoadingState(false);
+                        setHint('Perbesar peta untuk menampilkan titik WiFi.', 'warning');
+                        return;
+                    }
+
+                    var bounds = map.getBounds();
+                    var params = new URLSearchParams({
+                        north: bounds.getNorth(),
+                        south: bounds.getSouth(),
+                        east: bounds.getEast(),
+                        west: bounds.getWest(),
+                        zoom: map.getZoom()
+                    });
+                    var requestId = ++latestRequestId;
+
+                    if (activeController) {
+                        activeController.abort();
+                    }
+
+                    activeController = new AbortController();
+                    setLoadingState(true);
+                    setHint('');
+
+                    fetch(endpoint + '?' + params.toString(), {
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            signal: activeController.signal
+                        })
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error('Gagal memuat data titik WiFi.');
+                            }
+
+                            return response.json();
+                        })
+                        .then(function(payload) {
+                            if (requestId !== latestRequestId) {
+                                return;
+                            }
+
+                            var locations = Array.isArray(payload.data) ? payload.data : [];
+                            var markers = [];
+
+                            locations.forEach(function(loc) {
+                                var lat = Number(String(loc.latitude ?? '').replace(',', '.'));
+                                var lng = Number(String(loc.longitude ?? '').replace(',', '.'));
+
+                                if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                                    return;
+                                }
+
+                                var marker = L.marker([lat, lng], {
+                                    icon: makeIcon()
+                                });
+                                marker.bindPopup(buildPopup(loc));
+                                markers.push(marker);
+                            });
+
+                            clearMarkerLayer();
+                            addMarkers(markers);
+
+                            if (payload.meta && payload.meta.has_more) {
+                                setHint('Sebagian titik belum dimuat. Perbesar area peta untuk melihat lebih detail.', 'warning');
+                                return;
+                            }
+
+                            setHint('');
+                        })
+                        .catch(function(error) {
+                            if (error.name === 'AbortError') {
+                                return;
+                            }
+
+                            setHint('Data titik WiFi gagal dimuat. Coba geser atau muat ulang halaman.', 'error');
+                            console.error(error);
+                        })
+                        .finally(function() {
+                            if (requestId === latestRequestId) {
+                                setLoadingState(false);
+                            }
+                        });
+                }
+
+                var fetchLocationsDebounced = debounce(fetchLocations, REQUEST_DEBOUNCE_MS);
+
+                map.whenReady(function() {
+                    fetchLocations();
                 });
 
-                if (bounds.length > 0) {
-                    map.fitBounds(bounds);
-                }
+                map.on('moveend zoomend', fetchLocationsDebounced);
             }
 
-
-        });
+            document.addEventListener('DOMContentLoaded', bootWifiMap);
+            document.addEventListener('livewire:navigated', bootWifiMap);
+        })();
     </script>
 @endpush

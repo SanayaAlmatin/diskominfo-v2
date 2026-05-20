@@ -8,10 +8,20 @@ use Illuminate\Http\Request;
 
 class WifiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $wifis = TmKoordinatWifi::orderBy('id', 'desc')->paginate(10);
-        return view('admin.wifi.index', compact('wifis'));
+        $search = $request->string('search')->trim()->value();
+
+        $wifis = TmKoordinatWifi::select(['id', 'n_wilayah', 'ssid', 'latitude', 'longitude', 'kecepatan'])
+            ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
+                $q->where('n_wilayah', 'like', "%{$search}%")
+                  ->orWhere('ssid', 'like', "%{$search}%");
+            }))
+            ->orderBy('id', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.wifi.index', compact('wifis', 'search'));
     }
 
     public function create()
