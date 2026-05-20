@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\WifiLocationBoundsRequest;
 use App\Models\TmKoordinatWifi;
+use App\Support\WifiCoordinateNormalizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
@@ -11,6 +12,7 @@ class WifiLocationController extends Controller
 {
     private const MAX_POINTS = 1200;
     private const CACHE_TTL_SECONDS = 120;
+    private const CACHE_NAMESPACE = 'v5';
 
     public function index(WifiLocationBoundsRequest $request): JsonResponse
     {
@@ -19,7 +21,15 @@ class WifiLocationController extends Controller
 
         [$south, $north, $west, $east] = $this->normalizeBounds($validated);
         $precision = $this->bucketPrecision($zoom);
-        $cacheKey = $this->cacheKey($south, $north, $west, $east, $zoom, $precision);
+        $cacheKey = $this->cacheKey(
+            $south,
+            $north,
+            $west,
+            $east,
+            $zoom,
+            $precision,
+            $this->coordinatesVersion(),
+        );
 
         $cacheStore = Cache::store('file');
         $payload = $cacheStore->get($cacheKey);
@@ -81,71 +91,56 @@ class WifiLocationController extends Controller
         float $east,
         ?int $zoom,
         int $precision,
+        int $version,
     ): string {
         return sprintf(
-            'wifi-locations:v4:%s:%s:%s:%s:z%s:p%s',
+            'wifi-locations:%s:%s:%s:%s:%s:z%s:p%s:d%s',
+            self::CACHE_NAMESPACE,
             number_format(round($south, $precision), $precision, '.', ''),
             number_format(round($north, $precision), $precision, '.', ''),
             number_format(round($west, $precision), $precision, '.', ''),
             number_format(round($east, $precision), $precision, '.', ''),
             $zoom ?? 'na',
             $precision,
+            $version,
         );
     }
 
     private function queryLocationsPayload(float $south, float $north, float $west, float $east): array
     {
-        $locations = TmKoordinatWifi::query()
+        $rows = [];
+
+        foreach (TmKoordinatWifi::query()
             ->select(['id', 'n_wilayah', 'latitude', 'longitude', 'ssid', 'kecepatan', 'keterangan'])
-            ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->where('latitude', '!=', '')
-            ->where('longitude', '!=', '')
-            ->where(function ($query) use ($south, $north, $west, $east) {
-                // Some migrated records are stored as "lat,lng" decimal-comma strings
-                // and some are accidentally swapped between latitude/longitude columns.
-                $query
-                    ->whereRaw('CAST(REPLACE(TRIM(latitude), ",", ".") AS DECIMAL(10,7)) BETWEEN ? AND ?', [$south, $north])
-                    ->whereRaw('CAST(REPLACE(TRIM(longitude), ",", ".") AS DECIMAL(10,7)) BETWEEN ? AND ?', [$west, $east])
-                    ->orWhere(function ($swapped) use ($south, $north, $west, $east) {
-                        $swapped
-                            ->whereRaw('CAST(REPLACE(TRIM(longitude), ",", ".") AS DECIMAL(10,7)) BETWEEN ? AND ?', [$south, $north])
-                            ->whereRaw('CAST(REPLACE(TRIM(latitude), ",", ".") AS DECIMAL(10,7)) BETWEEN ? AND ?', [$west, $east]);
-                    });
-            })
+            ->withCoordinates()
             ->orderByDesc('id')
-            ->limit(self::MAX_POINTS + 1)
-            ->get();
+            ->cursor() as $location) {
+            $coordinates = $this->normalizeCoordinates($location->latitude, $location->longitude);
+            if ($coordinates === null || !$this->isWithinBounds($coordinates, $south, $north, $west, $east)) {
+                continue;
+            }
 
-        $hasMore = $locations->count() > self::MAX_POINTS;
-        if ($hasMore) {
-            $locations = $locations->take(self::MAX_POINTS)->values();
-        }
+            $rows[] = [
+                'id' => $location->id,
+                'n_wilayah' => $location->n_wilayah,
+                'latitude' => $coordinates['latitude'],
+                'longitude' => $coordinates['longitude'],
+                'ssid' => $location->ssid,
+                'kecepatan' => $location->kecepatan,
+                'keterangan' => $location->keterangan,
+            ];
 
-        $rows = $locations
-            ->map(function (TmKoordinatWifi $location): ?array {
-                $coordinates = $this->normalizeCoordinates($location->latitude, $location->longitude);
-                if ($coordinates === null) {
-                    return null;
-                }
-
+            if (count($rows) > self::MAX_POINTS) {
                 return [
-                    'id' => $location->id,
-                    'n_wilayah' => $location->n_wilayah,
-                    'latitude' => $coordinates['latitude'],
-                    'longitude' => $coordinates['longitude'],
-                    'ssid' => $location->ssid,
-                    'kecepatan' => $location->kecepatan,
-                    'keterangan' => $location->keterangan,
+                    'locations' => array_slice($rows, 0, self::MAX_POINTS),
+                    'has_more' => true,
                 ];
-            })
-            ->filter()
-            ->values()
-            ->all();
+            }
+        }
 
         return [
             'locations' => $rows,
-            'has_more' => $hasMore,
+            'has_more' => false,
         ];
     }
 
@@ -164,38 +159,21 @@ class WifiLocationController extends Controller
 
     private function normalizeCoordinates(mixed $latitude, mixed $longitude): ?array
     {
-        $lat = $this->toCoordinateFloat($latitude);
-        $lng = $this->toCoordinateFloat($longitude);
-
-        if ($lat === null || $lng === null) {
-            return null;
-        }
-
-        if (abs($lat) > 90 && abs($lng) <= 90) {
-            [$lat, $lng] = [$lng, $lat];
-        }
-
-        if (abs($lat) > 90 || abs($lng) > 180) {
-            return null;
-        }
-
-        return [
-            'latitude' => $lat,
-            'longitude' => $lng,
-        ];
+        return WifiCoordinateNormalizer::normalize($latitude, $longitude);
     }
 
-    private function toCoordinateFloat(mixed $value): ?float
+    private function isWithinBounds(array $coordinates, float $south, float $north, float $west, float $east): bool
     {
-        if (!is_scalar($value)) {
-            return null;
-        }
+        return $coordinates['latitude'] >= $south
+            && $coordinates['latitude'] <= $north
+            && $coordinates['longitude'] >= $west
+            && $coordinates['longitude'] <= $east;
+    }
 
-        $normalized = str_replace(',', '.', trim((string) $value));
-        if ($normalized === '' || !is_numeric($normalized)) {
-            return null;
-        }
+    private function coordinatesVersion(): int
+    {
+        $latestUpdate = TmKoordinatWifi::query()->max('updated_at');
 
-        return (float) $normalized;
+        return $latestUpdate ? strtotime((string) $latestUpdate) ?: 0 : 0;
     }
 }

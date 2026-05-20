@@ -1,62 +1,34 @@
 @php
-    $galleryItems = [
-        [
-            'category' => 'Digital Governance',
-            'title' => 'Smart City Command Centre Tour 2024',
-            'img' => null,
-            'icon' => 'dns',
-        ],
-        [
-            'category' => 'Community',
-            'title' => 'Digital Literacy Workshop for Seniors',
-            'img' => null,
-            'icon' => 'groups',
-        ],
-        [
-            'category' => 'Infrastructure',
-            'title' => 'Fibre Optic Network Expansion Phase 3',
-            'img' => null,
-            'icon' => 'cable',
-        ],
-        [
-            'category' => 'Innovation',
-            'title' => 'Startup & GovTech Collaboration Summit',
-            'img' => null,
-            'icon' => 'rocket_launch',
-        ],
-    ];
+    use App\Models\TmFoto;
+    use App\Models\TmYoutubeVideo;
 
-    $featuredVideo = [
-        'title' => 'Rapat Paripurna HUT Kota Tangerang Selatan ke-16 — Sidang Terbuka DPRD',
-        'channel' => 'Diskominfo Tangsel Official',
-        'duration' => '1:24:05',
-        'date' => '26 Nov 2024',
-        'icon' => 'record_voice_over',
-    ];
+    try {
+        $galleryItems = TmFoto::active()
+            ->orderBy('sort_order')
+            ->latest()
+            ->take(4)
+            ->get();
+    } catch (\Exception $e) {
+        $galleryItems = collect();
+    }
 
-    $playlistVideos = [
-        [
-            'title' => 'Live Streaming Upacara Hari Pahlawan 2024 — Lapangan A. Yani Tangsel',
-            'date' => '10 Nov 2024',
-            'duration' => '58:30',
-            'icon' => 'flag',
-        ],
-        [
-            'title' => 'Peluncuran Aplikasi TangselKu — Layanan Digital Terpadu Warga Tangsel',
-            'date' => '05 Nov 2024',
-            'duration' => '35:12',
-            'icon' => 'smartphone',
-        ],
-        [
-            'title' => 'Workshop Literasi Digital UMKM — Pemkot Tangsel × Kominfo RI',
-            'date' => '28 Okt 2024',
-            'duration' => '1:10:44',
-            'icon' => 'storefront',
-        ],
-    ];
+    try {
+        $featuredVideo = TmYoutubeVideo::getFeaturedVideo();
+        $allVideos = TmYoutubeVideo::getRecentVideos(7);
+        $playlistVideos = $featuredVideo
+            ? $allVideos->filter(fn($v) => $v->id !== $featuredVideo->id)->values()->slice(0, 6)
+            : $allVideos->slice(0, 6);
+    } catch (\Exception $e) {
+        $featuredVideo = null;
+        $playlistVideos = collect();
+    }
+
+    $videoPages = $playlistVideos->chunk(3);
 @endphp
 
-<section id="gallery" class="py-20 bg-white">
+<section id="gallery" class="py-20 bg-white"
+    x-data="{ lbOpen: false, lbSrc: '', lbTitle: '', lbCat: '' }"
+    @keydown.escape.window="lbOpen = false">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- ── Section Header ── --}}
@@ -74,7 +46,7 @@
                     A visual record of our programmes, initiatives, and community engagements across South Tangerang.
                 </p>
             </div>
-            <a href="#"
+            <a href="{{ route('galeri.foto') }}" wire:navigate
                 class="inline-flex items-center gap-2 text-sm font-bold text-[#044FA0] hover:text-[#F7D558] transition-colors duration-200 whitespace-nowrap group">
                 View Full Album
                 <span
@@ -84,51 +56,114 @@
 
         {{-- ── 4-Column Responsive Grid ── --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            @foreach ($galleryItems as $index => $item)
+            @forelse ($galleryItems as $index => $item)
                 <article
                     class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden group flex flex-col"
                     style="animation: fadeSlideUp 0.55s ease both; animation-delay: {{ $index * 80 }}ms;">
 
-                    {{-- Image Placeholder --}}
+                    {{-- Image --}}
                     <div
-                        class="relative w-full aspect-video object-cover overflow-hidden rounded-t-2xl bg-gradient-to-br from-[#044FA0]/10 to-[#044FA0]/25 flex items-center justify-center">
-                        {{-- Replace with <img> when real images are available --}}
-                        <span
-                            class="material-symbols-outlined text-6xl text-[#044FA0]/30 group-hover:scale-110 transition-transform duration-300">
-                            {{ $item['icon'] }}
-                        </span>
+                        class="relative w-full aspect-video overflow-hidden rounded-t-2xl bg-gradient-to-br from-[#044FA0]/10 to-[#044FA0]/25 flex items-center justify-center">
+                        @if ($item->image_path)
+                            <img src="{{ Storage::url($item->image_path) }}"
+                                alt="{{ $item->title }}"
+                                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                loading="lazy">
+                        @else
+                            <span class="material-symbols-outlined text-6xl text-[#044FA0]/30 group-hover:scale-110 transition-transform duration-300">
+                                image
+                            </span>
+                        @endif
 
                         {{-- Hover overlay --}}
-                        <div
-                            class="absolute inset-0 bg-[#044FA0]/0 group-hover:bg-[#044FA0]/60 transition-colors duration-300 flex items-center justify-center">
-                            <span
-                                class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                open_in_full
-                            </span>
-                        </div>
+                        @if ($item->image_path)
+                            <div class="absolute inset-0 cursor-pointer bg-[#044FA0]/0 transition-colors duration-300 group-hover:bg-[#044FA0]/60 flex items-center justify-center"
+                                @click="lbSrc = {{ Js::from(Storage::url($item->image_path)) }}; lbTitle = {{ Js::from($item->title) }}; lbCat = {{ Js::from($item->category ?? 'Kegiatan') }}; lbOpen = true">
+                                <span class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    open_in_full
+                                </span>
+                            </div>
+                        @else
+                            <div class="absolute inset-0 bg-[#044FA0]/0 group-hover:bg-[#044FA0]/60 transition-colors duration-300 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    open_in_full
+                                </span>
+                            </div>
+                        @endif
                     </div>
 
                     {{-- Card Body --}}
                     <div class="p-5 flex flex-col flex-1">
                         <span
                             class="inline-block text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#044FA0] mb-2">
-                            {{ $item['category'] }}
+                            {{ $item->category ?? 'Kegiatan' }}
                         </span>
                         <h3
                             class="text-sm md:text-base font-bold leading-tight line-clamp-2 text-slate-800 group-hover:text-[#044FA0] transition-colors duration-200 flex-1">
-                            {{ $item['title'] }}
+                            {{ $item->title }}
                         </h3>
-                        <div
-                            class="mt-4 flex items-center gap-1 text-xs font-semibold text-[#044FA0] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <span>View Photos</span>
-                            <span class="material-symbols-outlined text-base">chevron_right</span>
-                        </div>
                     </div>
                 </article>
-            @endforeach
+            @empty
+                {{-- Placeholder saat belum ada foto --}}
+                @foreach (range(0, 3) as $index)
+                    <article
+                        class="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col"
+                        style="animation: fadeSlideUp 0.55s ease both; animation-delay: {{ $index * 80 }}ms;">
+                        <div class="w-full aspect-video bg-gradient-to-br from-[#044FA0]/10 to-[#044FA0]/25 flex items-center justify-center rounded-t-2xl">
+                            <span class="material-symbols-outlined text-6xl text-[#044FA0]/20">image</span>
+                        </div>
+                        <div class="p-5 flex flex-col flex-1">
+                            <span class="inline-block h-3 w-20 bg-slate-100 rounded mb-2"></span>
+                            <span class="inline-block h-4 w-full bg-slate-100 rounded mb-1"></span>
+                            <span class="inline-block h-4 w-3/4 bg-slate-100 rounded"></span>
+                        </div>
+                    </article>
+                @endforeach
+            @endforelse
         </div>
 
     </div>
+
+    {{-- ── Lightbox Modal ── --}}
+    <div x-show="lbOpen"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+        @click.self="lbOpen = false"
+        style="display:none;">
+
+        <div x-show="lbOpen"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="relative max-w-3xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl">
+
+            {{-- Close button --}}
+            <button @click="lbOpen = false"
+                class="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors">
+                <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+
+            {{-- Image --}}
+            <img :src="lbSrc" :alt="lbTitle"
+                class="w-full max-h-[70vh] object-contain bg-slate-900">
+
+            {{-- Caption --}}
+            <div class="px-5 py-4">
+                <p x-show="lbCat" class="text-[11px] font-bold uppercase tracking-widest text-[#044FA0] mb-1" x-text="lbCat"></p>
+                <p class="text-sm font-semibold text-slate-800" x-text="lbTitle"></p>
+            </div>
+        </div>
+    </div>
+
 </section>
 
 <section id="videos" class="py-16 bg-[#044FA0]">
@@ -147,14 +182,14 @@
             {{-- ─── LEFT: Hero / Main Featured Video (8 cols) ─── --}}
             <div class="lg:col-span-6 flex flex-col h-full lg:mt-9">
                 {{-- Responsive Card: stacked on mobile, overlay on desktop --}}
-                <div
+                <a href="{{ $featuredVideo?->getYoutubeUrl() ?? '#' }}" target="_blank" rel="noopener noreferrer"
                     class="flex flex-col md:block relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl bg-[#033b7a] md:bg-slate-900 group cursor-pointer">
 
                     {{-- TOP: Thumbnail & Play Button --}}
                     <div class="relative aspect-video w-full shrink-0 overflow-hidden">
-                        {{-- Background Image Placeholder (replace src with real YouTube thumbnail URL) --}}
-                        <img src="https://placehold.co/1280x720/1e293b/ffffff?text=Video+Thumbnail"
-                            alt="{{ $featuredVideo['title'] }}"
+                        {{-- Background Image (from YouTube) --}}
+                        <img src="{{ $featuredVideo?->thumbnail_url ?? 'https://placehold.co/1280x720/1e293b/ffffff?text=Video+Thumbnail' }}"
+                            alt="{{ $featuredVideo?->title ?? 'Featured Video' }}"
                             class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
 
                         {{-- Centered Play Button (Red, Responsive) --}}
@@ -173,86 +208,150 @@
                         {{-- Title --}}
                         <h3
                             class="text-slate-900 md:text-white font-bold text-base md:text-2xl leading-snug md:leading-tight line-clamp-2 md:drop-shadow-md">
-                            {{ $featuredVideo['title'] }}
+                            {{ $featuredVideo?->title ?? 'Featured Video' }}
                         </h3>
 
                         {{-- Metadata Row --}}
                         <div
                             class="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2 md:mt-3 text-[11px] sm:text-xs text-slate-600 md:text-gray-300 font-medium">
-                            <div class="flex items-center gap-1.5">
-                                <i class="far fa-calendar-alt text-red-500 md:text-white/70 text-xs md:text-sm"></i>
-                                <span>{{ $featuredVideo['date'] }}</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <i class="far fa-clock text-red-500 md:text-white/70 text-xs md:text-sm"></i>
-                                <span>{{ $featuredVideo['duration'] }}</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <i class="far fa-user-circle text-red-500 md:text-white/70 text-xs md:text-sm"></i>
-                                <span class="text-slate-800 md:text-white">{{ $featuredVideo['channel'] }}</span>
-                            </div>
+                            @if ($featuredVideo)
+                                <div class="flex items-center gap-1.5">
+                                    <i class="far fa-calendar-alt text-red-500 md:text-white/70 text-xs md:text-sm"></i>
+                                    <span>{{ $featuredVideo->published_at->format('d M Y') }}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <i class="far fa-clock text-red-500 md:text-white/70 text-xs md:text-sm"></i>
+                                    <span>{{ $featuredVideo->duration }}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <i class="far fa-user-circle text-red-500 md:text-white/70 text-xs md:text-sm"></i>
+                                    <span
+                                        class="text-slate-800 md:text-white">{{ $featuredVideo->channel_name }}</span>
+                                </div>
+                            @endif
                         </div>
 
                     </div>
-                </div>
+                </a>
             </div>
 
-            {{-- ─── RIGHT: Playlist (6 cols) ─── --}}
-            <div class="lg:col-span-6 flex flex-col gap-3">
+            {{-- ─── RIGHT: Video Lainnya (6 cols) ─── --}}
+            <div class="lg:col-span-6 flex flex-col">
 
-                {{-- Playlist header --}}
-                <p class="text-sm font-bold uppercase tracking-widest text-white mb-1 border-b border-white/10 pb-3">
+                {{-- Header --}}
+                <p class="text-sm font-bold uppercase tracking-widest text-white mb-3 border-b border-white/10 pb-3">
                     Video Lainnya
                 </p>
 
-                @foreach ($playlistVideos as $index => $video)
-                    <article
-                        class="group flex flex-row gap-3 items-center cursor-pointer p-2 hover:bg-white/5 rounded-xl transition-colors duration-200">
+                @if ($playlistVideos->isNotEmpty())
+                    <div class="relative select-none"
+                        x-data="{
+                            active: 0,
+                            totalPages: {{ $videoPages->count() }},
+                            autoPlayInterval: null,
+                            startX: 0,
+                            endX: 0,
+                            init() { this.resume(); },
+                            pause() { clearInterval(this.autoPlayInterval); },
+                            resume() {
+                                this.pause();
+                                this.autoPlayInterval = setInterval(() => this.next(), 4000);
+                            },
+                            next() { this.active = (this.active + 1) % this.totalPages; },
+                            prev() { this.active = (this.active - 1 + this.totalPages) % this.totalPages; },
+                            goTo(i) { this.active = i; },
+                            handleSwipe() {
+                                const d = this.startX - this.endX;
+                                if (d > 40) this.next();
+                                else if (d < -40) this.prev();
+                            },
+                            getPageClass(i) {
+                                return i === this.active ? 'vp6-page vp6-active' : 'vp6-page vp6-hidden';
+                            }
+                        }"
+                        @mouseenter="pause()" @mouseleave="resume()"
+                        @touchstart.passive="startX = $event.touches[0].clientX"
+                        @touchend="endX = $event.changedTouches[0].clientX; handleSwipe()"
+                        @mousedown="startX = $event.clientX"
+                        @mouseup="endX = $event.clientX; handleSwipe()">
 
-                        {{-- Thumbnail --}}
-                        <div
-                            class="relative w-32 md:w-36 aspect-video rounded-lg overflow-hidden bg-[#021e45] shrink-0">
-                            {{-- Placeholder background --}}
-                            <div
-                                class="absolute inset-0 bg-gradient-to-br from-[#1a5fb4]/60 to-[#021e45] flex items-center justify-center">
-                                <span
-                                    class="material-symbols-outlined text-3xl text-white/20 select-none">{{ $video['icon'] }}</span>
+                        <div class="flex flex-row gap-3 items-stretch">
+
+                            {{-- Page Viewport --}}
+                            <div class="flex-1 relative min-h-[295px] md:min-h-[325px]">
+                                @foreach ($videoPages as $pageIdx => $page)
+                                    <div :class="getPageClass({{ $pageIdx }})"
+                                         class="absolute inset-x-0 top-0 flex flex-col gap-3">
+                                        @foreach ($page as $video)
+                                            <a href="{{ $video->getYoutubeUrl() }}"
+                                               target="_blank" rel="noopener noreferrer"
+                                               class="group flex flex-row gap-3 items-center p-2 hover:bg-white/5 rounded-xl transition-colors duration-200">
+
+                                                <div class="relative w-32 md:w-36 aspect-video rounded-lg overflow-hidden bg-[#021e45] shrink-0">
+                                                    <img src="{{ $video->thumbnail_url }}" alt="{{ $video->title }}"
+                                                         class="absolute inset-0 w-full h-full object-cover">
+                                                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-200"></div>
+                                                    <span class="absolute inset-0 m-auto w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow group-hover:scale-110 transition-transform duration-200">
+                                                        <span class="material-symbols-outlined text-white text-base"
+                                                              style="font-variation-settings:'FILL' 1;">play_arrow</span>
+                                                    </span>
+                                                    <span class="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                                        {{ $video->duration }}
+                                                    </span>
+                                                </div>
+
+                                                <div class="flex flex-col flex-1 min-w-0">
+                                                    <h4 class="text-sm font-semibold text-white leading-snug line-clamp-2">
+                                                        {{ $video->title }}
+                                                    </h4>
+                                                    <div class="flex items-center gap-1.5 mt-1.5 text-xs text-blue-300">
+                                                        <span class="material-symbols-outlined text-xs">calendar_today</span>
+                                                        {{ $video->published_at->format('d M Y') }}
+                                                    </div>
+                                                </div>
+
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endforeach
                             </div>
-                            {{-- Play overlay on hover --}}
-                            <div
-                                class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-200">
-                            </div>
-                            {{-- Small play icon --}}
-                            <span
-                                class="absolute inset-0 m-auto w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow group-hover:scale-110 transition-transform duration-200">
-                                <span class="material-symbols-outlined text-white text-base"
-                                    style="font-variation-settings: 'FILL' 1;">
-                                    play_arrow
-                                </span>
-                            </span>
-                            {{-- Duration badge --}}
-                            <span
-                                class="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-                                {{ $video['duration'] }}
-                            </span>
+
+                            {{-- Nav Buttons (right side, vertical) --}}
+                            @if ($videoPages->count() > 1)
+                                <div class="flex flex-col items-center justify-center gap-3">
+                                    <button @click="prev()"
+                                            class="w-9 h-9 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-md transition-all duration-200 hover:text-gray-700 hover:shadow-lg hover:scale-110 active:scale-95">
+                                        <span class="material-symbols-outlined text-lg">keyboard_arrow_up</span>
+                                    </button>
+                                    <button @click="next()"
+                                            class="w-9 h-9 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-md transition-all duration-200 hover:text-gray-700 hover:shadow-lg hover:scale-110 active:scale-95">
+                                        <span class="material-symbols-outlined text-lg">keyboard_arrow_down</span>
+                                    </button>
+                                </div>
+                            @endif
+
                         </div>
 
-                        {{-- Video Details --}}
-                        <div class="flex flex-col flex-1 min-w-0">
-                            <h4
-                                class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-white transition-colors duration-200">
-                                {{ $video['title'] }}
-                            </h4>
-                            <div class="flex items-center gap-2 mt-1.5 text-xs text-blue-300">
-                                <span class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs">calendar_today</span>
-                                    {{ $video['date'] }}
-                                </span>
+                        {{-- Dot Indicators --}}
+                        @if ($videoPages->count() > 1)
+                            <div class="flex items-center justify-center gap-2 mt-4">
+                                @foreach ($videoPages as $i => $page)
+                                    <button @click="goTo({{ $i }})"
+                                        class="h-1.5 rounded-full transition-all duration-300"
+                                        :class="active === {{ $i }} ? 'w-5 bg-white' : 'w-1.5 bg-white/30'">
+                                    </button>
+                                @endforeach
                             </div>
-                        </div>
+                        @endif
 
-                    </article>
-                @endforeach
+                    </div>
+
+                @else
+                    <div class="flex flex-col items-center justify-center py-10 text-white/40">
+                        <span class="material-symbols-outlined text-5xl mb-3">video_library</span>
+                        <p class="text-sm">Video akan segera tersedia</p>
+                    </div>
+                @endif
 
             </div>
 
@@ -260,7 +359,7 @@
 
         {{-- ── Bottom CTA ── --}}
         <div class="flex justify-center mt-10 md:mt-12 w-full">
-            <a href="https://www.youtube.com/@diskominfotangsel" target="_blank" rel="noopener noreferrer"
+            <a href="https://www.youtube.com/@humaskotatangerangselatan232" target="_blank" rel="noopener noreferrer"
                 class="inline-flex items-center justify-center gap-2 px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-sm md:text-base font-bold rounded-2xl md:rounded-3xl transition-all duration-200 hover:-translate-y-1 shadow-lg shadow-red-600/20">
                 <i class="fab fa-youtube text-lg md:text-xl"></i>
                 Kunjungi Channel YouTube
@@ -273,15 +372,22 @@
 @push('styles')
     <style>
         @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .vp6-page {
+            transition: opacity 0.42s cubic-bezier(0.4,0,0.2,1), transform 0.42s cubic-bezier(0.4,0,0.2,1);
+        }
+        .vp6-active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .vp6-hidden {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
         }
     </style>
 @endpush
