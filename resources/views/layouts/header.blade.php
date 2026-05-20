@@ -103,7 +103,7 @@
                     </a>
                     <ul
                         class="absolute top-full left-0 bg-white text-gray-800 shadow-xl rounded-b-lg w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top -translate-y-2 group-hover:translate-y-0">
-                        <li><a href="#"
+                        <li><a href="{{ route('galeri.foto') }}"
                                 class="block px-4 py-3 text-sm hover:bg-blue-50 hover:text-kominfo-blue transition-colors">Foto</a>
                         </li>
                         <li><a href="#"
@@ -285,7 +285,7 @@
                         </svg>
                     </button>
                     <ul x-show="open" x-transition class="pb-4 pl-4 space-y-3 text-sm">
-                        <li><a href="#" @click="mobileMenuOpen = false"
+                        <li><a href="{{ route('galeri.foto') }}" @click="mobileMenuOpen = false"
                                 class="block py-1 text-blue-200 hover:text-white transition-colors">Foto</a></li>
                         <li><a href="#" @click="mobileMenuOpen = false"
                                 class="block py-1 text-blue-200 hover:text-white transition-colors">Video</a></li>

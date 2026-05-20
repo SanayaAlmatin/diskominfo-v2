@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TmKoordinatWifi;
+use App\Support\WifiCoordinateNormalizer;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class WifiController extends Controller
 {
@@ -31,14 +33,7 @@ class WifiController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'n_wilayah'  => 'required|string|max:100',
-            'latitude'   => 'required|string|max:20',
-            'longitude'  => 'required|string|max:20',
-            'keterangan' => 'nullable|string',
-            'kecepatan'  => 'nullable|string|max:255',
-            'ssid'       => 'nullable|string|max:255',
-        ]);
+        $validated = $this->validatedPayload($request);
 
         TmKoordinatWifi::create($validated);
 
@@ -48,19 +43,14 @@ class WifiController extends Controller
 
     public function edit(TmKoordinatWifi $wifi)
     {
-        return view('admin.wifi.edit', compact('wifi'));
+        $normalizedCoordinates = WifiCoordinateNormalizer::normalizeForStorage($wifi->latitude, $wifi->longitude);
+
+        return view('admin.wifi.edit', compact('wifi', 'normalizedCoordinates'));
     }
 
     public function update(Request $request, TmKoordinatWifi $wifi)
     {
-        $validated = $request->validate([
-            'n_wilayah'  => 'required|string|max:100',
-            'latitude'   => 'required|string|max:20',
-            'longitude'  => 'required|string|max:20',
-            'keterangan' => 'nullable|string',
-            'kecepatan'  => 'nullable|string|max:255',
-            'ssid'       => 'nullable|string|max:255',
-        ]);
+        $validated = $this->validatedPayload($request);
 
         $wifi->update($validated);
 
@@ -74,5 +64,31 @@ class WifiController extends Controller
 
         return redirect()->route('admin.wifi.index')
             ->with('success', 'Data Titik WiFi berhasil dihapus.');
+    }
+
+    private function validatedPayload(Request $request): array
+    {
+        $validated = $request->validate([
+            'n_wilayah' => ['required', 'string', 'max:100'],
+            'latitude' => ['required', 'string', 'max:32'],
+            'longitude' => ['required', 'string', 'max:32'],
+            'keterangan' => ['nullable', 'string'],
+            'kecepatan' => ['nullable', 'string', 'max:255'],
+            'ssid' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $coordinates = WifiCoordinateNormalizer::normalizeForStorage(
+            $validated['latitude'],
+            $validated['longitude'],
+        );
+
+        if ($coordinates === null) {
+            throw ValidationException::withMessages([
+                'latitude' => 'Koordinat latitude dan longitude tidak valid.',
+                'longitude' => 'Koordinat latitude dan longitude tidak valid.',
+            ]);
+        }
+
+        return array_merge($validated, $coordinates);
     }
 }

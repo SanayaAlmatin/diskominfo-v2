@@ -81,7 +81,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Latitude</label>
                             <input type="text" name="latitude" id="latitude"
-                                value="{{ old('latitude', $wifi->latitude) }}" required readonly
+                                value="{{ old('latitude', $normalizedCoordinates['latitude'] ?? $wifi->latitude) }}" required readonly
                                 class="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-600 outline-none">
                             @error('latitude')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
@@ -90,7 +90,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Longitude</label>
                             <input type="text" name="longitude" id="longitude"
-                                value="{{ old('longitude', $wifi->longitude) }}" required readonly
+                                value="{{ old('longitude', $normalizedCoordinates['longitude'] ?? $wifi->longitude) }}" required readonly
                                 class="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-600 outline-none">
                             @error('longitude')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
