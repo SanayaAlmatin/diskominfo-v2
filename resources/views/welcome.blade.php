@@ -6,10 +6,17 @@
 @push('styles')
     <style>
         .welcome-modern header {
-            /* background: #044FA0 !important; */
             border-top-color: rgba(255, 255, 255, 0.16) !important;
             border-bottom-color: none !important;
             box-shadow: none !important;
+        }
+
+        /* Fix: glass panel picks up body's near-white background via backdrop-blur,
+               making the navbar appear white. Override with a solid dark-blue tint. */
+        .welcome-modern [data-site-header]>div:first-child {
+            background: rgba(4, 79, 160, 0.45) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
 
         .city-pattern {

@@ -11,7 +11,7 @@ class FooterSettingSeeder extends Seeder
     public function run(): void
     {
         TmFooterSetting::firstOrCreate([], [
-            'nama_organisasi' => 'Kominfo Tangsel',
+            'nama_organisasi' => 'Dinas Komunikasi dan Informatika Kota Tangerang Selatan',
             'deskripsi'       => 'Dinas Komunikasi dan Informatika Kota Tangerang Selatan — mendorong transformasi digital demi layanan publik yang cerdas, terbuka, dan terpercaya.',
             'alamat'          => "Jl. Maruga No. 1, Serua, Ciputat,\nKota Tangerang Selatan,\nBanten 15414",
             'telepon'         => '(021) 538 8833',

@@ -6,6 +6,7 @@ use App\Models\TmInfoBanner;
 use App\Models\TmKoordinatWifi;
 use App\Models\TmLowongan;
 use App\Models\TmNews;
+use App\Models\TmPortalApp;
 
 class HomeController extends Controller
 {
@@ -17,6 +18,9 @@ class HomeController extends Controller
         $lowongan    = TmLowongan::buka()->orderBy('tanggal_tutup')->latest()->take(6)->get();
         $wifiTotal   = TmKoordinatWifi::count();
 
-        return view('welcome', compact('latestNews', 'popularNews', 'banners', 'lowongan', 'wifiTotal'));
+        $featuredApps = TmPortalApp::active()->featured()->orderBy('sort_order')->take(4)->get();
+        $apps         = TmPortalApp::active()->orderBy('sort_order')->take(10)->get();
+
+        return view('welcome', compact('latestNews', 'popularNews', 'banners', 'lowongan', 'wifiTotal', 'featuredApps', 'apps'));
     }
 }

@@ -5,9 +5,13 @@
 
             {{-- ─── Col 1: Identity ─── --}}
             <div class="lg:col-span-1">
-                <h3 class="text-xl font-extrabold text-[#F7D558] mb-3 leading-tight">
-                    {{ $footerSettings->nama_organisasi ?? 'Kominfo Tangsel' }}
-                </h3>
+                <div class="mb-3 leading-tight">
+                    <span class="block text-xs font-light text-white/60 mb-1 uppercase tracking-widest">Dikembangkan
+                        oleh</span>
+                    <span class="block text-base font-bold text-[#F7D558]">
+                        {{ $footerSettings->nama_organisasi ?? 'Dinas Komunikasi dan Informatika Kota Tangerang Selatan' }}
+                    </span>
+                </div>
                 <p class="text-sm text-white/65 leading-relaxed mb-6">
                     {{ $footerSettings->deskripsi ?? '' }}
                 </p>
@@ -154,10 +158,11 @@
                 </h4>
 
                 <div
-                    class="rounded-xl overflow-hidden aspect-video bg-[#033a7a] border border-white/10 relative flex items-center justify-center mb-4">
+                    class="rounded-xl overflow-hidden aspect-video bg-[#033a7a] border border-white/10 relative flex items-center justify-center mb-4"
+                    style="color-scheme: light;">
                     @if ($footerSettings->maps_embed_url)
                         <iframe src="{{ $footerSettings->maps_embed_url }}"
-                            class="absolute inset-0 w-full h-full grayscale" style="border:0;" allowfullscreen
+                            class="absolute inset-0 w-full h-full" style="border:0; color-scheme: light;" allowfullscreen
                             loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
                     @else

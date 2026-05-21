@@ -2,14 +2,14 @@
     @resize.window="if (window.innerWidth >= 1024) mobileMenuOpen = false"
     class="fixed top-0 left-0 w-full text-white z-[999]">
 
-    {{-- Glass panel: visible at top of page, fades out when solid blue slides in --}}
+    {{-- Glass panel: visible at top of page, fades out when solid blue fades in --}}
     <div :class="scrolled ? 'opacity-0' : 'opacity-100'"
         class="absolute inset-0 bg-white/10 backdrop-blur-lg border-b border-white/20 transition-opacity duration-500 ease-in-out -z-10 pointer-events-none">
     </div>
 
-    {{-- Sliding solid-blue background panel (hidden off-screen above, slides down on scroll) --}}
-    <div :class="scrolled ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'"
-        class="absolute inset-0 bg-[#044FA0] shadow-xl transition-all duration-500 ease-in-out -z-10"></div>
+    {{-- Solid-blue background panel: fades in on scroll (no translate to avoid compositing overflow above top-0) --}}
+    <div :class="scrolled ? 'opacity-100' : 'opacity-0'"
+        class="absolute inset-0 bg-[#044FA0] shadow-xl transition-opacity duration-500 ease-in-out -z-10"></div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
 

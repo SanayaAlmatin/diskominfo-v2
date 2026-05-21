@@ -51,6 +51,49 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Locate Me button */
+        .leaflet-control-locate a {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            color: #444;
+            font-size: 15px;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .leaflet-control-locate a:hover {
+            background: #f4f4f4;
+            color: #4F46E5;
+        }
+
+        .leaflet-control-locate.is-locating a {
+            color: #4F46E5;
+            animation: pulse-locate 1s infinite;
+        }
+
+        .leaflet-control-locate.is-located a {
+            color: #22c55e;
+        }
+
+        @keyframes pulse-locate {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
     </style>
 @endpush
 
@@ -168,6 +211,85 @@
                 L.control.zoom({
                     position: 'bottomright'
                 }).addTo(map);
+
+                // ── Locate Me control (sits above zoom buttons) ──
+                var locateMeLayer = null;
+                var LocateControl = L.Control.extend({
+                    options: {
+                        position: 'bottomright'
+                    },
+                    onAdd: function() {
+                        var container = L.DomUtil.create('div', 'leaflet-control-locate leaflet-bar');
+                        var btn = L.DomUtil.create('a', '', container);
+                        btn.title = 'Tampilkan lokasi saya';
+                        btn.setAttribute('role', 'button');
+                        btn.setAttribute('aria-label', 'Tampilkan lokasi saya');
+                        btn.innerHTML = '<i class="fas fa-location-arrow"></i>';
+                        L.DomEvent.disableClickPropagation(btn);
+                        L.DomEvent.on(btn, 'click', function() {
+                            if (!navigator.geolocation) {
+                                setHint('Browser Anda tidak mendukung geolokasi.', 'error');
+                                return;
+                            }
+                            container.classList.add('is-locating');
+                            container.classList.remove('is-located');
+                            setHint('Mendeteksi lokasi Anda...');
+                            navigator.geolocation.getCurrentPosition(
+                                function(pos) {
+                                    var lat = pos.coords.latitude;
+                                    var lng = pos.coords.longitude;
+                                    var acc = pos.coords.accuracy;
+                                    if (locateMeLayer) {
+                                        map.removeLayer(locateMeLayer);
+                                    }
+                                    var group = L.layerGroup();
+                                    L.circle([lat, lng], {
+                                        radius: acc,
+                                        color: '#4F46E5',
+                                        fillColor: '#4F46E5',
+                                        fillOpacity: 0.12,
+                                        weight: 1.5
+                                    }).addTo(group);
+                                    L.circleMarker([lat, lng], {
+                                            radius: 8,
+                                            color: '#fff',
+                                            weight: 2,
+                                            fillColor: '#4F46E5',
+                                            fillOpacity: 1
+                                        }).bindPopup(
+                                            '<b style="color:#4F46E5;">Lokasi Anda</b><br><span style="color:#555;font-size:12px;">Akurasi ~' +
+                                            Math.round(acc) + ' meter</span>').addTo(group)
+                                        .openPopup();
+                                    locateMeLayer = group;
+                                    group.addTo(map);
+                                    map.flyTo([lat, lng], Math.max(map.getZoom(), 16), {
+                                        duration: 1.2
+                                    });
+                                    container.classList.remove('is-locating');
+                                    container.classList.add('is-located');
+                                    setHint('');
+                                },
+                                function(err) {
+                                    container.classList.remove('is-locating');
+                                    var msg = 'Lokasi tidak dapat dideteksi.';
+                                    if (err.code === 1) msg =
+                                        'Izin lokasi ditolak. Aktifkan izin di browser Anda.';
+                                    if (err.code === 2) msg =
+                                        'Lokasi tidak tersedia. Coba lagi.';
+                                    if (err.code === 3) msg =
+                                        'Waktu deteksi lokasi habis. Coba lagi.';
+                                    setHint(msg, 'error');
+                                }, {
+                                    enableHighAccuracy: true,
+                                    timeout: 10000,
+                                    maximumAge: 0
+                                }
+                            );
+                        });
+                        return container;
+                    }
+                });
+                new LocateControl().addTo(map);
 
                 // Google Maps road tile layer
                 L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
@@ -326,7 +448,8 @@
                             addMarkers(markers);
 
                             if (payload.meta && payload.meta.has_more) {
-                                setHint('Sebagian titik belum dimuat. Perbesar area peta untuk melihat lebih detail.', 'warning');
+                                setHint('Sebagian titik belum dimuat. Perbesar area peta untuk melihat lebih detail.',
+                                    'warning');
                                 return;
                             }
 

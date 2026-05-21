@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\FooterController;
 use App\Http\Controllers\Admin\FooterPortalController;
 use App\Http\Controllers\Admin\InfrastrukturTikController;
 use App\Http\Controllers\Admin\FotoController;
+use App\Http\Controllers\Admin\AplikasiController;
 use App\Http\Controllers\Admin\LowonganController;
 use App\Http\Controllers\Admin\ProgramVacancyController;
 use App\Http\Controllers\Admin\SekilasController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Admin\VisiMisiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WifiLocationController;
 use App\Http\Middleware\TrackPageVisit;
+use App\Livewire\Pages\AplikasiPublik;
 use App\Livewire\Pages\GaleriPhoto;
 use App\Livewire\Pages\InfrastrukturTik;
 use App\Livewire\Pages\LowonganDetail;
@@ -41,6 +43,8 @@ Route::middleware([TrackPageVisit::class])->group(function () {
     Route::get('/karir/{id}', LowonganDetail::class)->name('karir.show');
 
     Route::get('/galeri/foto', GaleriPhoto::class)->name('galeri.foto');
+
+    Route::get('/layanan/aplikasi', AplikasiPublik::class)->name('layanan.aplikasi');
 });
 
 Route::get('/wifi/locations', [WifiLocationController::class, 'index'])
@@ -120,6 +124,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Galeri Foto
         Route::resource('foto', FotoController::class)
             ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin']);
+
+        // Aplikasi Portal
+        Route::resource('aplikasi', AplikasiController::class)
+            ->except(['show'])
+            ->middleware(['admin.role:super-admin,admin']);
+        Route::post('aplikasi/toggle', [AplikasiController::class, 'toggleFeatured'])
+            ->name('aplikasi.toggleFeatured')
             ->middleware(['admin.role:super-admin,admin']);
 
         // Konten Footer

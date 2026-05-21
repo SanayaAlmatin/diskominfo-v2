@@ -509,6 +509,16 @@
                 <span>Galeri Foto</span>
             </a>
 
+            <a href="{{ route('admin.aplikasi.index') }}"
+                class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
+                      {{ request()->routeIs('admin.aplikasi.*') ? 'active' : '' }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                <span>Aplikasi Portal</span>
+            </a>
+
             <div class="px-3 mt-4 mb-2">
                 <p class="text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Konten Footer</p>
             </div>
