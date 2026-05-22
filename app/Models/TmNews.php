@@ -22,6 +22,6 @@ class TmNews extends Model
 
     public function scopePublished($query)
     {
-        return $query->whereNotNull('published_at')->where('status', 'published');
+        return $query->whereNotNull('published_at')->where('status', 1);
     }
 }

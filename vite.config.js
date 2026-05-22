@@ -19,6 +19,7 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
+        host: '127.0.0.1', // Memaksa Vite menggunakan IPv4 (menghindari error [::1])
         cors: true,
         watch: {
             ignored: ['**/storage/framework/views/**'],
