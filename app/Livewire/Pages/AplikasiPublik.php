@@ -3,6 +3,7 @@
 namespace App\Livewire\Pages;
 
 use App\Models\TmPortalApp;
+use App\Models\TmPortalAppCategory;
 use Livewire\Component;
 
 class AplikasiPublik extends Component
@@ -24,6 +25,7 @@ class AplikasiPublik extends Component
     public function render()
     {
         $allApps = TmPortalApp::active()->orderBy('sort_order')->orderBy('id', 'desc')->get();
+        $categories = TmPortalAppCategory::orderBy('name')->get();
 
         $filteredApps = $allApps
             ->when($this->activeTab !== 'all', fn ($c) => $c->where('category', $this->activeTab))
@@ -35,6 +37,7 @@ class AplikasiPublik extends Component
         return view('livewire.pages.aplikasi-publik', [
             'filteredApps'  => $filteredApps,
             'totalApps'     => $allApps->count(),
+            'categories'    => $categories,
         ])->extends('layouts.app', [
             'title'          => 'Layanan Aplikasi Publik — Diskominfo Tangerang Selatan',
             'metaDescription' => 'Akses seluruh layanan digital Kota Tangerang Selatan dalam satu portal terpadu — administrasi, kesehatan, keuangan, dan keamanan publik.',

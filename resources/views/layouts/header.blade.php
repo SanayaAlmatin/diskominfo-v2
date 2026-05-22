@@ -4,7 +4,7 @@
 
     {{-- Glass panel: visible at top of page, fades out when solid blue fades in --}}
     <div :class="scrolled ? 'opacity-0' : 'opacity-100'"
-        class="absolute inset-0 bg-white/10 backdrop-blur-lg border-b border-white/20 transition-opacity duration-500 ease-in-out -z-10 pointer-events-none">
+        class="absolute inset-0 bg-white/15 backdrop-blur-xl border-b border-white/10 transition-opacity duration-500 ease-in-out -z-10 pointer-events-none">
     </div>
 
     {{-- Solid-blue background panel: fades in on scroll (no translate to avoid compositing overflow above top-0) --}}

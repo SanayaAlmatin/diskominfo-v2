@@ -90,7 +90,7 @@
                                     {{ $app->name }}
                                 </h3>
                                 <p class="text-sm text-slate-500 mt-1.5 leading-relaxed line-clamp-2">
-                                    {{ $app->description }}
+                                    {{ Str::limit(strip_tags($app->description), 120) }}
                                 </p>
                             </div>
                         </a>
@@ -135,7 +135,7 @@
                                 {{ $app->name }}
                             </h4>
                             <p class="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">
-                                {{ $app->description }}
+                                {{ Str::limit(strip_tags($app->description), 120) }}
                             </p>
                         </a>
                     @endforeach

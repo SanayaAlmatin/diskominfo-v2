@@ -1,4 +1,4 @@
-﻿@push('styles')
+@push('styles')
     <style>
         /* â”€â”€ Hero â”€â”€ */
         .aplikasi-publik .ap-hero {
@@ -234,19 +234,29 @@
 
             {{-- â”€â”€ Category Tabs â”€â”€ --}}
             <div class="flex flex-wrap gap-2 justify-center" role="tablist" aria-label="Filter kategori aplikasi">
-                @foreach ([['key' => 'all', 'label' => 'Semua Layanan', 'icon' => 'apps'], ['key' => 'admin', 'label' => 'Administrasi', 'icon' => 'description'], ['key' => 'health', 'label' => 'Kesehatan', 'icon' => 'health_and_safety'], ['key' => 'safety', 'label' => 'Keamanan Publik', 'icon' => 'security'], ['key' => 'finance', 'label' => 'Keuangan', 'icon' => 'account_balance']] as $tab)
-                    <button role="tab" wire:click="selectTab('{{ $tab['key'] }}')"
-                        aria-selected="{{ $activeTab === $tab['key'] ? 'true' : 'false' }}"
+                <button role="tab" wire:click="selectTab('all')"
+                    aria-selected="{{ $activeTab === 'all' ? 'true' : 'false' }}"
+                    @class([
+                        'inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-sm font-semibold border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+                        'bg-blue-600 text-white shadow-md border-transparent' => $activeTab === 'all',
+                        'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300' => $activeTab !== 'all',
+                    ])>
+                    <span class="material-symbols-outlined" aria-hidden="true" style="font-variation-settings: 'FILL' 1; font-size: 15px;">apps</span>
+                    Semua Layanan
+                </button>
+                @foreach ($categories as $category)
+                    <button role="tab" wire:click="selectTab('{{ $category->name }}')"
+                        aria-selected="{{ $activeTab === $category->name ? 'true' : 'false' }}"
                         @class([
                             'inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-sm font-semibold border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
                             'bg-blue-600 text-white shadow-md border-transparent' =>
-                                $activeTab === $tab['key'],
+                                $activeTab === $category->name,
                             'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300' =>
-                                $activeTab !== $tab['key'],
+                                $activeTab !== $category->name,
                         ])>
                         <span class="material-symbols-outlined" aria-hidden="true"
-                            style="font-variation-settings: 'FILL' 1; font-size: 15px;">{{ $tab['icon'] }}</span>
-                        {{ $tab['label'] }}
+                            style="font-variation-settings: 'FILL' 1; font-size: 15px;">{{ $category->icon_material ?: 'apps' }}</span>
+                        {{ $category->name }}
                     </button>
                 @endforeach
             </div>
@@ -289,37 +299,56 @@
                         </button>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach ($filteredApps as $app)
-                            <div class="ap-card group flex flex-col bg-white rounded-2xl border border-slate-200/80">
-                                {{-- Upper: centered icon + name + desc --}}
-                                <div class="flex flex-col items-center text-center flex-1 px-6 pt-6 pb-4">
-                                    <div
-                                        class="{{ $app['icon_bg'] }} w-14 h-14 rounded-xl flex items-center justify-center">
-                                        <span class="material-symbols-outlined {{ $app['icon_color'] }}"
-                                            aria-hidden="true"
-                                            style="font-variation-settings: 'FILL' 1; font-size: 28px;">{{ $app['icon'] }}</span>
+                            <div class="ap-card group flex flex-col bg-white rounded-2xl border border-slate-200/80 hover:shadow-xl transition-all duration-300">
+                                {{-- Main content --}}
+                                <div class="flex flex-col flex-1 p-5">
+                                    {{-- Top row: Icon and Badges --}}
+                                    <div class="flex items-start justify-between mb-3.5">
+                                        {{-- Icon --}}
+                                        <div class="{{ $app->icon_bg }} w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:-translate-y-1">
+                                            @if ($app->icon_type === 'upload' && $app->logo_path)
+                                                <img src="{{ Storage::disk('public')->url($app->logo_path) }}"
+                                                    alt="{{ $app->name }}" class="w-full h-full object-contain p-2">
+                                            @else
+                                                <span class="material-symbols-outlined {{ $app->icon_color }}"
+                                                    aria-hidden="true"
+                                                    style="font-variation-settings: 'FILL' 1; font-size: 28px;">{{ $app->icon_material ?: 'apps' }}</span>
+                                            @endif
+                                        </div>
+
+                                        {{-- Badges --}}
+                                        <div class="flex flex-wrap items-center gap-2 justify-end pl-3 pt-1">
+                                            <span class="bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full whitespace-nowrap">
+                                                {{ $app->category }}
+                                            </span>
+                                            @if($app->is_featured)
+                                            <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1.5 rounded-full whitespace-nowrap">
+                                                Populer
+                                            </span>
+                                            @endif
+                                        </div>
                                     </div>
-                                    <h4
-                                        class="text-sm font-bold text-slate-900 mt-3 group-hover:text-blue-600 transition-colors">
-                                        {{ $app['name'] }}
+
+                                    {{-- Title and Desc --}}
+                                    <h4 class="text-lg font-extrabold text-[#0F2044] mb-1.5 group-hover:text-blue-600 transition-colors">
+                                        {{ $app->name }}
                                     </h4>
-                                    <p class="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">
-                                        {{ $app['desc'] }}
+                                    <p class="text-sm text-slate-500 leading-snug line-clamp-2">
+                                        {{ Str::limit(strip_tags($app->description), 120) }}
                                     </p>
                                 </div>
-                                {{-- Footer: URL (left) + open button (right) --}}
-                                <div class="mx-4 mb-4 pt-3 border-t border-slate-100 flex items-center gap-2 min-w-0">
-                                    <span class="text-xs text-slate-400 truncate flex-1 min-w-0"
-                                        title="{{ $app['url'] }}">
-                                        {{ $app['url'] }}
+
+                                {{-- Footer --}}
+                                <div class="border-t border-slate-100 px-5 py-3 flex items-center justify-between gap-3 bg-slate-50/50 rounded-b-2xl">
+                                    <span class="text-xs text-slate-500 font-mono truncate flex-1 min-w-0" title="{{ $app->href }}">
+                                        {{ Str::limit(str_replace(['http://', 'https://'], '', $app->href), 25) }}
                                     </span>
-                                    <a href="{{ $app['href'] }}" target="_blank" rel="noopener noreferrer"
-                                        aria-label="Buka {{ $app['name'] }} di tab baru"
-                                        class="inline-flex items-center gap-1 bg-blue-600 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg hover:bg-blue-700 active:scale-95 transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1">
-                                        Buka
-                                        <span class="material-symbols-outlined" aria-hidden="true"
-                                            style="font-size: 13px;">open_in_new</span>
+                                    <a href="{{ $app->href }}" target="_blank" rel="noopener noreferrer"
+                                        class="inline-flex items-center gap-1.5 text-[#0A4186] font-bold text-sm hover:text-blue-800 transition-colors shrink-0">
+                                        Akses
+                                        <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px;">open_in_new</span>
                                     </a>
                                 </div>
                             </div>

@@ -32,6 +32,11 @@ class TmPortalApp extends Model
         'sort_order'  => 'integer',
     ];
 
+    public function categoryData()
+    {
+        return $this->belongsTo(TmPortalAppCategory::class, 'category', 'name');
+    }
+
     // ── Scopes ──────────────────────────────────────────────────────────────
 
     public function scopeActive($query)

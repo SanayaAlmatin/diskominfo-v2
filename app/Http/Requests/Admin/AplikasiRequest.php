@@ -16,7 +16,7 @@ class AplikasiRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'category' => ['required', 'in:admin,health,finance,safety'],
+            'category' => ['required', 'string', 'max:100'],
             'icon_type' => ['required', 'in:material,upload'],
             'icon_material' => ['nullable', 'string', 'required_if:icon_type,material'],
             'icon_bg' => ['nullable', 'string'],

@@ -133,6 +133,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('aplikasi/toggle', [AplikasiController::class, 'toggleFeatured'])
             ->name('aplikasi.toggleFeatured')
             ->middleware(['admin.role:super-admin,admin']);
+        Route::post('aplikasi/categories', [AplikasiController::class, 'storeCategory'])
+            ->name('aplikasi.categories.store')
+            ->middleware(['admin.role:super-admin,admin']);
 
         // Konten Footer
         Route::middleware(['admin.role:super-admin,admin'])->group(function () {
