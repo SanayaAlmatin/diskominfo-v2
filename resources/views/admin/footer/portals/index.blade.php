@@ -78,7 +78,6 @@
                 </table>
             </div>
         </div>
-        <div id="dt-paging-portals"></div>
     </div>
 @endsection
 
@@ -87,7 +86,7 @@
         $('#table-portals').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-portals',
+                bottomEnd: 'paging',
             },
             columnDefs: [{
                 orderable: false,

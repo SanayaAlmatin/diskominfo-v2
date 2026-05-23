@@ -79,7 +79,6 @@
                 </table>
             </div>
         </div>
-        <div id="dt-paging-sotk"></div>
     </div>
 @endsection
 
@@ -88,7 +87,7 @@
         $('#table-sotk').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-sotk',
+                bottomEnd: 'paging',
             },
             columnDefs: [{
                 orderable: false,

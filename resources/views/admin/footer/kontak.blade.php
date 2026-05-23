@@ -21,8 +21,7 @@
                 <div class="space-y-5">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Alamat</label>
-                        <textarea name="alamat" rows="3"
-                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 @error('alamat') border-red-400 @enderror">{{ old('alamat', $settings->alamat) }}</textarea>
+                        <textarea name="alamat" rows="3" class="tinymce-editor-simple w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 @error('alamat') border-red-400 @enderror">{{ old('alamat', $settings->alamat) }}</textarea>
                         @error('alamat')
                             <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                         @enderror

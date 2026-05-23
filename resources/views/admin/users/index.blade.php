@@ -100,7 +100,6 @@
                 </table>
             </div>
         </div>
-        <div id="dt-paging-users"></div>
     </div>
 @endsection
 
@@ -109,7 +108,7 @@
         $('#table-users').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-users',
+                bottomEnd: 'paging',
             },
             columnDefs: [{
                 orderable: false,

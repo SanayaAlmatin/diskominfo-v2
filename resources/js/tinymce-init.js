@@ -26,6 +26,9 @@ import 'tinymce/plugins/code';
 import 'tinymce/plugins/searchreplace';
 import 'tinymce/plugins/wordcount';
 import 'tinymce/plugins/charmap';
+import 'tinymce/plugins/image';
+import 'tinymce/plugins/media';
+import 'tinymce/plugins/fullscreen';
 
 // --------------------------------------------------------------------------
 // Shared base configuration
@@ -78,10 +81,10 @@ const sharedConfig = {
 tinymce.init({
     ...sharedConfig,
     selector: 'textarea.tinymce-editor',
-    plugins: 'lists link autolink table code searchreplace wordcount charmap',
+    plugins: 'lists link autolink table code searchreplace wordcount charmap image media fullscreen',
     toolbar: [
         'undo redo | blocks | bold italic underline strikethrough',
-        'bullist numlist | link table charmap | searchreplace | code',
+        'bullist numlist | link image media table charmap | searchreplace code fullscreen',
     ].join(' | '),
     block_formats: 'Paragraf=p; Judul 2=h2; Judul 3=h3; Judul 4=h4',
     height: 420,

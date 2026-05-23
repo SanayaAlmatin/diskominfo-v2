@@ -7,6 +7,9 @@ use App\Http\Controllers\Admin\FooterPortalController;
 use App\Http\Controllers\Admin\InfrastrukturTikController;
 use App\Http\Controllers\Admin\FotoController;
 use App\Http\Controllers\Admin\AplikasiController;
+use App\Http\Controllers\Admin\BeritaController;
+use App\Http\Controllers\Admin\KategoriBeritaController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\LowonganController;
 use App\Http\Controllers\Admin\ProgramVacancyController;
 use App\Http\Controllers\Admin\SekilasController;
@@ -109,6 +112,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('statistik/{statistik}/files/{file}', [StatistikController::class, 'destroyFile'])
             ->name('statistik.destroyFile')
             ->middleware(['admin.role:super-admin']);
+
+        // Berita / News
+        Route::resource('berita', BeritaController::class)
+            ->middleware(['admin.role:super-admin,admin'])
+            ->parameters(['berita' => 'berita']);
+
+        // Kategori Berita
+        Route::resource('kategori', KategoriBeritaController::class)
+            ->except(['create', 'edit'])
+            ->middleware(['admin.role:super-admin,admin'])
+            ->parameters(['kategori' => 'kategori']);
+
+        // Tag Berita
+        Route::resource('tags', TagController::class)
+            ->except(['create', 'show', 'edit'])
+            ->middleware(['admin.role:super-admin,admin']);
 
         // Program & Lowongan (Carousel)
         Route::resource('program-vacancy', ProgramVacancyController::class)

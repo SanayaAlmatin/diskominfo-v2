@@ -382,8 +382,6 @@
                 </table>
             </div>
         </div>
-
-        <div id="dt-paging-aplikasi"></div>
     </div>
 @endsection
 
@@ -392,7 +390,7 @@
         $('#table-aplikasi').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-aplikasi',
+                bottomEnd: 'paging',
             },
             columnDefs: [{
                 orderable: false,

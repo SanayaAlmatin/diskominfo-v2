@@ -75,7 +75,6 @@
                 </table>
             </div>
         </div>
-        <div id="dt-paging-tik"></div>
     </div>
 @endsection
 
@@ -84,7 +83,7 @@
         $('#table-tik').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-tik',
+                bottomEnd: 'paging',
             },
             columnDefs: [{
                 orderable: false,

@@ -74,7 +74,6 @@
                 </table>
             </div>
         </div>
-        <div id="dt-paging-visimisi"></div>
     </div>
 @endsection
 
@@ -83,7 +82,7 @@
         $('#table-visimisi').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-visimisi',
+                bottomEnd: 'paging',
             },
             columnDefs: [{
                 orderable: false,

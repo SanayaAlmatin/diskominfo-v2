@@ -67,7 +67,6 @@
                 </table>
             </div>
         </div>
-        <div id="dt-paging-statistik"></div>
     </div>
 @endsection
 
@@ -76,7 +75,7 @@
         $('#table-statistik').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-statistik',
+                bottomEnd: 'paging',
             },
             columnDefs: [{
                 orderable: false,

@@ -67,8 +67,7 @@
                 {{-- Deskripsi --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Deskripsi</label>
-                    <textarea name="deskripsi" rows="4"
-                        class="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <textarea name="deskripsi" rows="4" class="tinymce-editor-simple w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Deskripsi singkat posisi atau program...">{{ old('deskripsi', $lowongan->deskripsi) }}</textarea>
                     @error('deskripsi')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>

@@ -93,7 +93,6 @@
                 </table>
             </div>
         </div>
-        <div id="dt-paging-banner"></div>
     </div>
 @endsection
 
@@ -102,7 +101,7 @@
         $('#table-banner').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-banner',
+                bottomEnd: 'paging',
             },
             columnDefs: [{
                 orderable: false,

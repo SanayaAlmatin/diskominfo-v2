@@ -134,7 +134,6 @@
                 </table>
             </div>
         </div>
-        <div id="dt-paging-lowongan"></div>
     </div>
 @endsection
 
@@ -143,7 +142,7 @@
         $('#table-lowongan').DataTable({
             layout: {
                 bottomStart: 'info',
-                bottomEnd: '#dt-paging-lowongan',
+                bottomEnd: 'paging',
             },
             columnDefs: [
                 { orderable: false, targets: [0, 2, 4, -1] }
