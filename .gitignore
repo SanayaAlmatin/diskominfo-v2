@@ -24,3 +24,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Custom ignored files
+debug_pagination.html
+debug_pagination.php
+test_images.php
+test_render.php
