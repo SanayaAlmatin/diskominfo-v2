@@ -1,6 +1,6 @@
 @extends('admin.layouts.admin')
-@section('title', 'Tambah Lowongan')
-@section('page-title', 'Tambah Lowongan')
+@section('title', 'Tambah Kegiatan')
+@section('page-title', 'Tambah Kegiatan')
 
 @section('content')
     <div class="max-w-4xl">
@@ -10,7 +10,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
             </a>
-            <h2 class="text-lg font-bold text-gray-800">Tambah Lowongan Karir</h2>
+            <h2 class="text-lg font-bold text-gray-800">Tambah Kegiatan</h2>
         </div>
 
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
@@ -34,15 +34,50 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">
                             Jenis <span class="text-red-500">*</span>
                         </label>
-                        <select name="jenis"
-                            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 @error('jenis') border-red-400 @enderror">
-                            <option value="">-- Pilih Jenis --</option>
-                            <option value="pekerjaan" {{ old('jenis') === 'pekerjaan' ? 'selected' : '' }}>Lowongan Pekerjaan</option>
-                            <option value="magang"    {{ old('jenis') === 'magang'    ? 'selected' : '' }}>Program Magang</option>
-                            <option value="program"   {{ old('jenis') === 'program'   ? 'selected' : '' }}>Program Khusus</option>
-                            <option value="kompetisi" {{ old('jenis') === 'kompetisi' ? 'selected' : '' }}>Kompetisi</option>
-                        </select>
-                        @error('jenis')
+                        <div x-data="{ 
+                            open: false, 
+                            selectedId: '{{ old('id_jenis') }}',
+                            selectedName: '{{ old('id_jenis') ? addslashes($jenisList->firstWhere('id', old('id_jenis'))?->nama) : '-- Pilih Jenis --' }}',
+                            selectedColor: '{{ old('id_jenis') ? $jenisList->firstWhere('id', old('id_jenis'))?->warna : '' }}',
+                            selectOption(id, name, color) {
+                                this.selectedId = id;
+                                this.selectedName = name;
+                                this.selectedColor = color;
+                                this.open = false;
+                            }
+                        }" class="relative">
+                            <input type="hidden" name="id_jenis" x-model="selectedId">
+                            
+                            <button type="button" @click="open = !open" @click.outside="open = false" 
+                                class="w-full flex items-center justify-between px-4 py-[9px] rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors {{ $errors->has('id_jenis') ? 'border-red-400' : 'border-gray-300' }} bg-white">
+                                
+                                <template x-if="selectedId">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold border" :class="selectedColor" x-text="selectedName"></span>
+                                </template>
+                                <template x-if="!selectedId">
+                                    <span class="text-gray-500" x-text="selectedName"></span>
+                                </template>
+
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                            </button>
+
+                            <div x-show="open" x-transition x-cloak class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-auto max-h-60 p-3">
+                                <button type="button" @click="selectOption('', '-- Pilih Jenis --', '')" class="w-full text-left px-2 py-1.5 mb-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md transition-colors border border-transparent hover:border-gray-200">
+                                    -- Pilih Jenis --
+                                </button>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($jenisList as $jenis)
+                                        <button type="button" @click="selectOption('{{ $jenis->id }}', '{{ addslashes($jenis->nama) }}', '{{ $jenis->warna }}')" 
+                                            class="hover:scale-105 transition-transform">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border cursor-pointer shadow-sm {{ $jenis->warna }}">
+                                                {{ $jenis->nama }}
+                                            </span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        @error('id_jenis')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>

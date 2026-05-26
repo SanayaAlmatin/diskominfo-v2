@@ -15,7 +15,7 @@ class LowonganRequest extends FormRequest
     {
         return [
             'posisi'        => ['required', 'string', 'max:255'],
-            'jenis'         => ['required', 'in:pekerjaan,magang,program,kompetisi'],
+            'id_jenis'      => ['required', 'exists:tm_jenis_lowongan,id'],
             'deskripsi'     => ['nullable', 'string'],
             'tags'          => ['nullable', 'array'],
             'tags.*'        => ['string', 'max:100'],
@@ -41,7 +41,7 @@ class LowonganRequest extends FormRequest
     {
         return [
             'posisi'        => 'posisi/judul',
-            'jenis'         => 'jenis lowongan',
+            'id_jenis'      => 'jenis kegiatan',
             'tanggal_tutup' => 'tanggal tutup',
             'link_daftar'   => 'link pendaftaran',
             'tipe_kerja'    => 'tipe kerja',

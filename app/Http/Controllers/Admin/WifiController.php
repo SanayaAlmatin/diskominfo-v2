@@ -14,6 +14,9 @@ class WifiController extends Controller
     {
         $search = $request->string('search')->trim()->value();
 
+        $totalWifi = TmKoordinatWifi::count();
+        $totalSsid = TmKoordinatWifi::whereNotNull('ssid')->where('ssid', '!=', '')->count();
+
         $wifis = TmKoordinatWifi::select(['id', 'n_wilayah', 'ssid', 'latitude', 'longitude', 'kecepatan'])
             ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
                 $q->where('n_wilayah', 'like', "%{$search}%")
@@ -23,7 +26,7 @@ class WifiController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.wifi.index', compact('wifis', 'search'));
+        return view('admin.wifi.index', compact('wifis', 'search', 'totalWifi', 'totalSsid'));
     }
 
     public function create()

@@ -10,12 +10,35 @@ use App\Models\TmTag;
 use App\Models\TrNewsImage;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class BeritaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = TmNews::with(['category', 'author', 'tags'])->latest('published_at')->get();
+        $query = TmNews::with(['category', 'author', 'tags'])->latest('published_at');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $status = $request->status == 'Published' ? 1 : 0;
+            $query->where('status', $status);
+        }
+
+        if ($request->filled('category')) {
+            $categoryName = $request->category;
+            $query->whereHas('category', function($q) use ($categoryName) {
+                $q->where('name', $categoryName);
+            });
+        }
+
+        $items = $query->paginate(10);
         $categories = TmCategory::all();
 
         $totalBerita = TmNews::count();

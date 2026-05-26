@@ -5,23 +5,43 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\LowonganRequest;
 use App\Models\TmLowongan;
+use App\Models\TmJenisLowongan;
 use Illuminate\Support\Facades\Storage;
 
 class LowonganController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $items = TmLowongan::orderByRaw("FIELD(status,'buka','tutup')")
-            ->orderBy('tanggal_tutup')
-            ->latest()
-            ->get();
+        // Update expired kegiatan to 'tutup'
+        TmLowongan::where('status', 'buka')
+            ->whereNotNull('tanggal_tutup')
+            ->whereDate('tanggal_tutup', '<', now()->startOfDay())
+            ->update(['status' => 'tutup']);
 
-        return view('admin.lowongan.index', compact('items'));
+        $query = TmLowongan::with('jenis_lowongan')
+            ->orderByRaw("FIELD(status,'buka','tutup')")
+            ->orderBy('tanggal_tutup')
+            ->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('posisi', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+        }
+
+        $items = $query->paginate(10);
+
+        $totalLowongan = TmLowongan::count();
+        $totalBuka = TmLowongan::where('status', 'buka')->count();
+        $totalTutup = TmLowongan::where('status', 'tutup')->count();
+
+        return view('admin.lowongan.index', compact('items', 'totalLowongan', 'totalBuka', 'totalTutup'));
     }
 
     public function create()
     {
-        return view('admin.lowongan.create');
+        $jenisList = TmJenisLowongan::orderBy('nama')->get();
+        return view('admin.lowongan.create', compact('jenisList'));
     }
 
     public function store(LowonganRequest $request)
@@ -35,12 +55,13 @@ class LowonganController extends Controller
         TmLowongan::create($data);
 
         return redirect()->route('admin.lowongan.index')
-            ->with('success', 'Lowongan berhasil ditambahkan.');
+            ->with('success', 'Kegiatan berhasil ditambahkan.');
     }
 
     public function edit(TmLowongan $lowongan)
     {
-        return view('admin.lowongan.edit', compact('lowongan'));
+        $jenisList = TmJenisLowongan::orderBy('nama')->get();
+        return view('admin.lowongan.edit', compact('lowongan', 'jenisList'));
     }
 
     public function update(LowonganRequest $request, TmLowongan $lowongan)
@@ -57,7 +78,7 @@ class LowonganController extends Controller
         $lowongan->update($data);
 
         return redirect()->route('admin.lowongan.index')
-            ->with('success', 'Lowongan berhasil diperbarui.');
+            ->with('success', 'Kegiatan berhasil diperbarui.');
     }
 
     public function destroy(TmLowongan $lowongan)
@@ -69,6 +90,6 @@ class LowonganController extends Controller
         $lowongan->delete();
 
         return redirect()->route('admin.lowongan.index')
-            ->with('success', 'Lowongan berhasil dihapus.');
+            ->with('success', 'Kegiatan berhasil dihapus.');
     }
 }

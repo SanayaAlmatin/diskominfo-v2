@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,1&display=swap"
         rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
     @stack('styles')
     <style>
         [x-cloak] { display: none !important; }
@@ -61,222 +60,7 @@
             }
         }
 
-        div.dt-container,
-        div.dt-container input,
-        div.dt-container select,
-        div.dt-container button {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
 
-        /* Remove default row margins */
-        div.dt-container div.dt-layout-row {
-            margin: 0 !important;
-        }
-
-        /* ── Top bar: length + search ── */
-        div.dt-container div.dt-layout-row:first-child {
-            padding: 14px 20px;
-            background: #F8FAFC;
-            border-bottom: 1px solid #E2E8F0;
-            border-radius: 12px 12px 0 0;
-        }
-
-        /* ── Table row: bottom rounding + horizontal scroll ── */
-        div.dt-container div.dt-layout-row.dt-layout-table {
-            border-radius: 0 0 12px 12px;
-            overflow-x: auto;
-            overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* ── Bottom bar: info only (pagination moved outside card) ── */
-        div.dt-container div.dt-layout-row:last-child {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 10px 20px 0 20px;
-            background: transparent;
-            border-top: none;
-        }
-
-        div.dt-container div.dt-layout-row:last-child .dt-layout-cell {
-            padding: 0 !important;
-        }
-
-        div.dt-container .dt-info {
-            padding-left: 0;
-        }
-
-        /* ── External pagination container ── */
-        [id^="dt-paging-"] {
-            display: flex;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 10px;
-        }
-
-        /* Label text */
-        div.dt-container .dt-length,
-        div.dt-container .dt-search {
-            font-size: 13px;
-            font-weight: 500;
-            color: #64748B;
-            letter-spacing: 0.01em;
-        }
-
-        /* Search input */
-        div.dt-container .dt-search input {
-            border: 1.5px solid #E2E8F0 !important;
-            border-radius: 10px !important;
-            padding: 7px 12px !important;
-            font-size: 13px !important;
-            outline: none;
-            color: #0F172A;
-            background: #FFFFFF;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-            transition: border-color .2s ease, box-shadow .2s ease;
-            margin-left: 8px;
-            width: 220px;
-        }
-
-        /* Length select */
-        div.dt-container .dt-length select,
-        div.dt-container select.dt-input {
-            border: 1.5px solid #E2E8F0 !important;
-            border-radius: 10px !important;
-            padding: 6px 10px !important;
-            font-size: 13px !important;
-            outline: none;
-            color: #0F172A;
-            background: #FFFFFF;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-            transition: border-color .2s ease, box-shadow .2s ease;
-            margin: 0 6px;
-            cursor: pointer;
-        }
-
-        /* Focus — indigo ring */
-        div.dt-container .dt-search input:focus,
-        div.dt-container .dt-length select:focus,
-        div.dt-container select.dt-input:focus {
-            border-color: #4F46E5 !important;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14),
-                0 1px 3px rgba(15, 23, 42, 0.04) !important;
-        }
-
-        /* Info text */
-        div.dt-container .dt-info {
-            font-size: 12px;
-            font-weight: 500;
-            color: #94A3B8;
-            letter-spacing: 0.01em;
-        }
-
-        /* ── Pagination buttons ── */
-        div.dt-container .dt-paging .dt-paging-button {
-            display: inline-flex !important;
-            align-items: center;
-            justify-content: center;
-            min-width: 32px;
-            height: 32px;
-            border-radius: 8px !important;
-            padding: 0 10px !important;
-            font-size: 13px !important;
-            font-weight: 500 !important;
-            border: 1.5px solid #E2E8F0 !important;
-            margin: 0 5px !important;
-            color: #64748B !important;
-            background: #FFFFFF !important;
-            transition: all .2s ease !important;
-            cursor: pointer;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
-            text-decoration: none !important;
-            vertical-align: middle;
-        }
-
-        /* Active page — indigo→violet gradient + colored shadow */
-        div.dt-container .dt-paging .dt-paging-button.current,
-        div.dt-container .dt-paging .dt-paging-button.current:hover {
-            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;
-            color: #FFFFFF !important;
-            border-color: transparent !important;
-            box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.45) !important;
-            transform: translateY(-1px);
-        }
-
-        /* Hover — indigo tint */
-        div.dt-container .dt-paging .dt-paging-button:hover:not(.current):not(.disabled) {
-            background: #EEF2FF !important;
-            color: #4F46E5 !important;
-            border-color: #C7D2FE !important;
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12) !important;
-            transform: translateY(-1px);
-        }
-
-        /* Disabled */
-        div.dt-container .dt-paging .dt-paging-button.disabled,
-        div.dt-container .dt-paging .dt-paging-button.disabled:hover,
-        div.dt-container .dt-paging .dt-paging-button.disabled:active {
-            color: #CBD5E1 !important;
-            background: #F8FAFC !important;
-            border-color: #F1F5F9 !important;
-            box-shadow: none !important;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* ── Table header ── */
-        table.dataTable thead th,
-        table.dataTable thead td {
-            border-bottom: 1.5px solid #E2E8F0 !important;
-        }
-
-        table.dataTable.no-footer {
-            border-bottom: none !important;
-        }
-
-        /* Sort arrows — indigo when active */
-        table.dataTable thead th.dt-ordering-asc span.dt-column-order::before,
-        table.dataTable thead th.dt-ordering-desc span.dt-column-order::after {
-            color: #4F46E5;
-            opacity: 1 !important;
-        }
-
-        /* Dim sort arrows on inactive orderable columns */
-        table.dataTable thead th.dt-orderable-asc span.dt-column-order,
-        table.dataTable thead th.dt-orderable-desc span.dt-column-order {
-            opacity: 0.3;
-            transition: opacity .2s ease;
-        }
-
-        table.dataTable thead th:hover span.dt-column-order {
-            opacity: 0.55;
-        }
-
-        /* Row hover — subtle indigo tint */
-        table.dataTable tbody tr:hover>* {
-            box-shadow: inset 0 0 0 9999px rgba(79, 70, 229, 0.028) !important;
-        }
-
-        /* ── Row & cell spacing ── */
-        table.dataTable thead th,
-        table.dataTable thead td {
-            padding-top: 14px !important;
-            padding-bottom: 14px !important;
-            padding-left: 16px !important;
-            padding-right: 16px !important;
-        }
-
-        table.dataTable tbody td {
-            padding-top: 14px !important;
-            padding-bottom: 14px !important;
-            padding-left: 16px !important;
-            padding-right: 16px !important;
-            vertical-align: middle;
-        }
 
         /* ── Lightbox ── */
         #img-lightbox {
@@ -311,66 +95,57 @@
         }
 
         /* ── Mobile responsiveness ── */
-        @media (max-width: 640px) {
 
-            /* Fix 2a — top bar stacks vertically */
-            div.dt-container div.dt-layout-row:first-child {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                gap: 10px;
-                padding: 12px 16px;
-            }
 
-            /* Fix 2b — search input fills width */
-            div.dt-container .dt-search input {
-                width: 100% !important;
-                min-width: unset !important;
-                margin-left: 0;
-            }
-
-            div.dt-container .dt-search {
-                width: 100%;
-            }
-
-            /* Fix 2c — bottom bar (info) on mobile */
-            div.dt-container div.dt-layout-row:last-child {
-                justify-content: flex-start !important;
-                padding: 8px 16px 0 16px;
-            }
-
-            /* Fix 2d — top bar horizontal padding reduced */
-            div.dt-container div.dt-layout-row:first-child {
-                padding-left: 16px;
-                padding-right: 16px;
-            }
-
-            /* Fix 2e — external pagination container centered on mobile */
-            [id^="dt-paging-"] {
-                justify-content: center;
-                margin-top: 8px;
-            }
-
-            /* Smaller pagination buttons on mobile */
-            div.dt-container .dt-paging .dt-paging-button {
-                min-width: 28px !important;
-                height: 28px !important;
-                padding: 0 8px !important;
-                font-size: 12px !important;
-                margin: 0 3px !important;
-            }
+        /* ── Custom Pagination Styling (Laravel Default) ── */
+        nav[role="navigation"] .shadow-sm.rounded-md {
+            box-shadow: none !important;
+        }
+        nav[role="navigation"] .shadow-sm.rounded-md > * {
+            margin: 0 0.15rem !important;
+        }
+        nav[role="navigation"] .shadow-sm.rounded-md > a,
+        nav[role="navigation"] .shadow-sm.rounded-md > span > span {
+            padding: 0.35rem 0.75rem !important;
+            border-radius: 0.375rem !important;
+            border: 1px solid #e5e7eb !important;
+            font-size: 0.875rem !important;
+            color: #4b5563 !important;
+            background: #fff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 2rem !important;
+            height: 2.2rem !important;
+        }
+        nav[role="navigation"] .shadow-sm.rounded-md > a:hover {
+            background: #f9fafb !important;
+            color: #1f2937 !important;
+        }
+        /* Active page indicator */
+        nav[role="navigation"] .shadow-sm.rounded-md > span[aria-current="page"] > span {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #2563eb !important;
+            font-weight: 600 !important;
+        }
+        /* Fix SVG sizes */
+        nav[role="navigation"] .shadow-sm.rounded-md svg {
+            width: 1.25rem;
+            height: 1.25rem;
         }
     </style>
 </head>
 
-<body class="h-full bg-gray-50 font-sans" data-start-alpine="true" x-data="{ sidebarOpen: false }">
+<body class="h-full bg-gray-50 font-sans" data-start-alpine="true" x-data="{ sidebarOpen: false, desktopSidebarOpen: true }">
 
     <!-- Mobile sidebar overlay -->
     <div x-cloak x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-black/50 lg:hidden"
         @click="sidebarOpen = false"></div>
 
     <!-- Sidebar -->
-    <aside class="fixed inset-y-0 left-0 z-50 w-64 flex flex-col transition-transform duration-300 lg:translate-x-0"
-        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" style="background-color: var(--navy);" x-cloak>
+    <aside class="fixed inset-y-0 left-0 z-50 w-64 flex flex-col transition-transform duration-300"
+        :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen, 'lg:translate-x-0': desktopSidebarOpen, 'lg:-translate-x-full': !desktopSidebarOpen}" style="background-color: var(--navy);" x-cloak>
 
         <!-- Logo -->
         <div class="flex items-center justify-between gap-3 px-6 py-5 border-b border-white/10">
@@ -413,7 +188,7 @@
             </a>
 
             <div class="px-3 mt-4 mb-2">
-                <p class="text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Konten Profil</p>
+                <p class="text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Konten Navbar</p>
             </div>
 
             <a href="{{ route('admin.sekilas.index') }}"
@@ -446,9 +221,6 @@
                 <span>Struktur Organisasi</span>
             </a>
 
-            <div class="px-3 mt-4 mb-2">
-                <p class="text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Unit Kerja</p>
-            </div>
 
             <a href="{{ route('admin.infrastruktur-tik.index') }}"
                 class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
@@ -471,58 +243,58 @@
             </a>
 
             <div class="px-3 mt-4 mb-2">
-                <p class="text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Manajemen Artikel</p>
-            </div>
-
-            <a href="{{ route('admin.berita.index') }}"
-                class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
-                      {{ request()->routeIs('admin.berita.index') ? 'active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span>Kelola Artikel</span>
-            </a>
-
-            <a href="{{ route('admin.berita.create') }}"
-                class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
-                      {{ request()->routeIs('admin.berita.create') ? 'active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Buat Artikel Baru</span>
-            </a>
-
-            <a href="{{ route('admin.kategori.index') }}"
-                class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
-                      {{ request()->routeIs('admin.kategori.*') ? 'active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
-                <span>Kategori</span>
-            </a>
-
-            <a href="{{ route('admin.tags.index') }}"
-                class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
-                      {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-                <span>Tag</span>
-            </a>
-
-            <div class="px-3 mt-4 mb-2">
                 <p class="text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Konten Website</p>
             </div>
 
-            <a href="{{ route('admin.program-vacancy.index') }}"
-                class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
-                      {{ request()->routeIs('admin.program-vacancy.*') ? 'active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <span>Program & Lowongan</span>
-            </a>
+            <div x-data="{ open: {{ request()->routeIs('admin.berita.*', 'admin.kategori.*', 'admin.tags.*') ? 'true' : 'false' }} }">
+                <button @click="open = !open"
+                    class="w-full flex items-center justify-between px-6 py-2.5 text-blue-100 text-sm transition-all hover:bg-white/10 hover:text-yellow-400 {{ request()->routeIs('admin.berita.*', 'admin.kategori.*', 'admin.tags.*') ? 'text-yellow-400 bg-white/10' : '' }}">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Manajemen Artikel</span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-cloak x-show="open" x-transition.opacity class="bg-black/20 py-1">
+                    <a href="{{ route('admin.berita.index') }}"
+                        class="flex items-center gap-3 pl-14 pr-6 py-2 text-blue-100 text-sm transition-all
+                              {{ request()->routeIs('admin.berita.index') ? 'active' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Kelola Artikel</span>
+                    </a>
+                    <a href="{{ route('admin.berita.create') }}"
+                        class="flex items-center gap-3 pl-14 pr-6 py-2 text-blue-100 text-sm transition-all
+                              {{ request()->routeIs('admin.berita.create') ? 'active' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Buat Artikel Baru</span>
+                    </a>
+                    <a href="{{ route('admin.kategori.index') }}"
+                        class="flex items-center gap-3 pl-14 pr-6 py-2 text-blue-100 text-sm transition-all
+                              {{ request()->routeIs('admin.kategori.*') ? 'active' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                        <span>Kategori</span>
+                    </a>
+                    <a href="{{ route('admin.tags.index') }}"
+                        class="flex items-center gap-3 pl-14 pr-6 py-2 text-blue-100 text-sm transition-all
+                              {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        <span>Tag</span>
+                    </a>
+                </div>
+            </div>
+
 
             <a href="{{ route('admin.wifi.index') }}"
                 class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
@@ -534,15 +306,39 @@
                 <span>Titik WiFi</span>
             </a>
 
-            <a href="{{ route('admin.lowongan.index') }}"
-                class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
-                      {{ request()->routeIs('admin.lowongan.*') ? 'active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <span>Lowongan Karir</span>
-            </a>
+            <div x-data="{ open: {{ request()->routeIs('admin.lowongan.*', 'admin.jenis-lowongan.*') ? 'true' : 'false' }} }">
+                <button @click="open = !open"
+                    class="w-full flex items-center justify-between px-6 py-2.5 text-blue-100 text-sm transition-all hover:bg-white/10 hover:text-yellow-400 {{ request()->routeIs('admin.lowongan.*', 'admin.jenis-lowongan.*') ? 'text-yellow-400 bg-white/10' : '' }}">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span>Manajemen Kegiatan</span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-cloak x-show="open" x-transition.opacity class="bg-black/20 py-1">
+                    <a href="{{ route('admin.lowongan.index') }}"
+                        class="flex items-center gap-3 pl-14 pr-6 py-2 text-blue-100 text-sm transition-all
+                              {{ request()->routeIs('admin.lowongan.*') ? 'active' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                        <span>Kelola Kegiatan</span>
+                    </a>
+                    <a href="{{ route('admin.jenis-lowongan.index') }}"
+                        class="flex items-center gap-3 pl-14 pr-6 py-2 text-blue-100 text-sm transition-all
+                              {{ request()->routeIs('admin.jenis-lowongan.*') ? 'active' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                        <span>Manajemen Jenis</span>
+                    </a>
+                </div>
+            </div>
 
             <a href="{{ route('admin.foto.index') }}"
                 class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
@@ -668,21 +464,32 @@
     </aside>
 
     <!-- Main content -->
-    <div class="lg:pl-64 flex flex-col min-h-screen">
+    <div class="flex flex-col min-h-screen transition-all duration-300" :class="desktopSidebarOpen ? 'lg:pl-64' : 'lg:pl-0'">
 
         <!-- Top bar -->
         <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
             <div class="flex items-center justify-between px-4 h-14">
-                <button @click="sidebarOpen = !sidebarOpen"
-                    class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button @click="sidebarOpen = !sidebarOpen"
+                        class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
 
-                <div class="hidden lg:block">
-                    <h1 class="text-sm font-semibold text-gray-700">@yield('page-title', 'Dashboard')</h1>
+                    <button @click="desktopSidebarOpen = !desktopSidebarOpen"
+                        class="hidden lg:block p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+                        <!-- Ikon Sidebar untuk Desktop -->
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 4v16" />
+                        </svg>
+                    </button>
+
+                    <div class="hidden lg:block ml-2">
+                        <h1 class="text-sm font-semibold text-gray-700">@yield('page-title', 'Dashboard')</h1>
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-3 ml-auto">
@@ -716,30 +523,6 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
-    <script>
-        // Global DataTables defaults — Bahasa Indonesia
-        $.extend(true, $.fn.dataTable.defaults, {
-            language: {
-                lengthMenu: 'Tampilkan _MENU_ data',
-                zeroRecords: 'Tidak ada data yang ditemukan',
-                info: 'Menampilkan _START_–_END_ dari _TOTAL_ data',
-                infoEmpty: 'Menampilkan 0 dari 0 data',
-                infoFiltered: '(difilter dari _MAX_ total data)',
-                search: 'Cari:',
-                paginate: {
-                    first: '«',
-                    last: '»',
-                    next: '›',
-                    previous: '‹',
-                },
-                emptyTable: 'Belum ada data.',
-            },
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50, 100],
-            order: [],
-        });
-    </script>
     @stack('scripts')
 
     {{-- SweetAlert flash messages --}}

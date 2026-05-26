@@ -3,41 +3,6 @@
 @section('title', 'Manajemen Berita')
 @section('page-title', 'Manajemen Berita')
 
-@push('styles')
-<style>
-    /* Custom Pagination Styling to match reference */
-    .dt-paging-button {
-        padding: 0.35rem 0.75rem !important;
-        margin: 0 0.15rem !important;
-        border-radius: 0.375rem !important;
-        border: 1px solid #e5e7eb !important;
-        font-size: 0.875rem !important;
-        color: #4b5563 !important;
-        background: #fff !important;
-    }
-    .dt-paging-button.current {
-        background: #3b82f6 !important;
-        color: #fff !important;
-        border-color: #3b82f6 !important;
-        font-weight: 600 !important;
-    }
-    .dt-paging-button:hover:not(.current) {
-        background: #f9fafb !important;
-    }
-    .dt-info {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-    /* Action Buttons Hover */
-    .action-btn {
-        transition: all 0.2s ease;
-    }
-    .action-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-</style>
-@endpush
 
 @section('content')
     <div class="space-y-6 max-w-7xl mx-auto">
@@ -107,42 +72,42 @@
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             
             {{-- Custom Filter Bar --}}
-            <div class="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-col lg:flex-row gap-4 items-end">
+            <form method="GET" action="{{ route('admin.berita.index') }}" class="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-col lg:flex-row gap-4 items-end">
                 <div class="flex-1 w-full lg:w-auto">
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5"><svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>Cari Artikel</label>
-                    <input type="text" id="customSearch" placeholder="Cari judul, konten..." class="w-full px-4 py-2.5 bg-white rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, konten..." class="w-full px-4 py-2.5 bg-white rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
                 <div class="w-full lg:w-48">
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5"><svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>Status</label>
-                    <select id="customStatus" class="w-full px-4 py-2.5 bg-white rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none">
+                    <select name="status" class="w-full px-4 py-2.5 bg-white rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none">
                         <option value="">Semua Status</option>
-                        <option value="Published">Published</option>
-                        <option value="Draft">Draft</option>
+                        <option value="Published" {{ request('status') == 'Published' ? 'selected' : '' }}>Published</option>
+                        <option value="Draft" {{ request('status') == 'Draft' ? 'selected' : '' }}>Draft</option>
                     </select>
                 </div>
                 <div class="w-full lg:w-48">
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5"><svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002 2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>Kategori</label>
-                    <select id="customCategory" class="w-full px-4 py-2.5 bg-white rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none">
+                    <select name="category" class="w-full px-4 py-2.5 bg-white rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->name }}">{{ $category->name }}</option>
+                            <option value="{{ $category->name }}" {{ request('category') == $category->name ? 'selected' : '' }}>{{ $category->name }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="flex gap-2 w-full lg:w-auto">
-                    <button type="button" id="btnFilter" class="flex-1 lg:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                    <button type="submit" class="flex-1 lg:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         Filter
                     </button>
-                    <button type="button" id="btnReset" class="px-3 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center" title="Reset Filter">
+                    <a href="{{ route('admin.berita.index') }}" class="px-3 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center" title="Reset Filter">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                    </button>
+                    </a>
                 </div>
-            </div>
+            </form>
 
             {{-- Table --}}
-            <div class="overflow-x-auto p-5">
-                <table id="table-berita" class="w-full text-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
                     <thead class="bg-gray-50/80 border-b border-gray-100">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ARTIKEL</th>
@@ -150,7 +115,7 @@
                             <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-40">PENULIS</th>
                             <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-28">STATUS</th>
                             <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-36">TANGGAL</th>
-                            <th data-orderable="false" class="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider w-32">AKSI</th>
+                            <th data-orderable="false" class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider w-32">AKSI</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -244,8 +209,8 @@
 
                                 {{-- Aksi Column --}}
                                 <td class="px-4 py-4 align-top pt-5">
-                                    <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ route('admin.berita.show', $item) }}" class="action-btn w-8 h-8 rounded bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 hover:text-blue-700" title="Preview">
+                                    <div class="flex items-center justify-start gap-1.5">
+                                        <a href="{{ route('admin.berita.show', $item) }}" class="action-btn w-8 h-8 rounded bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-blue-100 hover:text-blue-700" title="Preview">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                         </a>
                                         @if (auth()->user()->isAdmin())
@@ -268,62 +233,14 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- Pagination --}}
+            @if ($items->hasPages() || $items->total() > 0)
+            <div class="p-4 border-t border-gray-100 bg-gray-50/50">
+                {{ $items->appends(request()->query())->links() }}
+            </div>
+            @endif
         </div>
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            // Inisialisasi DataTable
-            var table = $('#table-berita').DataTable({
-                layout: {
-                    topStart: null,
-                    topEnd: null,
-                    bottomStart: 'info',
-                    bottomEnd: 'paging'
-                },
-                language: {
-                    info: "_START_ - _END_ dari _TOTAL_",
-                    infoEmpty: "0 dari 0",
-                    infoFiltered: "",
-                    emptyTable: "Belum ada data artikel.",
-                    zeroRecords: "Tidak ditemukan artikel yang sesuai."
-                },
-                columnDefs: [
-                    { orderable: false, targets: [0, 5] } // Nonaktifkan sorting pada Artikel dan Aksi
-                ],
-                order: [[4, 'desc']] // Urutkan berdasarkan Tanggal descending defaultnya
-            });
-
-            // Fungsionalitas Custom Filter
-            $('#btnFilter').on('click', function() {
-                var search = $('#customSearch').val();
-                var status = $('#customStatus').val();
-                var category = $('#customCategory').val();
-
-                table.search(search);
-                table.column(3).search(status); // Status ada di kolom ke-4 (index 3)
-                table.column(1).search(category); // Kategori ada di kolom ke-2 (index 1)
-                
-                table.draw();
-            });
-
-            // Trigger filter saat enter di input pencarian
-            $('#customSearch').on('keyup', function(e) {
-                if (e.key === 'Enter' || e.keyCode === 13) {
-                    $('#btnFilter').click();
-                }
-            });
-
-            // Fungsi Reset
-            $('#btnReset').on('click', function() {
-                $('#customSearch').val('');
-                $('#customStatus').val('');
-                $('#customCategory').val('');
-                
-                table.search('').columns().search('').draw();
-            });
-        });
-    </script>
-@endpush

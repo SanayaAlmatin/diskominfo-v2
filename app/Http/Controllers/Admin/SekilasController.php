@@ -9,9 +9,17 @@ use Illuminate\Support\Facades\Storage;
 
 class SekilasController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $sekilas = TmSejarah::orderBy('id', 'desc')->get();
+        $query = TmSejarah::orderBy('id', 'desc');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('judul', 'like', "%{$search}%")
+                  ->orWhere('konten', 'like', "%{$search}%");
+        }
+
+        $sekilas = $query->paginate(10);
 
         return view('admin.sekilas.index', compact('sekilas'));
     }

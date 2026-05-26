@@ -8,9 +8,17 @@ use App\Models\TmTikStats;
 
 class InfrastrukturTikController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $items = TmTikStats::orderBy('kategori')->orderBy('sort_order')->get();
+        $query = TmTikStats::orderBy('kategori')->orderBy('sort_order');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('label', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%");
+        }
+
+        $items = $query->paginate(10);
 
         return view('admin.infrastruktur-tik.index', compact('items'));
     }

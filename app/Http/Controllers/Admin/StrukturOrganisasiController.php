@@ -9,9 +9,17 @@ use Illuminate\Support\Facades\Storage;
 
 class StrukturOrganisasiController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $items = TmSotk::orderBy('tahun', 'desc')->get();
+        $query = TmSotk::orderBy('tahun', 'desc');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('keterangan', 'like', "%{$search}%")
+                  ->orWhere('tahun', 'like', "%{$search}%");
+        }
+
+        $items = $query->paginate(10);
 
         return view('admin.struktur-organisasi.index', compact('items'));
     }

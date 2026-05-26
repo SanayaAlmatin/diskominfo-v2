@@ -20,7 +20,7 @@ class BeritaRequest extends FormRequest
         return [
             'title'             => ['required', 'string', 'max:255'],
             'subtitle'          => ['nullable', 'string', 'max:255'],
-            'slug'              => ['nullable', 'string', 'max:255', Rule::unique('tm_news', 'slug')->ignore($newsId)],
+            'slug'              => ['nullable', 'string', 'max:255'],
             'content'           => ['required', 'string'],
             'excerpt'           => ['nullable', 'string', 'max:500'],
             'description_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],

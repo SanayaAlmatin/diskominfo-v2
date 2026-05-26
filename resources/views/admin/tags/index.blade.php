@@ -4,45 +4,6 @@
 @section('page-title', 'Manajemen Tag')
 
 @push('styles')
-<style>
-    /* Custom Pagination Styling to match DataTables reference */
-    nav[role="navigation"] .shadow-sm.rounded-md {
-        box-shadow: none !important;
-    }
-    nav[role="navigation"] .shadow-sm.rounded-md > * {
-        margin: 0 0.15rem !important;
-    }
-    nav[role="navigation"] .shadow-sm.rounded-md > a,
-    nav[role="navigation"] .shadow-sm.rounded-md > span > span {
-        padding: 0.35rem 0.75rem !important;
-        border-radius: 0.375rem !important;
-        border: 1px solid #e5e7eb !important;
-        font-size: 0.875rem !important;
-        color: #4b5563 !important;
-        background: #fff !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 2rem !important;
-        height: 2.2rem !important;
-    }
-    nav[role="navigation"] .shadow-sm.rounded-md > a:hover {
-        background: #f9fafb !important;
-        color: #1f2937 !important;
-    }
-    /* Active page indicator */
-    nav[role="navigation"] .shadow-sm.rounded-md > span[aria-current="page"] > span {
-        background-color: #2563eb !important;
-        color: #ffffff !important;
-        border-color: #2563eb !important;
-        font-weight: 600 !important;
-    }
-    /* Fix SVG sizes */
-    nav[role="navigation"] .shadow-sm.rounded-md svg {
-        width: 1.25rem;
-        height: 1.25rem;
-    }
-</style>
 @endpush
 
 @section('content')
@@ -126,7 +87,7 @@
                     @if(auth()->user()->isSuperAdmin())
                     <form action="{{ route('admin.tags.destroy', $tag) }}" method="POST" class="inline-block">
                         @csrf @method('DELETE')
-                        <button type="button" onclick="confirmDelete(this.closest('form'), 'Tag ini akan dihapus secara permanen.')" class="w-8 h-8 rounded-full bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 transition-colors">
+                        <button type="button" onclick="confirmDelete(this.closest('form'), 'Tag ini akan dihapus secara permanen.')" class="w-8 h-8 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-red-100 transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                         </button>
                     </form>
@@ -147,13 +108,8 @@
 
     <!-- Pagination -->
     @if($tags->hasPages())
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-        <p class="text-sm text-gray-500">
-            {{ $tags->firstItem() ?? 0 }} - {{ $tags->lastItem() ?? 0 }} dari {{ $tags->total() }} tag
-        </p>
-        <div>
-            {{ $tags->links() }}
-        </div>
+    <div class="pt-2">
+        {{ $tags->links() }}
     </div>
     @endif
 

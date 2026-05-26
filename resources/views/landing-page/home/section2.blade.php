@@ -69,7 +69,7 @@
                 <div class="swiper berita-swiper">
                     <div class="swiper-wrapper">
 
-                        @forelse ($latestNews ?? [] as $news)
+                        @forelse ($headlineNews ?? [] as $news)
                             <div class="swiper-slide">
                                 <div
                                     class="relative w-full aspect-[4/3] md:aspect-video lg:aspect-[1/1] xl:aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">

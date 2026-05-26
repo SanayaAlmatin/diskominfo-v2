@@ -11,9 +11,16 @@ use Illuminate\Support\Facades\Storage;
 
 class StatistikController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = TmBidangStatistik::withCount('files')->orderBy('n_bidang')->get();
+        $query = TmBidangStatistik::withCount('files')->orderBy('n_bidang');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('n_bidang', 'like', "%{$search}%");
+        }
+
+        $items = $query->paginate(10);
 
         return view('admin.statistik.index', compact('items'));
     }

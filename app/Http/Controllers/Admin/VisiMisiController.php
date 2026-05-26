@@ -8,9 +8,16 @@ use App\Models\TmVisiMisi;
 
 class VisiMisiController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $items = TmVisiMisi::orderBy('tipe')->orderBy('sort_order')->get();
+        $query = TmVisiMisi::orderBy('tipe')->orderBy('sort_order');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('konten', 'like', "%{$search}%");
+        }
+
+        $items = $query->paginate(10);
 
         return view('admin.visi-misi.index', compact('items'));
     }

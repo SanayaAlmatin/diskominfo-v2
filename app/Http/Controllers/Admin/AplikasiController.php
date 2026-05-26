@@ -11,9 +11,17 @@ use Illuminate\Support\Facades\Storage;
 
 class AplikasiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $apps = TmPortalApp::orderBy('sort_order')->orderBy('id', 'desc')->get();
+        $query = TmPortalApp::orderBy('sort_order')->orderBy('id', 'desc');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        $apps = $query->paginate(10);
         return view('admin.aplikasi.index', compact('apps'));
     }
 

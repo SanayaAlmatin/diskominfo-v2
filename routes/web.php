@@ -11,7 +11,6 @@ use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\KategoriBeritaController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\LowonganController;
-use App\Http\Controllers\Admin\ProgramVacancyController;
 use App\Http\Controllers\Admin\SekilasController;
 use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\StrukturOrganisasiController;
@@ -129,16 +128,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->except(['create', 'show', 'edit'])
             ->middleware(['admin.role:super-admin,admin']);
 
-        // Program & Lowongan (Carousel)
-        Route::resource('program-vacancy', ProgramVacancyController::class)
-            ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin'])
-            ->parameters(['program-vacancy' => 'programVacancy']);
-
-        // Lowongan Karir
+        // Lowongan Karir / Manajemen Kegiatan
         Route::resource('lowongan', LowonganController::class)
             ->except(['show'])
             ->middleware(['admin.role:super-admin,admin']);
+
+        // Manajemen Jenis Lowongan
+        Route::resource('jenis-lowongan', \App\Http\Controllers\Admin\JenisLowonganController::class)
+            ->except(['create', 'show', 'edit'])
+            ->middleware(['admin.role:super-admin,admin'])
+            ->parameters(['jenis-lowongan' => 'jenisLowongan']);
 
         // Galeri Foto
         Route::resource('foto', FotoController::class)

@@ -9,11 +9,23 @@ use Illuminate\Support\Facades\Storage;
 
 class FotoController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $items = TmFoto::orderBy('sort_order')->latest()->get();
+        $query = TmFoto::orderBy('sort_order')->latest();
 
-        return view('admin.foto.index', compact('items'));
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('title', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+        }
+
+        $items = $query->paginate(10);
+
+        $totalFoto = TmFoto::count();
+        $totalAktif = TmFoto::where('is_active', true)->count();
+        $totalKategori = TmFoto::whereNotNull('category')->distinct('category')->count('category');
+
+        return view('admin.foto.index', compact('items', 'totalFoto', 'totalAktif', 'totalKategori'));
     }
 
     public function create()

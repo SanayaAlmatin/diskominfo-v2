@@ -10,9 +10,17 @@ use Illuminate\Support\Str;
 
 class KategoriBeritaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = TmCategory::withCount('news')->latest()->get();
+        $query = TmCategory::withCount('news')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        $categories = $query->paginate(10);
 
         $totalKategori = TmCategory::count();
         $totalArtikel = TmNews::count();

@@ -24,17 +24,10 @@
             
             {{-- Header --}}
             <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                    </div>
-                    <div>
+                <div>
                         <h2 class="text-xl font-bold text-gray-800">Edit Artikel: {{ Str::limit($berita->title, 40) }}</h2>
                         <p class="text-sm text-gray-500">Perbarui artikel berita Anda</p>
                     </div>
-                </div>
                 <a href="{{ route('admin.berita.index') }}" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors flex items-center gap-2 bg-white">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                     Kembali
@@ -277,7 +270,7 @@
                                 Simpan sebagai Draft
                             </button>
                             <button type="submit" name="status" value="1" class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors" style="background-color: #0F2044;">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                                <svg class="w-4 h-4 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                                 Kirim / Publish Perubahan
                             </button>
                         </div>
@@ -298,7 +291,8 @@
             $('#tags-select').select2({
                 placeholder: "Ketik nama tag...",
                 allowClear: false,
-                tags: true // Allow creating new tags if necessary
+                tags: true, // Allow creating new tags if necessary
+                width: '100%'
             });
 
             // Sinkronisasi tag terpilih ke container di bawah
@@ -349,3 +343,4 @@
         });
     </script>
 @endpush
+

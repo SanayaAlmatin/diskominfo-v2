@@ -8,9 +8,17 @@ use App\Models\TmFooterPortal;
 
 class FooterPortalController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $portals = TmFooterPortal::ordered()->get();
+        $query = TmFooterPortal::ordered();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('label', 'like', "%{$search}%")
+                  ->orWhere('url', 'like', "%{$search}%");
+        }
+
+        $portals = $query->paginate(10);
 
         return view('admin.footer.portals.index', compact('portals'));
     }
