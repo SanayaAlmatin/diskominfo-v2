@@ -81,6 +81,22 @@ class UserController extends Controller
         $roleIds = $data['role_ids'] ?? [];
         unset($data['role_ids'], $data['password_confirmation']);
 
+        // Proteksi: Mencegah penghapusan hak akses Admin jika ini adalah Admin terakhir
+        if ($user->hasRole('admin')) {
+            $adminRole = Role::where('name', 'admin')->first();
+            if ($adminRole && !in_array($adminRole->id, $roleIds)) {
+                $adminCount = User::whereHas('roles', function($q) use ($adminRole) {
+                    $q->where('role_id', $adminRole->id);
+                })->count();
+
+                if ($adminCount <= 1) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'Gagal memperbarui: Harus ada setidaknya satu akun berstatus Admin di dalam sistem.');
+                }
+            }
+        }
+
         $user->update($data);
         $user->roles()->sync($roleIds);
 

@@ -26,8 +26,19 @@ class BeritaController extends Controller
             });
         }
 
+        // If user is verifikator or sort_pending is requested, prioritize pending validation items
+        if (auth()->user()?->hasRole('verifikator') || $request->has('sort_pending')) {
+            $query->orderByRaw('CASE WHEN status = 2 THEN 1 ELSE 2 END');
+        }
+
         if ($request->filled('status')) {
-            $status = $request->status == 'Published' ? 1 : 0;
+            if ($request->status == 'Published') {
+                $status = 1;
+            } elseif ($request->status == 'Menunggu Validasi') {
+                $status = 2;
+            } else {
+                $status = 0;
+            }
             $query->where('status', $status);
         }
 
@@ -42,17 +53,22 @@ class BeritaController extends Controller
         $categories = TmCategory::all();
 
         $totalBerita = TmNews::count();
-        $totalDraft = TmNews::where('status', 0)->count();
+        $totalDraft = TmNews::whereIn('status', [0, 3])->count();
         $totalPublished = TmNews::where('status', 1)->count();
+        $totalPending = TmNews::where('status', 2)->count();
         $totalHeadline = TmNews::where('is_headline', 1)->count();
 
         return view('admin.berita.index', compact(
-            'items', 'categories', 'totalBerita', 'totalDraft', 'totalPublished', 'totalHeadline'
+            'items', 'categories', 'totalBerita', 'totalDraft', 'totalPublished', 'totalPending', 'totalHeadline'
         ));
     }
 
     public function create()
     {
+        if (auth()->user()->hasRole('verifikator')) {
+            abort(403, 'Akses Ditolak. Verifikator tidak dapat membuat berita baru.');
+        }
+
         $categories = TmCategory::all();
         $tags = TmTag::all();
         return view('admin.berita.create', compact('categories', 'tags'));
@@ -60,6 +76,10 @@ class BeritaController extends Controller
 
     public function store(BeritaRequest $request)
     {
+        if (auth()->user()->hasRole('verifikator')) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         $data = $request->validated();
 
         // Upload gambar utama
@@ -72,6 +92,11 @@ class BeritaController extends Controller
 
         // Set author
         $data['author_id'] = auth()->id();
+
+        // Jika admin mencoba publish langsung (status 1) tapi bukan verifikator, ubah ke 2 (Menunggu Validasi)
+        if ($data['status'] == 1 && !auth()->user()->hasRole('verifikator')) {
+            $data['status'] = 2;
+        }
 
         // Set published_at jika status published dan belum ada
         if ($data['status'] == 1 && empty($data['published_at'])) {
@@ -113,6 +138,17 @@ class BeritaController extends Controller
 
     public function update(BeritaRequest $request, TmNews $berita)
     {
+        // Jika verifikator, HANYA update status dan rejection_reason
+        if (auth()->user()->hasRole('verifikator')) {
+            $berita->update([
+                'status' => $request->status,
+                'rejection_reason' => $request->rejection_reason ?? null,
+                'verifikator_id' => auth()->id(),
+                'published_at' => $request->status == 1 ? ($berita->published_at ?? now()) : null,
+            ]);
+            return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil diverifikasi.');
+        }
+
         $data = $request->validated();
 
         // Upload gambar baru (replace yang lama)
@@ -129,6 +165,16 @@ class BeritaController extends Controller
         // Pastikan slug unik (kecuali milik sendiri)
         if (isset($data['slug'])) {
             $data['slug'] = $this->ensureUniqueSlug($data['slug'], $berita->id);
+        }
+
+        // Jika admin mencoba publish langsung (status 1) tapi bukan verifikator, ubah ke 2
+        if ($data['status'] == 1 && !auth()->user()->hasRole('verifikator')) {
+            $data['status'] = 2;
+        }
+
+        // Jika statusnya dikirim untuk validasi atau draft, reset rejection reason
+        if (in_array($data['status'], [0, 2])) {
+            $data['rejection_reason'] = null;
         }
 
         // Set published_at jika baru dipublish
@@ -159,6 +205,10 @@ class BeritaController extends Controller
 
     public function destroy(TmNews $berita)
     {
+        if (auth()->user()->hasRole('verifikator')) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         // Hapus gambar hanya jika bukan dari folder migrasi
         if ($berita->description_image && ! Str::startsWith($berita->description_image, 'berita-portal-kominfo/')) {
             Storage::disk('public')->delete($berita->description_image);
@@ -174,6 +224,33 @@ class BeritaController extends Controller
 
         return redirect()->route('admin.berita.index')
             ->with('success', 'Berita berhasil dihapus.');
+    }
+
+    public function verify(Request $request, TmNews $berita)
+    {
+        $request->validate([
+            'action' => ['required', 'in:approve,reject'],
+            'rejection_reason' => ['required_if:action,reject', 'nullable', 'string']
+        ]);
+
+        if ($request->action === 'approve') {
+            $berita->update([
+                'status' => 1,
+                'published_at' => $berita->published_at ?? now(),
+                'verifikator_id' => auth()->id(),
+                'rejection_reason' => null
+            ]);
+            $message = 'Berita berhasil dipublikasi.';
+        } else {
+            $berita->update([
+                'status' => 0, // Kembalikan ke draft
+                'verifikator_id' => auth()->id(),
+                'rejection_reason' => $request->rejection_reason
+            ]);
+            $message = 'Berita ditolak dan dikembalikan sebagai draft.';
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 
     /**

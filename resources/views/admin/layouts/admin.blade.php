@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'CMS') — Diskominfo Tangsel</title>
+    <title>@yield('title', 'CMS') — Kominfo Tangsel</title>
+    <link rel="icon" href="{{ asset('Images/logo-kominfo.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
@@ -19,11 +20,26 @@
         [x-cloak] { display: none !important; }
 
         :root {
-            --navy: #0F2044;
-            --navy-dark: #091529;
-            --navy-light: #1a3460;
+            --navy: #0665D0;
+            --navy-dark: #0552A8;
+            --navy-light: #1A75E8;
             --yellow: #FFC107;
             --yellow-dark: #e5ac00;
+        }
+
+        /* Theme overrides for buttons */
+        .bg-blue-600,
+        [style*="background-color: #1a56db"],
+        [style*="background-color: #0F2044"] {
+            background-color: var(--navy) !important;
+        }
+        .hover\:bg-blue-700:hover,
+        [style*="background-color: #1a56db"]:hover,
+        [style*="background-color: #0F2044"]:hover {
+            background-color: var(--navy-dark) !important;
+        }
+        .text-blue-600 {
+            color: var(--navy) !important;
         }
 
         .sidebar-nav a.active,
@@ -148,23 +164,17 @@
         :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen, 'lg:translate-x-0': desktopSidebarOpen, 'lg:-translate-x-full': !desktopSidebarOpen}" style="background-color: var(--navy);" x-cloak>
 
         <!-- Logo -->
-        <div class="flex items-center justify-between gap-3 px-6 py-5 border-b border-white/10">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style="background-color: var(--yellow);">
-                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.357l4-2a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zm5.99 7.176A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-                    </svg>
-                </div>
+        <div class="flex items-start lg:items-center justify-between gap-3 px-6 py-5 border-b border-white/10">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-3">
+                <img src="{{ asset('Images/logo-kominfo.png') }}" class="h-10 w-auto object-contain" alt="Logo">
                 <div>
-                    <p class="text-white font-bold text-sm leading-tight">CMS Diskominfo</p>
+                    <p class="text-white font-bold text-sm leading-tight">CMS Kominfo</p>
                     <p class="text-blue-300 text-xs">Tangerang Selatan</p>
                 </div>
             </div>
             <!-- Close button (mobile only) -->
             <button @click="sidebarOpen = false"
-                class="lg:hidden p-1.5 rounded-lg text-blue-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0">
+                class="lg:hidden p-1.5 rounded-lg text-blue-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 mt-1 lg:mt-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -187,6 +197,7 @@
                 <span>Dashboard</span>
             </a>
 
+            @if (!auth()->user()?->hasRole('verifikator'))
             <div class="px-3 mt-4 mb-2">
                 <p class="text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Konten Navbar</p>
             </div>
@@ -198,7 +209,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                 </svg>
-                <span>Sekilas Diskominfo</span>
+                <span>Sekilas Kominfo</span>
             </a>
 
             <a href="{{ route('admin.visi-misi.index') }}"
@@ -241,6 +252,7 @@
                 </svg>
                 <span>Statistik Layanan</span>
             </a>
+            @endif
 
             <div class="px-3 mt-4 mb-2">
                 <p class="text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Konten Website</p>
@@ -267,7 +279,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span>Kelola Artikel</span>
+                        @php
+                            $sidebarPendingCount = \App\Models\TmNews::where('status', 2)->count();
+                        @endphp
+                        @if($sidebarPendingCount > 0)
+                            <span class="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $sidebarPendingCount }}</span>
+                        @endif
                     </a>
+                    @if (auth()->user()?->hasRole('admin'))
                     <a href="{{ route('admin.berita.create') }}"
                         class="flex items-center gap-3 pl-14 pr-6 py-2 text-blue-100 text-sm transition-all
                               {{ request()->routeIs('admin.berita.create') ? 'active' : '' }}">
@@ -276,6 +295,7 @@
                         </svg>
                         <span>Buat Artikel Baru</span>
                     </a>
+                    @endif
                     <a href="{{ route('admin.kategori.index') }}"
                         class="flex items-center gap-3 pl-14 pr-6 py-2 text-blue-100 text-sm transition-all
                               {{ request()->routeIs('admin.kategori.*') ? 'active' : '' }}">
@@ -296,6 +316,7 @@
             </div>
 
 
+            @if (!auth()->user()?->hasRole('verifikator'))
             <a href="{{ route('admin.wifi.index') }}"
                 class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
                       {{ request()->routeIs('admin.wifi.*') ? 'active' : '' }}">
@@ -339,6 +360,16 @@
                     </a>
                 </div>
             </div>
+
+            <a href="{{ route('admin.events.index') }}"
+                class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
+                      {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Kelola Event</span>
+            </a>
 
             <a href="{{ route('admin.foto.index') }}"
                 class="flex items-center gap-3 px-6 py-2.5 text-blue-100 text-sm transition-all
@@ -415,6 +446,7 @@
                 </svg>
                 <span>Link Utilitas</span>
             </a>
+            @endif
 
             @if (auth()->user()?->isSuperAdmin())
                 <div class="px-3 mt-4 mb-2">
@@ -436,24 +468,24 @@
         <!-- Sidebar Footer -->
         <div class="p-4 border-t border-white/10">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                    @if (auth()->user()?->avatar)
-                        <img src="{{ auth()->user()->avatar }}" class="w-8 h-8 rounded-full object-cover"
-                            alt="">
-                    @else
-                        <span
-                            class="text-white text-xs font-bold">{{ strtoupper(substr(auth()->user()?->nama ?? 'U', 0, 1)) }}</span>
-                    @endif
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-white text-sm font-medium truncate">{{ auth()->user()?->nama }}</p>
-                    <p class="text-blue-400 text-xs truncate">{{ auth()->user()?->getCmsRole() }}</p>
-                </div>
+                <a href="{{ route('admin.profile.index') }}" class="flex items-center gap-3 flex-1 min-w-0 group cursor-pointer">
+                    <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm border border-white/10 group-hover:border-white/30 transition-colors">
+                        @if (auth()->user()?->profile_photo_url)
+                            <img src="{{ auth()->user()->profile_photo_url }}" class="w-full h-full object-cover" alt="Profile">
+                        @else
+                            <span class="text-white text-xs font-bold">{{ auth()->user()?->initials }}</span>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white text-sm font-semibold truncate group-hover:text-yellow-400 transition-colors">{{ auth()->user()?->nama }}</p>
+                        <p class="text-blue-300 text-xs truncate">{{ auth()->user()?->getCmsRole() }}</p>
+                    </div>
+                </a>
                 <form method="POST" action="{{ route('admin.logout') }}" id="logout-form">
                     @csrf
                     <button type="button" onclick="confirmLogout(document.getElementById('logout-form'))"
-                        class="text-blue-400 hover:text-red-400 transition-colors" title="Logout">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="text-blue-400 hover:text-red-400 transition-colors p-2" title="Logout">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
@@ -492,18 +524,157 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 ml-auto">
-                    <a href="{{ url('/') }}" target="_blank"
-                        class="flex items-center gap-1.5 text-xs text-gray-500 hover:text-blue-700 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                <div class="flex items-center gap-4 ml-auto">
+                    
+                    <!-- Date & Time -->
+                    <div class="hidden md:flex items-center gap-2 bg-gray-50 hover:bg-gray-100 transition-colors px-3 py-1.5 rounded-xl border border-gray-100">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span class="hidden sm:inline">Lihat Website</span>
-                    </a>
-                    <span class="hidden sm:inline text-gray-300">|</span>
-                    <span
-                        class="hidden sm:inline text-xs text-gray-500 font-medium">{{ auth()->user()?->nama }}</span>
+                        <div class="text-[13px] font-medium text-gray-700 flex items-center gap-1.5" x-data="{ time: '{{ \Carbon\Carbon::now()->format('H:i') }}' }" x-init="setInterval(() => { let d = new Date(); time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') }, 1000)">
+                            <span>{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</span>
+                            <span class="text-gray-300">|</span>
+                            <span x-text="time"></span>
+                        </div>
+                    </div>
+
+                    @php
+                        $pendingArticlesCount = \App\Models\TmNews::where('status', 2)->count();
+                    @endphp
+
+                    <!-- Notifications Dropdown -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" @click.away="open = false" class="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            @if($pendingArticlesCount > 0)
+                                <span class="absolute top-0.5 right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white">
+                                    {{ $pendingArticlesCount > 9 ? '9+' : $pendingArticlesCount }}
+                                </span>
+                            @endif
+                        </button>
+
+                        <div x-show="open" x-transition.opacity.duration.200ms x-cloak
+                            class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                            <div class="px-4 py-3 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                                <h3 class="text-base font-bold text-gray-800">Notifikasi</h3>
+                                <span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">{{ $pendingArticlesCount }}</span>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto">
+                                @if($pendingArticlesCount > 0)
+                                <a href="{{ route('admin.berita.index', ['status' => 'Menunggu Validasi']) }}" class="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+                                    <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-500 relative">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                        </svg>
+                                        <!-- clock overlay in bottom right -->
+                                        <div class="absolute -bottom-1 -right-1 bg-orange-100 rounded-full p-0.5">
+                                            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="12" r="9" stroke-width="2"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v5l3 3"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0 pt-0.5">
+                                        <p class="text-sm font-bold text-gray-800">Artikel Pending</p>
+                                        <p class="text-[13px] text-gray-500 mt-0.5 leading-snug">{{ $pendingArticlesCount }} artikel menunggu verifikasi</p>
+                                    </div>
+                                    <div class="flex-shrink-0 mt-2">
+                                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white">
+                                            {{ $pendingArticlesCount > 9 ? '9+' : $pendingArticlesCount }}
+                                        </span>
+                                    </div>
+                                </a>
+                                @else
+                                <div class="p-6 text-center">
+                                    <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-3">
+                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Tidak ada notifikasi saat ini.</p>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Profile Dropdown -->
+                    <div x-data="{ open: false }" class="relative ml-1">
+                        <button @click="open = !open" @click.away="open = false" class="flex items-center gap-2 hover:bg-gray-50 rounded-lg p-1 pr-2 transition-colors">
+                            <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm text-white font-bold text-sm">
+                                @if (auth()->user()?->profile_photo_url)
+                                    <img src="{{ auth()->user()->profile_photo_url }}" class="w-full h-full object-cover" alt="Profile">
+                                @else
+                                    {{ auth()->user()?->initials }}
+                                @endif
+                            </div>
+                            <div class="hidden md:block text-left">
+                                <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()?->nama }}</p>
+                                <p class="text-xs text-gray-500">{{ auth()->user()?->getCmsRole() }}</p>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-transition.opacity.duration.200ms x-cloak
+                            class="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                            <!-- Header -->
+                            <div class="bg-blue-600 p-4 flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 overflow-hidden text-white font-bold text-lg border border-white/20">
+                                    @if (auth()->user()?->profile_photo_url)
+                                        <img src="{{ auth()->user()->profile_photo_url }}" class="w-full h-full object-cover" alt="Profile">
+                                    @else
+                                        {{ auth()->user()?->initials }}
+                                    @endif
+                                </div>
+                                <div class="text-left text-white min-w-0">
+                                    <p class="text-base font-bold truncate">{{ auth()->user()?->nama }}</p>
+                                    <p class="text-sm text-blue-100 truncate">{{ auth()->user()?->getCmsRole() }}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Menu Items -->
+                            <div class="py-2">
+                                <a href="{{ url('/') }}" target="_blank" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    Portal Kominfo
+                                </a>
+                                
+                                <a href="{{ route('admin.profile.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Profil Saya
+                                </a>
+
+
+
+                                <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                    Two-Factor Auth
+                                </a>
+
+                                <div class="h-px bg-gray-100 my-1"></div>
+
+                                <form method="POST" action="{{ route('admin.logout') }}" id="topbar-logout-form">
+                                    @csrf
+                                    <button type="button" onclick="confirmLogout(document.getElementById('topbar-logout-form'))" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                        </svg>
+                                        Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -517,7 +688,7 @@
         </main>
 
         <footer class="py-3 px-6 border-t border-gray-200 bg-white">
-            <p class="text-xs text-gray-400 text-center">CMS Portal Diskominfo Tangerang Selatan &copy;
+            <p class="text-xs text-gray-400 text-center">CMS Portal Kominfo Tangerang Selatan &copy;
                 {{ date('Y') }}</p>
         </footer>
     </div>

@@ -72,8 +72,8 @@
                                 <td class="px-6 py-4 align-middle">
                                     @php $role = $user->getCmsRole(); @endphp
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold
-                                        {{ $role === 'super-admin' ? 'bg-red-50 text-red-700 border border-red-100' : ($role === 'admin' ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-gray-50 text-gray-700 border border-gray-200') }}">
-                                        {{ $role === 'super-admin' ? 'Super Admin' : ($role === 'admin' ? 'Admin' : 'Guest') }}
+                                        {{ $role === 'admin' ? 'bg-red-50 text-red-700 border border-red-100' : ($role === 'verifikator' ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-gray-50 text-gray-700 border border-gray-200') }}">
+                                        {{ $role === 'admin' ? 'Admin' : ($role === 'verifikator' ? 'Verifikator' : 'Pejabat Dinas') }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 align-middle text-sm text-gray-500 font-medium">

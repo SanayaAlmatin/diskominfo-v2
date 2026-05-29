@@ -174,7 +174,7 @@
                     <div class="rounded-2xl border border-white/40 bg-white p-6 text-slate-900 shadow-2xl sm:p-8">
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#044FA0]">Visi Kota</p>
                         <blockquote class="mt-4 text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl">
-                            {{ $vision }}
+                            {!! $vision !!}
                         </blockquote>
                         <div class="mt-6 flex flex-wrap gap-2">
                             <span class="rounded-lg bg-[#F7D558] px-3 py-1 text-xs font-semibold text-[#044FA0]">Tangsel
@@ -237,8 +237,8 @@
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Misi
                                     {{ $number }}</p>
-                                <p class="mt-2 text-base font-semibold leading-relaxed text-slate-900">
-                                    {{ $mission }}</p>
+                                <div class="mt-2 text-base font-semibold leading-relaxed text-slate-900 prose prose-sm max-w-none prose-p:my-0">
+                                    {!! $mission !!}</div>
                             </div>
                         </div>
                         <div class="mt-6 h-1 w-full rounded-full bg-slate-100">

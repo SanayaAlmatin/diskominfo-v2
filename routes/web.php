@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\StrukturOrganisasiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VisiMisiController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WifiLocationController;
 use App\Http\Middleware\TrackPageVisit;
@@ -67,96 +68,109 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Protected CMS routes
-    Route::middleware(['admin.auth'])->group(function () {
+    Route::middleware(['admin.auth', \App\Http\Middleware\PejabatDinasReadOnly::class])->group(function () {
 
         // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+        // Profil Saya
+        Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('profile.index');
+        Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile/photo', [\App\Http\Controllers\Admin\ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
+        Route::put('/profile/password', [\App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
         // Sekilas Diskominfo
         Route::resource('sekilas', SekilasController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin'])
+            ->middleware(['admin.role:admin,pejabat-dinas'])
             ->parameters(['sekilas' => 'sekilas']);
 
         // Visi & Misi
         Route::resource('visi-misi', VisiMisiController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin'])
+            ->middleware(['admin.role:admin,pejabat-dinas'])
             ->parameters(['visi-misi' => 'visiMisi']);
 
         // Struktur Organisasi
         Route::resource('struktur-organisasi', StrukturOrganisasiController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin'])
+            ->middleware(['admin.role:admin,pejabat-dinas'])
             ->parameters(['struktur-organisasi' => 'strukturOrganisasi']);
 
         // Infrastruktur TIK
         Route::resource('infrastruktur-tik', InfrastrukturTikController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin'])
+            ->middleware(['admin.role:admin,pejabat-dinas'])
             ->parameters(['infrastruktur-tik' => 'infrastrukturTik']);
 
         // Titik Wifi
         Route::resource('wifi', \App\Http\Controllers\Admin\WifiController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin,pejabat-dinas']);
 
         // Statistik Layanan Informasi
         Route::resource('statistik', StatistikController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin,pejabat-dinas']);
         Route::post('statistik/{statistik}/files', [StatistikController::class, 'storeFile'])
             ->name('statistik.storeFile')
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin']);
         Route::delete('statistik/{statistik}/files/{file}', [StatistikController::class, 'destroyFile'])
             ->name('statistik.destroyFile')
-            ->middleware(['admin.role:super-admin']);
+            ->middleware(['admin.role:admin']);
 
         // Berita / News
+        Route::post('berita/{berita}/verify', [BeritaController::class, 'verify'])
+            ->name('berita.verify')
+            ->middleware(['admin.role:admin,verifikator']);
         Route::resource('berita', BeritaController::class)
-            ->middleware(['admin.role:super-admin,admin'])
+            ->middleware(['admin.role:admin,verifikator,pejabat-dinas'])
             ->parameters(['berita' => 'berita']);
 
         // Kategori Berita
         Route::resource('kategori', KategoriBeritaController::class)
             ->except(['create', 'edit'])
-            ->middleware(['admin.role:super-admin,admin'])
+            ->middleware(['admin.role:admin,verifikator,pejabat-dinas'])
             ->parameters(['kategori' => 'kategori']);
 
         // Tag Berita
         Route::resource('tags', TagController::class)
             ->except(['create', 'show', 'edit'])
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin,verifikator,pejabat-dinas']);
 
         // Lowongan Karir / Manajemen Kegiatan
         Route::resource('lowongan', LowonganController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin,pejabat-dinas']);
+
+        // Kelola Event
+        Route::resource('events', EventController::class)
+            ->middleware(['admin.role:admin,pejabat-dinas']);
 
         // Manajemen Jenis Lowongan
         Route::resource('jenis-lowongan', \App\Http\Controllers\Admin\JenisLowonganController::class)
             ->except(['create', 'show', 'edit'])
-            ->middleware(['admin.role:super-admin,admin'])
+            ->middleware(['admin.role:admin,pejabat-dinas'])
             ->parameters(['jenis-lowongan' => 'jenisLowongan']);
 
         // Galeri Foto
         Route::resource('foto', FotoController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin,pejabat-dinas']);
 
         // Aplikasi Portal
         Route::resource('aplikasi', AplikasiController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin,pejabat-dinas']);
         Route::post('aplikasi/toggle', [AplikasiController::class, 'toggleFeatured'])
             ->name('aplikasi.toggleFeatured')
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin']);
         Route::post('aplikasi/categories', [AplikasiController::class, 'storeCategory'])
             ->name('aplikasi.categories.store')
-            ->middleware(['admin.role:super-admin,admin']);
+            ->middleware(['admin.role:admin']);
 
         // Konten Footer
-        Route::middleware(['admin.role:super-admin,admin'])->group(function () {
+        Route::middleware(['admin.role:admin,pejabat-dinas'])->group(function () {
             Route::get('footer/identitas', [FooterController::class, 'editIdentitas'])->name('footer.identitas');
             Route::put('footer/identitas', [FooterController::class, 'updateIdentitas'])->name('footer.identitas.update');
 
@@ -185,6 +199,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // User Management (Super Admin only)
         Route::resource('users', UserController::class)
             ->except(['show'])
-            ->middleware(['admin.role:super-admin']);
+            ->middleware(['admin.role:admin']);
     });
 });

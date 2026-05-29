@@ -54,31 +54,56 @@ class User extends Authenticatable
 
     public function isSuperAdmin(): bool
     {
-        return $this->hasRole('super-admin');
+        return $this->hasRole('admin');
     }
 
     public function isAdmin(): bool
     {
-        return $this->hasAnyRole(['super-admin', 'admin']);
+        return $this->hasAnyRole(['admin', 'verifikator']);
     }
 
     public function getCmsRole(): string
     {
-        if ($this->hasRole('super-admin')) {
-            return 'super-admin';
-        }
         if ($this->hasRole('admin')) {
             return 'admin';
         }
-        if ($this->hasRole('guest')) {
-            return 'guest';
+        if ($this->hasRole('verifikator')) {
+            return 'verifikator';
+        }
+        if ($this->hasRole('pejabat-dinas')) {
+            return 'pejabat-dinas';
         }
 
         // Fallback to legacy role column
         return match ($this->role) {
-            'super-admin' => 'super-admin',
-            'verifikator', 'editor' => 'admin',
-            default => 'guest',
+            'super-admin', 'admin' => 'admin',
+            'verifikator', 'editor' => 'verifikator',
+            default => 'pejabat-dinas',
         };
+    }
+
+    public function getInitialsAttribute(): string
+    {
+        $name = $this->nama ?: 'User';
+        $words = explode(' ', trim($name));
+        $initials = '';
+        foreach ($words as $word) {
+            if (!empty($word)) {
+                $initials .= strtoupper(substr($word, 0, 1));
+                if (strlen($initials) >= 2) break;
+            }
+        }
+        return $initials;
+    }
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        if ($this->photo) {
+            return \Illuminate\Support\Facades\Storage::disk('public')->url($this->photo);
+        }
+        if ($this->avatar) {
+            return $this->avatar;
+        }
+        return null;
     }
 }

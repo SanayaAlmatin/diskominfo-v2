@@ -63,7 +63,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 align-middle text-gray-800">
-                                    <p class="line-clamp-2 leading-relaxed">{{ $item->konten }}</p>
+                                    <p class="line-clamp-2 leading-relaxed">{{ strip_tags($item->konten) }}</p>
                                 </td>
                                 <td class="px-6 py-4 align-middle">
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-700 font-bold text-xs border border-gray-200">

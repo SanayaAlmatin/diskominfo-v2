@@ -11,46 +11,39 @@
             $words    = explode(' ', auth()->user()->nama);
             $initials = strtoupper(substr($words[0], 0, 1)) . (isset($words[1]) ? strtoupper(substr($words[1], 0, 1)) : '');
             $cmsRole  = auth()->user()->getCmsRole();
-            $roleBadge = match($cmsRole) {
-                'super-admin' => ['label' => 'Super Admin', 'color' => '#FFC107'],
-                'admin'       => ['label' => 'Admin',       'color' => '#10B981'],
-                default       => ['label' => 'Guest',       'color' => '#6B7280'],
-            };
+            $roleConfig = [
+                'admin'         => ['label' => 'Admin',         'color' => '#FFC107'],
+                'verifikator'   => ['label' => 'Verifikator',   'color' => '#17a2b8'],
+                'pejabat-dinas' => ['label' => 'Pejabat Dinas', 'color' => '#6c757d']
+            ];
+            $roleBadge = $roleConfig[$cmsRole] ?? ['label' => 'Guest', 'color' => '#6B7280'];
         @endphp
-        <div class="rounded-xl overflow-hidden relative text-white" style="background: linear-gradient(135deg, #0F2044, #1a3460);">
-            {{-- Dot pattern overlay --}}
-            <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <pattern id="banner-dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                        <circle cx="2" cy="2" r="1.5" fill="white" opacity="0.08"/>
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#banner-dots)"/>
-            </svg>
-
-            {{-- Decorative circles (kanan, desktop only) --}}
-            <div class="hidden md:block absolute right-0 top-0 bottom-0 w-48 pointer-events-none overflow-hidden">
-                <div class="absolute rounded-full" style="width:180px;height:180px;background:rgba(255,193,7,0.10);right:-40px;top:50%;transform:translateY(-50%);"></div>
-                <div class="absolute rounded-full" style="width:110px;height:110px;background:rgba(255,255,255,0.05);right:20px;top:50%;transform:translateY(-50%);"></div>
-                <div class="absolute rounded-full" style="width:55px;height:55px;background:rgba(255,193,7,0.18);right:50px;top:50%;transform:translateY(-50%);"></div>
-            </div>
-
-            {{-- Content --}}
-            <div class="relative z-10 flex items-center gap-4 p-6">
-                <div class="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0"
-                     style="background:#FFC107;color:#0F2044;">
+        <div class="rounded-xl overflow-hidden relative bg-white border border-gray-100 shadow-sm flex items-center justify-between p-6">
+            <div class="relative z-10 flex items-center gap-5">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-2xl flex-shrink-0 shadow-inner"
+                     style="background: #eff6ff; color: #1d4ed8;">
                     {{ $initials }}
                 </div>
                 <div>
-                    <p class="text-xs text-blue-300 mb-0.5">Selamat Datang,</p>
-                    <h2 class="text-xl font-bold leading-tight">{{ auth()->user()->nama }}</h2>
-                    <p class="text-blue-300 text-xs mt-1">{{ now()->isoFormat('dddd, D MMMM Y') }}</p>
-                    <span class="inline-flex items-center gap-1.5 mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold"
-                          style="background:{{ $roleBadge['color'] }}22;color:{{ $roleBadge['color'] }};border:1px solid {{ $roleBadge['color'] }}44;">
-                        <span class="w-1.5 h-1.5 rounded-full" style="background:{{ $roleBadge['color'] }};"></span>
-                        {{ $roleBadge['label'] }}
-                    </span>
+                    <p class="text-sm text-gray-500 mb-0.5">Selamat Datang,</p>
+                    <h2 class="text-2xl font-extrabold text-gray-800 leading-tight">{{ auth()->user()->nama }}</h2>
+                    <div class="flex items-center gap-3 mt-2">
+                        <p class="text-gray-500 text-sm flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            {{ now()->isoFormat('dddd, D MMMM Y') }}
+                        </p>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+                              style="background:{{ $roleBadge['color'] }}15;color:{{ $roleBadge['color'] }};">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background:{{ $roleBadge['color'] }};"></span>
+                            {{ $roleBadge['label'] }}
+                        </span>
+                    </div>
                 </div>
+            </div>
+            
+            {{-- Decorative accent --}}
+            <div class="hidden md:block opacity-5 pointer-events-none absolute right-4">
+                 <img src="{{ asset('Images/logo-kominfo.png') }}" alt="Logo" class="h-32 grayscale mix-blend-multiply">
             </div>
         </div>
 
@@ -71,8 +64,8 @@
                         'color' => '#10B981',
                     ],
                     [
-                        'label' => 'Lowongan Aktif',
-                        'value' => $stats['lowongan_aktif'],
+                        'label' => 'Kegiatan Aktif',
+                        'value' => $stats['kegiatan_aktif'],
                         'icon'  => 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
                         'color' => '#F59E0B',
                     ],
@@ -102,30 +95,74 @@
             @endforeach
         </div>
 
+        @if (auth()->user()->hasRole('verifikator') && isset($pendingBerita) && $pendingBerita->count() > 0)
+            <div class="bg-white rounded-xl border border-orange-200 shadow-sm overflow-hidden mb-6">
+                <div class="bg-orange-50 px-6 py-4 border-b border-orange-100 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-orange-900">Menunggu Validasi</h3>
+                            <p class="text-xs text-orange-700">Ada {{ $pendingBerita->count() }} artikel yang perlu diverifikasi</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+                    @foreach($pendingBerita->take(5) as $berita)
+                    <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-4">
+                            @if($berita->image_url)
+                                <img src="{{ $berita->image_url }}" alt="{{ $berita->title }}" class="w-16 h-16 rounded-lg object-cover">
+                            @else
+                                <div class="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                </div>
+                            @endif
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800 mb-1 line-clamp-1">{{ $berita->title }}</h4>
+                                <p class="text-xs text-gray-500">Oleh: {{ $berita->author->nama ?? 'Admin' }} &bull; {{ $berita->updated_at->diffForHumans() }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.berita.index', ['status' => 'Menunggu Validasi']) }}" class="px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-semibold rounded hover:bg-orange-200 transition-colors flex-shrink-0">Verifikasi</a>
+                    </div>
+                    @endforeach
+                </div>
+                @if($pendingBerita->count() > 0)
+                <div class="p-4 bg-gray-50 border-t border-gray-100 text-center">
+                    <a href="{{ route('admin.berita.index', ['status' => 'Menunggu Validasi']) }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-orange-700 bg-white border border-orange-200 rounded-lg hover:bg-orange-50 hover:text-orange-800 transition-colors w-full sm:w-auto">
+                        Lihat Selengkapnya
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
+                </div>
+                @endif
+            </div>
+        @endif
+
         {{-- Charts row 1: Visitor trend + Top berita --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
 
             {{-- Visitor trend chart --}}
-            <div class="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5 min-w-0 w-full overflow-hidden">
                 <h3 class="font-semibold text-gray-800 mb-4">Kunjungan Portal — 30 Hari Terakhir</h3>
-                <div id="chart-visitor"></div>
+                <div id="chart-visitor" class="w-full"></div>
             </div>
 
             {{-- Top 5 berita --}}
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 min-w-0 w-full overflow-hidden">
                 <h3 class="font-semibold text-gray-800 mb-4">Top 5 Berita Terbanyak Dibaca</h3>
                 @if ($topBerita->isEmpty())
                     <p class="text-sm text-gray-400 text-center py-8">Belum ada data berita.</p>
                 @else
-                    <div id="chart-top-berita"></div>
+                    <div id="chart-top-berita" class="w-full"></div>
                 @endif
             </div>
         </div>
 
-        {{-- Charts row 2: Lowongan per bulan --}}
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-            <h3 class="font-semibold text-gray-800 mb-4">Lowongan Pekerjaan — 6 Bulan Terakhir</h3>
-            <div id="chart-lowongan"></div>
+        {{-- Charts row 2: Kegiatan per bulan --}}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 min-w-0 w-full overflow-hidden">
+            <h3 class="font-semibold text-gray-800 mb-4">Kegiatan — 6 Bulan Terakhir</h3>
+            <div id="chart-kegiatan" class="w-full"></div>
         </div>
 
         {{-- Quick links --}}
@@ -231,6 +268,7 @@
                 chart: {
                     type: 'area',
                     height: 280,
+                    width: '100%',
                     toolbar: { show: false },
                     zoom: { enabled: false },
                 },
@@ -266,6 +304,7 @@
                 chart: {
                     type: 'bar',
                     height: 280,
+                    width: '100%',
                     toolbar: { show: false },
                 },
                 title: {
@@ -297,21 +336,22 @@
             }).render();
             @endif
 
-            // ── Lowongan per bulan (bar chart) ─────────────────────────────────
-            const lowonganData = @json($lowonganChart);
+            // ── Kegiatan per bulan (bar chart) ─────────────────────────────────
+            const kegiatanData = @json($kegiatanChart);
 
-            new ApexCharts(document.querySelector('#chart-lowongan'), {
+            new ApexCharts(document.querySelector('#chart-kegiatan'), {
                 chart: {
                     type: 'bar',
                     height: 220,
+                    width: '100%',
                     toolbar: { show: false },
                 },
                 plotOptions: {
                     bar: { borderRadius: 4, columnWidth: '45%' },
                 },
-                series: [{ name: 'Lowongan', data: lowonganData.totals }],
+                series: [{ name: 'Kegiatan', data: kegiatanData.totals }],
                 xaxis: {
-                    categories: lowonganData.months,
+                    categories: kegiatanData.months,
                     labels: { style: { fontSize: '12px' } },
                 },
                 yaxis: {
@@ -323,7 +363,7 @@
                 dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#374151'] } },
                 grid: { borderColor: '#f3f4f6' },
                 tooltip: {
-                    y: { formatter: (val) => val + ' lowongan' },
+                    y: { formatter: (val) => val + ' kegiatan' },
                 },
             }).render();
         });

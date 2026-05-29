@@ -22,6 +22,7 @@
         @csrf @method('PUT')
         <div class="max-w-7xl mx-auto">
             
+            <fieldset @if(auth()->user()->hasRole('verifikator')) disabled class="opacity-80" @endif>
             {{-- Header --}}
             <div class="flex items-center justify-between mb-6">
                 <div>
@@ -256,6 +257,7 @@
                             </div>
                         </div>
                     </div>
+                    </fieldset>
 
                     {{-- Aksi --}}
                     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
@@ -264,15 +266,45 @@
                             <h3 class="text-base font-bold text-gray-800">Aksi</h3>
                         </div>
 
+                        @if($berita->rejection_reason && $berita->status == 0)
+                        <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-100">
+                            <div class="flex gap-2">
+                                <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <div>
+                                    <p class="text-sm font-bold text-red-800">Artikel Ditolak / Perlu Revisi</p>
+                                    <p class="text-sm text-red-600 mt-1">{{ $berita->rejection_reason }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="space-y-3">
-                            <button type="submit" name="status" value="0" class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
-                                Simpan sebagai Draft
-                            </button>
-                            <button type="submit" name="status" value="1" class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors" style="background-color: #0F2044;">
-                                <svg class="w-4 h-4 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-                                Kirim / Publish Perubahan
-                            </button>
+                            @if(auth()->user()->hasRole('verifikator'))
+                                <button type="submit" name="status" value="1" class="w-full px-4 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 flex items-center justify-center gap-2 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                    Publish Berita
+                                </button>
+                                <button type="button" onclick="document.getElementById('reject-container').style.display='block'" class="w-full px-4 py-2.5 bg-orange-500 text-white rounded-lg text-sm font-semibold hover:bg-orange-600 flex items-center justify-center gap-2 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                    Tolak / Sarankan Edit
+                                </button>
+                                <div id="reject-container" style="display:none;" class="mt-3">
+                                    <textarea name="rejection_reason" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2 focus:ring-orange-500 focus:outline-none" placeholder="Tuliskan alasan penolakan atau saran perbaikan..."></textarea>
+                                    <div class="flex gap-2">
+                                        <button type="submit" name="status" value="2" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors">Tolak</button>
+                                        <button type="submit" name="status" value="3" class="flex-1 px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-semibold hover:bg-amber-600 transition-colors">Revisi</button>
+                                    </div>
+                                </div>
+                            @else
+                                <button type="submit" name="status" value="0" class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                                    Simpan sebagai Draft
+                                </button>
+                                <button type="submit" name="status" value="2" class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors" style="background-color: #0F2044;">
+                                    <svg class="w-4 h-4 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                                    Kirim untuk divalidasi
+                                </button>
+                            @endif
                         </div>
                     </div>
 

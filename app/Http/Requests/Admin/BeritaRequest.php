@@ -15,6 +15,13 @@ class BeritaRequest extends FormRequest
 
     public function rules(): array
     {
+        if (auth()->user()->hasRole('verifikator')) {
+            return [
+                'status'           => ['required', 'in:0,1,2,3'],
+                'rejection_reason' => ['nullable', 'string'],
+            ];
+        }
+
         $newsId = $this->route('berita')?->id ?? $this->route('berita');
 
         return [
@@ -25,7 +32,7 @@ class BeritaRequest extends FormRequest
             'excerpt'           => ['nullable', 'string', 'max:500'],
             'description_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'image_caption'     => ['nullable', 'string', 'max:255'],
-            'status'            => ['required', 'in:0,1'],
+            'status'            => ['required', 'in:0,1,2,3'],
             'is_headline'       => ['nullable', 'boolean'],
             'published_at'      => ['nullable', 'date'],
             'category_id'       => ['required', 'integer', 'exists:tm_categories,id'],

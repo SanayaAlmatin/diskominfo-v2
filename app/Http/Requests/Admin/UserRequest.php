@@ -23,9 +23,8 @@ class UserRequest extends FormRequest
             'no_telp'               => ['nullable', 'string', 'max:20'],
             'alamat'                => ['nullable', 'string'],
             'instansi'              => ['nullable', 'string', 'max:255'],
-            'role'                  => ['required', Rule::in(['editor', 'verifikator', 'super-admin'])],
             'photo'                 => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:1024'],
-            'role_ids'              => ['nullable', 'array'],
+            'role_ids'              => ['required', 'array'],
             'role_ids.*'            => ['integer', 'exists:roles,id'],
             'password_confirmation' => ['nullable', 'string'],
         ];

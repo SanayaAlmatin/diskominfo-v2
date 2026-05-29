@@ -22,7 +22,7 @@
         </div>
 
         {{-- Stats Cards --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             {{-- Card 1: Total --}}
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -36,12 +36,23 @@
             
             {{-- Card 2: Draft --}}
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
                 <div>
                     <p class="text-2xl font-bold text-gray-800">{{ number_format($totalDraft) }}</p>
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Draft</p>
+                </div>
+            </div>
+
+            {{-- Card 2.5: Menunggu Validasi --}}
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-800">{{ number_format($totalPending ?? 0) }}</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Menunggu Validasi</p>
                 </div>
             </div>
 
@@ -82,6 +93,7 @@
                     <select name="status" class="w-full px-4 py-2.5 bg-white rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none">
                         <option value="">Semua Status</option>
                         <option value="Published" {{ request('status') == 'Published' ? 'selected' : '' }}>Published</option>
+                        <option value="Menunggu Validasi" {{ request('status') == 'Menunggu Validasi' ? 'selected' : '' }}>Menunggu Validasi</option>
                         <option value="Draft" {{ request('status') == 'Draft' ? 'selected' : '' }}>Draft</option>
                     </select>
                 </div>
@@ -186,10 +198,17 @@
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
                                             Dipublikasi
                                         </span>
+                                    @elseif($item->status == 2)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-100">
+                                            Menunggu Validasi
+                                        </span>
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
                                             Draft
                                         </span>
+                                        @if($item->rejection_reason)
+                                        <p class="text-[10px] text-red-500 font-medium mt-1 leading-tight line-clamp-2" title="{{ $item->rejection_reason }}">Ditolak: {{ $item->rejection_reason }}</p>
+                                        @endif
                                     @endif
                                 </td>
 
@@ -226,6 +245,18 @@
                                                 </form>
                                             @endif
                                         @endif
+                                        @if($item->status == 2 && auth()->user()->hasAnyRole(['admin', 'verifikator']))
+                                            <form method="POST" action="{{ route('admin.berita.verify', $item) }}" class="inline-block">
+                                                @csrf
+                                                <input type="hidden" name="action" value="approve">
+                                                <button type="submit" class="action-btn w-8 h-8 rounded bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 hover:text-emerald-700" title="Publish Berita">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                                </button>
+                                            </form>
+                                            <button type="button" onclick="openRejectModal('{{ route('admin.berita.verify', $item) }}')" class="action-btn w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 hover:text-red-700" title="Tolak Berita">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                            </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -242,5 +273,47 @@
             @endif
         </div>
     </div>
+
+    {{-- Modal Reject --}}
+    <div id="rejectModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex bg-gray-900/50">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <div class="relative bg-white rounded-xl shadow">
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                    <h3 class="text-lg font-bold text-gray-900">
+                        Tolak Artikel
+                    </h3>
+                    <button type="button" onclick="closeRejectModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <form id="rejectForm" method="POST" action="" class="p-4 md:p-5">
+                    @csrf
+                    <input type="hidden" name="action" value="reject">
+                    <div class="mb-4">
+                        <label for="rejection_reason" class="block mb-2 text-sm font-medium text-gray-900">Alasan Penolakan <span class="text-red-500">*</span></label>
+                        <textarea id="rejection_reason" name="rejection_reason" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Tuliskan alasan mengapa artikel ini ditolak atau perlu direvisi..." required></textarea>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="closeRejectModal()" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Batal</button>
+                        <button type="submit" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Tolak Artikel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openRejectModal(actionUrl) {
+            document.getElementById('rejectForm').action = actionUrl;
+            document.getElementById('rejectModal').classList.remove('hidden');
+        }
+        function closeRejectModal() {
+            document.getElementById('rejectModal').classList.add('hidden');
+            document.getElementById('rejectForm').reset();
+        }
+    </script>
 @endsection
 

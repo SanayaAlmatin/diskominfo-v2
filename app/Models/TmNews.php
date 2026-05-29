@@ -15,8 +15,8 @@ class TmNews extends Model
     protected $fillable = [
         'title', 'subtitle', 'excerpt', 'slug', 'content',
         'category_id', 'is_headline', 'view_count', 'status',
-        'author_id', 'published_at', 'date', 'description_image', 'image_caption',
-        'meta_title', 'meta_description',
+        'author_id', 'verifikator_id', 'published_at', 'date', 'description_image', 'image_caption',
+        'meta_title', 'meta_description', 'rejection_reason',
     ];
 
     protected $casts = ['published_at' => 'datetime', 'is_headline' => 'boolean'];

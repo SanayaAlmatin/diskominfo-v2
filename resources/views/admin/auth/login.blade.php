@@ -9,22 +9,18 @@
 </head>
 
 <body class="h-full flex items-center justify-center min-h-screen"
-    style="background: linear-gradient(135deg, #0F2044 0%, #1a3460 50%, #0F2044 100%);">
+    style="background: linear-gradient(135deg, #0665D0 0%, #0552A8 50%, #0665D0 100%);">
 
     <div class="w-full max-w-md px-4">
         <!-- Card -->
         <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
 
             <!-- Header -->
-            <div class="px-8 pt-8 pb-6 text-center" style="background: linear-gradient(135deg, #0F2044, #1a3460);">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-                    style="background-color: #FFC107;">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.357l4-2a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z" />
-                    </svg>
+            <div class="px-8 pt-8 pb-6 text-center" style="background: linear-gradient(135deg, #0665D0, #0552A8);">
+                <div class="mb-4 flex justify-center">
+                    <img src="{{ asset('Images/logo-kominfo.png') }}" alt="Logo Kominfo" class="h-16 w-auto object-contain">
                 </div>
-                <h1 class="text-2xl font-bold text-white">CMS Diskominfo</h1>
+                <h1 class="text-2xl font-bold text-white">CMS Kominfo</h1>
                 <p class="text-blue-300 text-sm mt-1">Kota Tangerang Selatan</p>
             </div>
 
@@ -39,7 +35,7 @@
 
                 @if (session('error'))
                     <script>
-                        window.__loginError = @json(session('error'));
+                        window.__flashError = @json(session('error'));
                     </script>
                 @endif
 
@@ -59,7 +55,7 @@
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 text-sm
                                       focus:outline-none focus:ring-2 focus:border-blue-500 transition-colors
                                       @error('username') border-red-400 @enderror"
-                            style="--tw-ring-color: #0F2044;" placeholder="Masukkan username" required>
+                            style="--tw-ring-color: #0665D0;" placeholder="Masukkan username" required>
                         @error('username')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
@@ -83,7 +79,7 @@
 
                     <button type="submit"
                         class="w-full py-3 px-4 rounded-lg text-sm font-bold text-white transition-all hover:opacity-90 hover:-translate-y-0.5 shadow-lg"
-                        style="background-color: #0F2044;">
+                        style="background-color: #0665D0;">
                         Masuk ke CMS
                     </button>
                 </form>
